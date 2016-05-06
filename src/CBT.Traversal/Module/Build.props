@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TraversalProjectNames Condition=" '$(TraversalProjectNames)' == '' ">dirs.proj</TraversalProjectNames>
+
+    <IsTraversal Condition=" '$(IsTraversal)' != '' ">$([System.Convert]::ToBoolean($(IsTraversal)))</IsTraversal>
+    <IsTraversal Condition=" '$(IsTraversal)' == '' And $(TraversalProjectNames.Contains($(MSBuildProjectFile))) ">true</IsTraversal>
+    
+    <TraversalTargets>$(MSBuildThisFileDirectory)Traversal.targets</TraversalTargets>
+
+  </PropertyGroup>
+</Project>

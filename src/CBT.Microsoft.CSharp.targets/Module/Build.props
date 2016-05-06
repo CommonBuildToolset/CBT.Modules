@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SavedCustomBeforeMicrosoftCSharpTargets>$(CustomBeforeMicrosoftCSharpTargets)</SavedCustomBeforeMicrosoftCSharpTargets>
+    <SavedCustomAfterMicrosoftCSharpTargets>$(CustomAfterMicrosoftCSharpTargets)</SavedCustomAfterMicrosoftCSharpTargets>
+
+    <CustomBeforeMicrosoftCSharpTargets>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.CSharp.targets</CustomBeforeMicrosoftCSharpTargets>
+    <CustomAfterMicrosoftCSharpTargets>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.CSharp.targets</CustomAfterMicrosoftCSharpTargets>
+  </PropertyGroup>
+</Project>

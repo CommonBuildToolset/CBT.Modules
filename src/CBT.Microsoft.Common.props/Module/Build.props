@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SavedCustomBeforeMicrosoftCommonProps>$(CustomBeforeMicrosoftCommonProps)</SavedCustomBeforeMicrosoftCommonProps>
+    <SavedCustomAfterMicrosoftCommonProps>$(CustomAfterMicrosoftCommonProps)</SavedCustomAfterMicrosoftCommonProps>
+
+    <CustomBeforeMicrosoftCommonProps>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.Common.props</CustomBeforeMicrosoftCommonProps>
+    <CustomAfterMicrosoftCommonProps>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.Common.props</CustomAfterMicrosoftCommonProps>
+  </PropertyGroup>
+</Project>

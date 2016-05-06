@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <NuGetTasksAssemblyFile Condition=" '$(NuGetTasksAssemblyFile)' == '' ">$(MSBuildThisFileDirectory)CBT.NuGet.dll</NuGetTasksAssemblyFile>
+    <NuGetAllProjects>$(NuGetAllProjects);$(MSBuildThisFileFullPath);$(MSBuildThisFileDirectory)CBT.NuGet.targets;$(NuGetTasksAssemblyFile)</NuGetAllProjects>
+    <EnablePackageRestore Condition=" '$(EnablePackageRestore)' == '' And '$(BuildingInsideVisualStudio)' != 'true' ">true</EnablePackageRestore>
+    <DisableNuGetPackageRestoreOptimization Condition=" '$(DisableNuGetPackageRestoreOptimization)' == '' ">false</DisableNuGetPackageRestoreOptimization>
+    <NuGetRestoreFile Condition=" '$(NuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\packages.config') ">$(MSBuildProjectDirectory)\packages.config</NuGetRestoreFile>
+    <NuGetRestoreFile Condition=" '$(NuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\project.json') ">$(MSBuildProjectDirectory)\project.json</NuGetRestoreFile>
+    <NuGetAllProjects Condition=" '$(NuGetRestoreFile)' != '' ">$(NuGetAllProjects);$(MSBuildProjectFullPath)</NuGetAllProjects>
+    <NuGetPath Condition=" '$(NuGetPath)' == '' And '$(CBTModuleRestoreCommand)' != '' And $([System.IO.Path]::GetFileName($(CBTModuleRestoreCommand))) == 'NuGet.exe' And Exists($(CBTModuleRestoreCommand)) ">$([System.IO.Path]::GetDirectoryName($(CBTModuleRestoreCommand)))</NuGetPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NuGetPackagesRestoredMarker Condition=" '$(NuGetPackagesRestoredMarker)' == '' ">$(IntermediateOutputPath)\$(MSBuildProjectFile).NuGetPackagesRestored</NuGetPackagesRestoredMarker>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(EnablePackageRestore)' == 'true' ">
+    <NuGetMsBuildVersion Condition=" '$(NuGetMsBuildVersion)' == '' ">$(MSBuildToolsVersion)</NuGetMsBuildVersion>
+    <NuGetRestorePackagesDirectory Condition=" '$(NuGetRestorePackagesDirectory)' == '' ">$(NuGetPackagesPath)</NuGetRestorePackagesDirectory>
+    <NuGetRestoreRequireConsent Condition=" '$(NuGetRestoreRequireConsent)' == '' ">false</NuGetRestoreRequireConsent>
+    <NuGetDisableParallelProcessing Condition=" '$(NuGetDisableParallelProcessing)' == '' ">false</NuGetDisableParallelProcessing>
+    <NuGetNoCache Condition=" '$(NuGetNoCache)' == '' ">false</NuGetNoCache>
+    <NuGetNonInteractive Condition=" '$(NuGetNonInteractive)' == '' ">true</NuGetNonInteractive>
+    <NuGetTimeout Condition=" '$(NuGetTimeout)' == '' ">0</NuGetTimeout>
+    <EnablePackageRestore Condition=" '$(NuGetRestoreFile)' == '' ">false</EnablePackageRestore>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(EnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' ">
+    <NuGetPackagesRestored>$(NuGetTasksAssemblyFile.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null, null).CreateInstanceFromAndUnwrap($(NuGetTasksAssemblyFile), 'CBT.NuGet.Tasks.NuGetRestore').Execute($(NuGetRestoreFile), $(NuGetMsBuildVersion), $(NuGetRestorePackagesDirectory), $(NuGetRestoreRequireConsent), $(NuGetRestoreSolutionDirectory), $(NuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(NuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(NuGetNonInteractive), $(NuGetVerbosity), $(NuGetTimeout), $(NuGetPath), $(DisableNuGetPackageRestoreOptimization), $(NuGetPackagesRestoredMarker), $(NuGetAllProjects.Split(';'))))</NuGetPackagesRestored>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(NuGetRestoreFile)' != '' ">
+    <NuGetPackagePropertyFile Condition=" '$(NuGetPackagePropertyFile)' == '' ">$(IntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(NuGetRestoreFile)')).props</NuGetPackagePropertyFile>
+    <NuGetPackagePropertyNamePrefix Condition=" '$(NuGetPackagePropertyNamePrefix)' == '' ">NuGetPath_</NuGetPackagePropertyNamePrefix>
+    <NuGetPackagePropertyValuePrefix Condition=" '$(NuGetPackagePropertyValuePrefix)' == '' ">%24(NuGetPackagesPath)\</NuGetPackagePropertyValuePrefix>
+    
+    <NuGetPackagePropertiesCreated>$(NuGetTasksAssemblyFile.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null, null).CreateInstanceFromAndUnwrap($(NuGetTasksAssemblyFile), 'CBT.NuGet.Tasks.NuGetRestore').GenerateNuGetProperties($(NuGetRestoreFile), $(NuGetAllProjects.Split(';')), $(NuGetPackagePropertyFile), $(NuGetPackagePropertyNamePrefix), $(NuGetPackagePropertyValuePrefix)))</NuGetPackagePropertiesCreated>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)CBT.NuGet.targets" />
+
+  <Import Project="$(NuGetPackagePropertyFile)" Condition=" '$(NuGetPackagePropertiesCreated)' == 'true' And Exists('$(NuGetPackagePropertyFile)') "/>
+
+</Project>

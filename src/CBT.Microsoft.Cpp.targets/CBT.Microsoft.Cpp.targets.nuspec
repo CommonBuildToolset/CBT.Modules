@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>CBT.Microsoft.Cpp.targets</id>
+    <version>1.0.0</version>
+    <authors>CBT Developers</authors>
+    <owners>CBT Developers</owners>
+    <licenseUrl>https://raw.githubusercontent.com/CommonBuildToolset/CBT.Modules/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/CommonBuildToolset</projectUrl>
+    <iconUrl>https://avatars2.githubusercontent.com/u/16727685?v=3&amp;s=200</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Provides hooks into Microsoft.Cpp.targets.</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>CBT Module</tags>
+  </metadata>
+  <files>
+    <file src="**\*" target="CBT" exclude="*.nuspec" />
+  </files>
+</package>

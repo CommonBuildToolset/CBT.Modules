@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetAdd" />
+  <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetConfig" />
+  <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetList" />
+  <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetPack" />
+  <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetPush" />
+  <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetRestore" />
+  <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetSetApiKey" />
+
+  <Target Name="RestoreNuGetPackages" Condition=" '$(EnablePackageRestore)' == 'true' " Inputs="$(NuGetAllProjects);$(NuGetRestoreFile)" Outputs="$(NuGetPackagesRestoredMarker)">
+
+    <NuGetRestore
+      File="$(NuGetRestoreFile)"
+      RequireConsent="$(NuGetRestoreRequireConsent)"
+      PackagesDirectory="$(NuGetRestorePackagesDirectory)"
+      SolutionDirectory="$(NuGetRestoreSolutionDirectory)"
+      MsBuildVersion="$(NuGetMsBuildVersion)"
+      DisableParallelProcessing="$(NuGetDisableParallelProcessing)"
+      FallbackSource="$(NuGetFallbackSource)"
+      NoCache="$(NuGetNoCache)"
+      PackageSaveMode="$(NuGetPackageSaveMode)"
+      Source="$(NuGetSource)"
+      ConfigFile="$(NuGetConfigFile)"
+      NonInteractive="$(NuGetNonInteractive)"
+      Verbosity="$(NuGetVerbosity)"
+      Timeout="$(NuGetTimeout)"
+      ToolPath="$(NuGetPath)"
+      />
+
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(NuGetPackagesRestoredMarker)))" Condition=" '$(DisableNuGetPackageRestoreOptimization)' != 'true' " />
+
+    <Touch AlwaysCreate="true" ForceTouch="true" Files="$(NuGetPackagesRestoredMarker)" Condition=" '$(DisableNuGetPackageRestoreOptimization)' != 'true' " />
+
+  </Target>
+
+</Project>
