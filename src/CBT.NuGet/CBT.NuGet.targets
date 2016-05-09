@@ -44,7 +44,7 @@
   <Target Name="_CheckForNuGetPackagesRestoredMarker">
 
     <ItemGroup>
-      <FileWrites Include="$(NuGetPackagesRestoredMarker)" />
+      <FileWrites Include="$(NuGetPackagesRestoredMarker)" Condition=" '$(DisableNuGetPackageRestoreOptimization)' != 'true' And Exists('$(NuGetPackagesRestoredMarker)') " />
     </ItemGroup>
 
   </Target>

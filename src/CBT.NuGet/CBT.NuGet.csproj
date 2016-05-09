@@ -57,6 +57,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="After.Microsoft.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="build.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
