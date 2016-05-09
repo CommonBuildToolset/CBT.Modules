@@ -40,9 +40,9 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
-            var mutextName = PackagesDirectory.ToUpper().GetHashCode().ToString("X");
+            string mutextName = PackagesDirectory.ToUpper().GetHashCode().ToString("X");
 
-            using (var mutex = new Mutex(false, mutextName))
+            using (Mutex mutex = new Mutex(false, mutextName))
             {
                 if (!mutex.WaitOne(TimeSpan.FromMinutes(30)))
                 {
@@ -100,15 +100,24 @@ namespace CBT.NuGet.Tasks
 
                     string dir = Path.GetDirectoryName(markerPath);
 
-                    if (!String.IsNullOrWhiteSpace(dir) && !Directory.Exists(dir))
+                    using (Mutex mutex = new Mutex(false, markerPath.ToUpper().GetHashCode().ToString("X")))
                     {
-                        Directory.CreateDirectory(dir);
+                        if (!mutex.WaitOne(TimeSpan.FromMinutes(30)))
+                        {
+                            return false;
+                        }
+
+                        if (!System.IO.File.Exists(markerPath))
+                        {
+                            if (!String.IsNullOrWhiteSpace(dir) && !Directory.Exists(dir))
+                            {
+                                Directory.CreateDirectory(dir);
+                            }
+
+                            System.IO.File.WriteAllText(markerPath, String.Empty);
+                        }
                     }
-
-                    System.IO.File.WriteAllText(markerPath, String.Empty);
                 }
-
-
             }
             catch (Exception e)
             {
