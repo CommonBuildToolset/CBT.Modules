@@ -9,7 +9,11 @@
   <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetRestore" />
   <UsingTask AssemblyFile="$(NuGetTasksAssemblyFile)" TaskName="CBT.NuGet.Tasks.NuGetSetApiKey" />
 
-  <Target Name="RestoreNuGetPackages" Condition=" '$(EnablePackageRestore)' == 'true' " Inputs="$(NuGetAllProjects);$(NuGetRestoreFile)" Outputs="$(NuGetPackagesRestoredMarker)">
+  <Target Name="RestoreNuGetPackages"
+    Condition=" '$(EnablePackageRestore)' == 'true' "
+    DependsOnTargets="_CheckForNuGetPackagesRestoredMarker;$(RestoreNuGetPackagesDependsOn)"
+    Inputs="$(NuGetAllProjects);$(NuGetRestoreFile)"
+    Outputs="$(NuGetPackagesRestoredMarker)">
 
     <NuGetRestore
       File="$(NuGetRestoreFile)"
@@ -32,6 +36,16 @@
     <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(NuGetPackagesRestoredMarker)))" Condition=" '$(DisableNuGetPackageRestoreOptimization)' != 'true' " />
 
     <Touch AlwaysCreate="true" ForceTouch="true" Files="$(NuGetPackagesRestoredMarker)" Condition=" '$(DisableNuGetPackageRestoreOptimization)' != 'true' " />
+
+    <CallTarget Targets="_CheckForNuGetPackagesRestoredMarker" />
+
+  </Target>
+
+  <Target Name="_CheckForNuGetPackagesRestoredMarker">
+
+    <ItemGroup>
+      <FileWrites Include="$(NuGetPackagesRestoredMarker)" />
+    </ItemGroup>
 
   </Target>
 
