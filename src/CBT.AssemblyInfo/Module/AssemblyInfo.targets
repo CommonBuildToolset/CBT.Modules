@@ -1,0 +1,153 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" >
+
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildTasksPath)'==''">
+    <MSBuildTasksPath>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MSBuildTasksPath>
+    <MSBuildTasksPath Condition="!Exists('$(MSBuildTasksPath)')">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MSBuildTasksPath>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <!--
+    We chose to hard-code AssemblyInfoTemplateDirectory; reason is that otherwise we could have same AssemblyInfoTemplateDirectory in different directories
+    and then we could get into collisions unless we include the template source path in the generated file path.
+    -->
+    <AssemblyInfoTemplateDirectory>$(MSBuildThisFileDirectory)Template\Basic</AssemblyInfoTemplateDirectory>
+
+    <ValidateAssemblyInfoPropertiesSet Condition="'$(ValidateAssemblyInfoPropertiesSet)'==''">true</ValidateAssemblyInfoPropertiesSet>
+    <AssemblyInfoGenerateFileDependsOn Condition="'$(ValidateAssemblyInfoPropertiesSet)'=='true'">ValidateAssemblyInfoProperties</AssemblyInfoGenerateFileDependsOn>
+
+    <AssemblyInfoOutputPath>$(BaseIntermediateOutputPath)gen\AssemblyInfo</AssemblyInfoOutputPath>
+    <AssemblyInfoOutputPath Condition="'$(AssemblyInfoOutputPathOverride)'!=''">$(AssemblyInfoOutputPathOverride)</AssemblyInfoOutputPath>
+
+  </PropertyGroup>
+  
+
+  <ItemGroup>
+    <Clean Include="%(AssemblyInfoTemplateFiles.Identity)" Condition="'$(MSBuildNodeCount)' == '1'"/>
+  </ItemGroup>
+  
+
+  <UsingTask
+    TaskName="AssemblyInfoWriteGeneratedFile"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="$(MSBuildTasksPath)" >
+    <ParameterGroup>
+      <TemplateFileName Required="true" />
+      <ResultFileName Required="true" />
+      <Replacements ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+    </ParameterGroup>
+
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Threading" />      
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+// get a hash of the file path; reason: there's a limit on name length for named mutexes
+string mutexName = ResultFileName.ToLowerInvariant().GetHashCode().ToString("X");
+
+using (var mutex = new Mutex(false, mutexName))
+{
+    bool owner = false;
+    try
+    {
+        try
+        {
+            owner = mutex.WaitOne(TimeSpan.FromMinutes(1)); // typically should be few ms; giving it 1 minute just in case
+            if (!owner)
+            {
+                throw new TimeoutException("Timeout waiting for mutex");
+            }
+        }
+        catch (AbandonedMutexException)
+        {
+            Log.LogWarning("Why did someone abandon the mutex?");
+            owner = true; // now mine
+        }
+
+        if (File.Exists(ResultFileName) && File.GetLastWriteTime(ResultFileName) > File.GetLastWriteTime(TemplateFileName))
+        {
+            return true; // someone else took care of it
+        }
+        
+        using (var sr = new StreamReader(TemplateFileName))
+        {
+            using (var sw = new StreamWriter(ResultFileName, false))
+            {
+                string line;
+                while ( (line = sr.ReadLine()) != null)
+                {
+                    var modifiedLine = line;
+                    foreach (var item in Replacements)
+                    {
+                      modifiedLine = modifiedLine.Replace(item.ItemSpec, item.GetMetadata("Value"));
+                    }
+                    sw.WriteLine(modifiedLine);
+                }
+            }
+        }        
+    }
+    finally
+    {
+        if (owner)
+        {
+            mutex.ReleaseMutex();
+        }
+    }
+}
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="AssemblyInfoDefaultValues">
+    <PropertyGroup>
+      <AssemblyInfoConfiguration Condition="'$(AssemblyInfoConfiguration)'==''">$(Configuration)</AssemblyInfoConfiguration>
+      <AssemblyInfoCLSCompliant Condition="'$(AssemblyInfoCLSCompliant)'==''">true</AssemblyInfoCLSCompliant>
+      <AssemblyInfoComVisible Condition="'$(AssemblyInfoComVisible)'==''">false</AssemblyInfoComVisible>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="ValidateAssemblyInfoProperties" DependsOnTargets="AssemblyInfoDefaultValues">
+    <Warning Condition="'$(AssemblyInfoProductName)'==''" Text="msbuild property AssemblyInfoProductName is not defined."/>
+    <Warning Condition="'$(AssemblyInfoCompanyName)'==''" Text="msbuild property AssemblyInfoCompanyName is not defined."/>
+    <Warning Condition="'$(AssemblyInfoCopyright)'==''" Text="msbuild property AssemblyInfoCopyright is not defined."/>
+    <Warning Condition="'$(AssemblyInfoTrademark)'==''" Text="msbuild property AssemblyInfoTrademark is not defined."/>
+  </Target>
+
+  <Target Name="AssemblyInfoGenerateReplacementVars">
+    <ItemGroup>
+      <AssemblyInfoVars Include="%25AssemblyInfoTemplate%25"><Value>$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoProductName%25"><Value>$(AssemblyInfoProductName)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoTemplateName%25"><Value>%(AssemblyInfoTemplateFiles.FileName)%(AssemblyInfoTemplateFiles.Extension)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoCompanyName%25"><Value>$(AssemblyInfoCompanyName)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoCopyright%25"><Value>$(AssemblyInfoCopyright)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoTrademark%25"><Value>$(AssemblyInfoTrademark)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoCulture%25"><Value>$(AssemblyInfoCulture)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoConfiguration%25"><Value>$(AssemblyInfoConfiguration)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoCLSCompliant%25"><Value>$(AssemblyInfoCLSCompliant)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoComVisible%25"><Value>$(AssemblyInfoComVisible)</Value></AssemblyInfoVars>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="AssemblyInfoGenerateFile"
+    Condition="'@(AssemblyInfoTemplateFiles)' != ''"
+    BeforeTargets="$(AssemblyInfoRunBeforeTargets)"
+    Inputs="$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)"
+    DependsOnTargets="$(AssemblyInfoGenerateFileDependsOn);AssemblyInfoGenerateReplacementVars"
+    Outputs="$(AssemblyInfoOutputPath)\%(AssemblyInfoTemplateFiles.Identity)" >
+
+    <MakeDir Condition="!Exists($(AssemblyInfoOutputPath))" Directories="$(AssemblyInfoOutputPath)" />
+
+    <Error Text="Couldn't find template file '$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)'" Condition="!Exists('$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)')" />
+    
+    <Message Text="Generating '$(AssemblyInfoOutputPath)\%(AssemblyInfoTemplateFiles.Identity)' from '$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)'" Condition="'$(AssemblyInfoEnableDebugging)'=='true'" />
+
+    <AssemblyInfoWriteGeneratedFile TemplateFileName="$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)" ResultFileName="$(AssemblyInfoOutputPath)\%(AssemblyInfoTemplateFiles.Identity)" Replacements="@(AssemblyInfoVars)" />
+  </Target>
+
+</Project>
