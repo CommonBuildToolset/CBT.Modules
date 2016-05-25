@@ -1,8 +1,9 @@
-﻿using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 
-namespace CBT.NuGet.Tasks
+namespace CBT.NuGet.Internal
 {
     internal static class ExtensionMethods
     {
@@ -14,6 +15,14 @@ namespace CBT.NuGet.Tasks
                 {
                     commandLineBuilder.AppendSwitchIfNotNull(switchName, item.ItemSpec);
                 }
+            }
+        }
+
+        public static void AppendSwitchIfNotNullOrWhiteSpace(this CommandLineBuilder commandLineBuilder, string switchName, string parameter)
+        {
+            if (!String.IsNullOrWhiteSpace(parameter))
+            {
+                commandLineBuilder.AppendSwitchIfNotNull(switchName, parameter);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Framework;
+﻿using CBT.NuGet.Internal;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System.Text.RegularExpressions;
 
@@ -50,13 +51,13 @@ namespace CBT.NuGet.Tasks
 
             commandLineBuilder.AppendFileNameIfNotNull(File);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-OutputDirectory ", OutputDirectory);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-OutputDirectory ", OutputDirectory);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-BasePath ", BasePath);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-BasePath ", BasePath);
 
             commandLineBuilder.AppendSwitchIfTrue("-Verbose", Verbose);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-Version ", Version);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Version ", Version);
 
             commandLineBuilder.AppendSwitchIfAny("-Exclude ", Exclude);
 
@@ -76,9 +77,9 @@ namespace CBT.NuGet.Tasks
 
             commandLineBuilder.AppendSwitchIfAny("-Properties ", Properties);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-MinClientVersion ", MinClientVersion);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MinClientVersion ", MinClientVersion);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-MSBuildVersion ", MsBuildVersion);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildVersion ", MsBuildVersion);
         }
 
         protected override void LogEventsFromTextOutput(string singleLine, MessageImportance messageImportance)

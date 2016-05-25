@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Framework;
+﻿using CBT.NuGet.Internal;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
 namespace CBT.NuGet.Tasks
@@ -16,7 +17,7 @@ namespace CBT.NuGet.Tasks
 
             commandLineBuilder.AppendFileNameIfNotNull(ApiKey);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-Source ", Source);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Source ", Source);
         }
     }
 }
