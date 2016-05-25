@@ -11,7 +11,7 @@
     <AssemblyName>CBT.NuGet</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-	<OutputPath>bin\Debug\$(MSBuildToolsVersion)\</OutputPath>
+    <OutputPath>bin\Debug\$(MSBuildToolsVersion)\</OutputPath>
     <MsBuildUtilitiesAssemblyName>Microsoft.Build.Utilities.v$(MSBuildToolsVersion)</MsBuildUtilitiesAssemblyName>
     <MsBuildUtilitiesAssemblyName Condition="'$(MSBuildToolsVersion)' == '14.0'">Microsoft.Build.Utilities.Core</MsBuildUtilitiesAssemblyName>
   </PropertyGroup>
