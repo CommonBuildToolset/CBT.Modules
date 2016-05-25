@@ -49,7 +49,14 @@ namespace CBT.NuGet.Tasks
                     return false;
                 }
 
-                return base.Execute();
+                try
+                {
+                    return base.Execute();
+                }
+                finally
+                {
+                    mutex.ReleaseMutex();
+                }
             }
         }
 
