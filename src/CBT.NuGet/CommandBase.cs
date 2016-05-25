@@ -1,6 +1,6 @@
-﻿using Microsoft.Build.Utilities;
+﻿using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using System;
-using Microsoft.Build.Framework;
 
 namespace CBT.NuGet
 {
@@ -15,7 +15,7 @@ namespace CBT.NuGet
         {
             NonInteractive = true;
             LogStandardErrorAsError = true;
-            StandardErrorImportance =StandardOutputImportance = MessageImportance.Normal.ToString();
+            StandardErrorImportance = StandardOutputImportance = MessageImportance.Normal.ToString();
         }
 
         /// <summary>
@@ -42,7 +42,19 @@ namespace CBT.NuGet
         {
             get { return "NuGet.exe"; }
         }
-        
+
+        public override bool Execute()
+        {
+            if (Timeout == 0)
+            {
+                // ToolTask does not treat 0 as infinite
+                //
+                Timeout = System.Threading.Timeout.Infinite;
+            }
+
+            return base.Execute();
+        }
+
         protected override string GenerateCommandLineCommands()
         {
             CommandLineBuilder commandLineBuilder = new CommandLineBuilder();
