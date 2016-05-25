@@ -153,11 +153,11 @@ namespace CBT.NuGet.Tasks
 
             commandLineBuilder.AppendSwitchIfTrue("-RequireConsent", RequireConsent);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-PackagesDirectory ", PackagesDirectory);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-PackagesDirectory ", PackagesDirectory);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-SolutionDirectory ", SolutionDirectory);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-SolutionDirectory ", SolutionDirectory);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-MSBuildVersion ", MsBuildVersion);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildVersion ", MsBuildVersion);
 
             base.GenerateCommandLineCommands(commandLineBuilder);
         }

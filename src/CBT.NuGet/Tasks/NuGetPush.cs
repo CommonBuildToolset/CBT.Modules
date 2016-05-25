@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Framework;
+﻿using CBT.NuGet.Internal;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
 namespace CBT.NuGet.Tasks
@@ -37,9 +38,9 @@ namespace CBT.NuGet.Tasks
 
             commandLineBuilder.AppendFileNameIfNotNull(Package);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-Source ", Source);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Source ", Source);
 
-            commandLineBuilder.AppendSwitchIfNotNull("-ApiKey ", ApiKey);
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-ApiKey ", ApiKey);
 
             commandLineBuilder.AppendSwitchIfTrue("-DisableBuffering", DisableBuffering);
         }
