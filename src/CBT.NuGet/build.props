@@ -5,32 +5,43 @@
     <NuGetTasksAssemblyFile Condition=" '$(NuGetTasksAssemblyFile)' == '' ">$(MSBuildThisFileDirectory)CBT.NuGet.dll</NuGetTasksAssemblyFile>
     <NuGetAllProjects>$(NuGetAllProjects);$(MSBuildThisFileFullPath);$(MSBuildThisFileDirectory)CBT.NuGet.targets;$(NuGetTasksAssemblyFile)</NuGetAllProjects>
     <EnablePackageRestore Condition=" '$(EnablePackageRestore)' == '' And '$(BuildingInsideVisualStudio)' != 'true' ">true</EnablePackageRestore>
-    <DisableNuGetPackageRestoreOptimization Condition=" '$(DisableNuGetPackageRestoreOptimization)' == '' ">false</DisableNuGetPackageRestoreOptimization>
-    <NuGetRestoreFile Condition=" '$(NuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\packages.config') ">$(MSBuildProjectDirectory)\packages.config</NuGetRestoreFile>
-    <NuGetRestoreFile Condition=" '$(NuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\project.json') ">$(MSBuildProjectDirectory)\project.json</NuGetRestoreFile>
-    <NuGetAllProjects Condition=" '$(NuGetRestoreFile)' != '' ">$(NuGetAllProjects);$(MSBuildProjectFullPath)</NuGetAllProjects>
     <NuGetPath Condition=" '$(NuGetPath)' == '' And '$(CBTModuleRestoreCommand)' != '' And $([System.IO.Path]::GetFileName($(CBTModuleRestoreCommand))) == 'NuGet.exe' And Exists($(CBTModuleRestoreCommand)) ">$([System.IO.Path]::GetDirectoryName($(CBTModuleRestoreCommand)))</NuGetPath>
+    <DisableNuGetPackageRestoreOptimization Condition=" '$(DisableNuGetPackageRestoreOptimization)' == '' ">false</DisableNuGetPackageRestoreOptimization>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(EnablePackageRestore)' == 'true' And '$(NuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\project.json') ">
+    <!-- For project.json, the file to pass to restore is the project itself -->
+    <NuGetRestoreFile>$(MSBuildProjectFullPath)</NuGetRestoreFile>
+    <NuGetAllProjects>$(NuGetAllProjects);$(MSBuildProjectDirectory)\project.json</NuGetAllProjects>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(EnablePackageRestore)' == 'true' And '$(NuGetRestoreFile)' == ''  And Exists('$(MSBuildProjectDirectory)\packages.config') ">
+    <NuGetRestoreFile>$(MSBuildProjectDirectory)\packages.config</NuGetRestoreFile>
+    <NuGetAllProjects>$(NuGetAllProjects);$(MSBuildProjectFullPath)</NuGetAllProjects>
+    <NuGetRestorePackagesDirectory Condition=" '$(NuGetRestorePackagesDirectory)' == '' ">$(NuGetPackagesPath)</NuGetRestorePackagesDirectory>
+    <NuGetGeneratePackageProperties Condition=" '$(NuGetGeneratePackageProperties)' == '' ">true</NuGetGeneratePackageProperties>
   </PropertyGroup>
 
   <PropertyGroup>
-    <NuGetPackagesRestoredMarker Condition=" '$(NuGetPackagesRestoredMarker)' == '' ">$(IntermediateOutputPath)\$(MSBuildProjectFile).NuGetPackagesRestored</NuGetPackagesRestoredMarker>
+    <!-- Disable package restoration if there is no packages.config/project.json -->
+    <EnablePackageRestore Condition=" '$(NuGetRestoreFile)' == '' ">false</EnablePackageRestore>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition=" '$(EnablePackageRestore)' == 'true' ">
-    <NuGetRestorePackagesDirectory Condition=" '$(NuGetRestorePackagesDirectory)' == '' ">$(NuGetPackagesPath)</NuGetRestorePackagesDirectory>
+    <NuGetPackagesRestoredMarker Condition=" '$(NuGetPackagesRestoredMarker)' == '' ">$(IntermediateOutputPath)\$(MSBuildProjectFile).NuGetPackagesRestored</NuGetPackagesRestoredMarker>
     <NuGetRestoreRequireConsent Condition=" '$(NuGetRestoreRequireConsent)' == '' ">false</NuGetRestoreRequireConsent>
     <NuGetDisableParallelProcessing Condition=" '$(NuGetDisableParallelProcessing)' == '' ">false</NuGetDisableParallelProcessing>
     <NuGetNoCache Condition=" '$(NuGetNoCache)' == '' ">false</NuGetNoCache>
     <NuGetNonInteractive Condition=" '$(NuGetNonInteractive)' == '' ">true</NuGetNonInteractive>
     <NuGetTimeout Condition=" '$(NuGetTimeout)' == '' ">0</NuGetTimeout>
-    <EnablePackageRestore Condition=" '$(NuGetRestoreFile)' == '' ">false</EnablePackageRestore>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(EnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' ">
+  <PropertyGroup Condition=" '$(EnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' ">
+    <!-- Restore packages if not running under Visual Studio and not running as part of NuGet's restore -->
     <NuGetPackagesRestored>$(NuGetTasksAssemblyFile.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(NuGetTasksAssemblyFile), 'CBT.NuGet.Tasks.NuGetRestore').Execute($(NuGetRestoreFile), '$(NuGetMsBuildVersion)', $(NuGetRestorePackagesDirectory), $(NuGetRestoreRequireConsent), $(NuGetRestoreSolutionDirectory), $(NuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(NuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(NuGetNonInteractive), $(NuGetVerbosity), $(NuGetTimeout), $(NuGetPath), $(DisableNuGetPackageRestoreOptimization), $(NuGetPackagesRestoredMarker), $(NuGetAllProjects.Split(';'))))</NuGetPackagesRestored>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(NuGetRestoreFile)' != '' ">
+  <PropertyGroup Condition=" '$(EnablePackageRestore)' == 'true' And '$(NuGetGeneratePackageProperties)' == 'true' ">
     <NuGetPackagePropertyFile Condition=" '$(NuGetPackagePropertyFile)' == '' ">$(IntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(NuGetRestoreFile)')).props</NuGetPackagePropertyFile>
     <NuGetPackagePropertyNamePrefix Condition=" '$(NuGetPackagePropertyNamePrefix)' == '' ">NuGetPath_</NuGetPackagePropertyNamePrefix>
     <NuGetPackagePropertyValuePrefix Condition=" '$(NuGetPackagePropertyValuePrefix)' == '' ">%24(NuGetPackagesPath)\</NuGetPackagePropertyValuePrefix>
