@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>CBT.Microsoft.NuGet</id>
+    <version>1.0.0-beta1</version>
+    <authors>CBT Developers</authors>
+    <owners>CBT Developers</owners>
+    <licenseUrl>https://raw.githubusercontent.com/CommonBuildToolset/CBT.Modules/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/CommonBuildToolset</projectUrl>
+    <iconUrl>https://avatars2.githubusercontent.com/u/16727685?v=3&amp;s=200</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Provides support for NuGet and project.json.</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>CBT Module</tags>
+    <dependencies>
+      <dependency id="CBT.Microsoft.Common.targets" version="[1.0,)"/>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="**\*" target="CBT" exclude="*.nuspec" />
+  </files>
+</package>
