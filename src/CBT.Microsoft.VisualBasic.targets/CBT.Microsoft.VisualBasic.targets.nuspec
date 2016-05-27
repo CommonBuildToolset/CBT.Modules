@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CBT.Microsoft.VisualBasic.targets</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <authors>CBT Developers</authors>
     <owners>CBT Developers</owners>
     <licenseUrl>https://raw.githubusercontent.com/CommonBuildToolset/CBT.Modules/master/LICENSE</licenseUrl>
