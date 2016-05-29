@@ -13,6 +13,7 @@
     <!-- For project.json, the file to pass to restore is the project itself -->
     <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\project.json</CBTNuGetAllProjects>
+    <NuGetTargets Condition=" '$(NuGetTargets)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == ''  And Exists('$(MSBuildProjectDirectory)\packages.config') ">
@@ -52,5 +53,7 @@
   <Import Project="$(MSBuildThisFileDirectory)CBT.NuGet.targets" />
 
   <Import Project="$(CBTNuGetPackagePropertyFile)" Condition=" '$(CBTNuGetPackagePropertiesCreated)' == 'true' And Exists('$(CBTNuGetPackagePropertyFile)') "/>
+
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props" Condition=" '$(IncludeNuGetImports)' != 'false' "/>
 
 </Project>

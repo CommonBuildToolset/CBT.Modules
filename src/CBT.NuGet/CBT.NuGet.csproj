@@ -56,28 +56,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="After.Microsoft.Common.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="build.props">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="CBT.NuGet.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="CBT.NuGet.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Include="After.Traversal.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="After.Microsoft.Common.targets" />
+    <None Include="After.Traversal.targets" />
+    <None Include="build.props" />
+    <None Include="CBT.NuGet.nuspec"/>
+    <None Include="CBT.NuGet.targets" />
+    <None Include="Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />
+    <None Include="Microsoft.NuGet\Microsoft.NuGet.props" />
+    <None Include="Microsoft.NuGet\Microsoft.NuGet.targets" />
+    <None Include="Microsoft.NuGet\Newtonsoft.Json.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
