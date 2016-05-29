@@ -1,8 +1,0 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  
-  <PropertyGroup>
-    <NuGetTargets Condition=" '$(NuGetTargets)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet.targets</NuGetTargets>
-  </PropertyGroup>
-  
-  <Import Project="$(NuGetTargets)" Condition=" !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.targets\ImportAfter\Microsoft.NuGet.ImportAfter.targets') " />
-</Project>

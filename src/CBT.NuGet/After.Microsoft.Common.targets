@@ -4,5 +4,7 @@
   <PropertyGroup>
     <PrepareForBuildDependsOn Condition=" '$(CBTDisableNuGetPackageRestoreOptimization)' != 'true' ">_CheckForCBTNuGetPackagesRestoredMarker;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
   </PropertyGroup>
+
+  <Import Project="$(NuGetTargets)" Condition=" '$(NuGetTargets)' != '' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.targets\ImportAfter\Microsoft.NuGet.ImportAfter.targets') " />
   
 </Project>
