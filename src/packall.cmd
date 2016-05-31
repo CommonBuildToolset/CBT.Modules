@@ -1,4 +1,4 @@
 @ECHO OFF
-FOR /F "usebackq" %%A IN (`dir %~dp0*.nuspec /s /b`) DO (
-	"NuGet.exe" pack "%%A" -OutputDirectory %~dp0
+FOR /F "usebackq" %%A IN (`dir %~dp0*.nuspec /s /b ^| findstr /v /i "CBT.DotNetFx"`) DO (
+	ECHO "NuGet.exe" pack "%%A" -OutputDirectory %~dp0
 )

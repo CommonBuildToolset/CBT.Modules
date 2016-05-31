@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>CBT.DotNetFx</id>
+    <version>$version$</version>
+    <authors>CBT</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Contains the reference assemblies for the .NET Framework v4.0</description>
+  </metadata>
+
+  <files>
+    <file src="build-$DisplayName$.props" target="CBT\Module\build.props" />
+	<file src="$Root$\**\*" target="CBT\Module\$DisplayName$\" />
+  </files>
+</package>
