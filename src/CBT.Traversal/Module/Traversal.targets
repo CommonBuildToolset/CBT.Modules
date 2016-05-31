@@ -34,6 +34,14 @@
 
   <Target Name="Rebuild" DependsOnTargets="$(RebuildDependsOn)" />
 
+  <Target Name="Restore" DependsOnTargets="$(RestoreDependsOn)">
+    <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Restore" Condition=" '@(PreTraversalProjectFile)' != '' " />
+
+    <MSBuild Projects="@(ProjectFile)" Targets="Restore" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);IsRestoreOnly=true" />
+
+    <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Restore" Condition="'@(PostTraversalProjectFile)'!=''" />
+  </Target>
+
   <Target Name="Test" DependsOnTargets="$(TestDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Test" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
@@ -43,7 +51,7 @@
   </Target>
 
   <Import Project="$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)') " />
-  
+
   <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)') " />
 
   <Import Project="$(CustomAfterTraversalTargets)" Condition=" '$(CustomAfterTraversalTargets)' != '' And Exists('$(CustomAfterTraversalTargets)') " />
