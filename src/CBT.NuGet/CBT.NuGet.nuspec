@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>CBT.NuGet</id>
-    <version>1.0.0-beta10</version>
+    <version>1.0.0-beta11</version>
     <title>CBT NuGet Module</title>
     <authors>CBT Developers</authors>
     <owners>CBT Developers</owners>
@@ -18,8 +18,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Debug\12.0\CBT.NuGet.dll" target="CBT\Module\v12.0" />
-    <file src="bin\Debug\14.0\CBT.NuGet.dll" target="CBT\Module\v14.0" />
+    <file src="bin\Debug\CBT.NuGet.dll" target="CBT\Module" />
     <file src="CBT.NuGet.targets" target="CBT\Module" />
     <file src="Build.props" target="CBT\Module" />
     <file src="After.Traversal.targets" target="CBT\Module" />
