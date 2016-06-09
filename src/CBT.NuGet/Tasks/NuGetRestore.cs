@@ -40,22 +40,29 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
-            string mutextName = PackagesDirectory.ToUpper().GetHashCode().ToString("X");
+            string semaphoreName = PackagesDirectory.ToUpper().GetHashCode().ToString("X");
 
-            using (Mutex mutex = new Mutex(false, mutextName))
+            bool releaseSemaphore;
+
+            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out releaseSemaphore))
             {
-                if (!mutex.WaitOne(TimeSpan.FromMinutes(30)))
-                {
-                    return false;
-                }
-
                 try
                 {
+                    if (!releaseSemaphore)
+                    {
+                        releaseSemaphore = semaphore.WaitOne(TimeSpan.FromMinutes(30));
+
+                        return releaseSemaphore;
+                    }
+                
                     return base.Execute();
                 }
                 finally
                 {
-                    mutex.ReleaseMutex();
+                    if (releaseSemaphore)
+                    {
+                        semaphore.Release();
+                    }
                 }
             }
         }
