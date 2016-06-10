@@ -10,7 +10,7 @@
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetSetApiKey" />
 
   <Target Name="RestoreNuGetPackages"
-    Condition=" '$(CBTEnablePackageRestore)' == 'true' "
+    Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' "
     DependsOnTargets="_CheckForCBTNuGetPackagesRestoredMarker;$(RestoreNuGetPackagesDependsOn)"
     Inputs="$(CBTNuGetAllProjects);$(CBTNuGetRestoreFile)"
     Outputs="$(CBTNuGetPackagesRestoredMarker)">
