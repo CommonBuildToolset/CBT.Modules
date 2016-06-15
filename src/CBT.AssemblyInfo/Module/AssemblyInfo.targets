@@ -16,10 +16,11 @@
     and then we could get into collisions unless we include the template source path in the generated file path.
     -->
     <AssemblyInfoTemplateDirectory>$(MSBuildThisFileDirectory)Template\Basic</AssemblyInfoTemplateDirectory>
-
+<!--
     <ValidateAssemblyInfoPropertiesSet Condition="'$(ValidateAssemblyInfoPropertiesSet)'==''">true</ValidateAssemblyInfoPropertiesSet>
     <AssemblyInfoGenerateFileDependsOn Condition="'$(ValidateAssemblyInfoPropertiesSet)'=='true'">ValidateAssemblyInfoProperties</AssemblyInfoGenerateFileDependsOn>
-
+    <AssemblyInfoGenerateFileDependsOn Condition="'$(AssemblyInfoGenerateFileDependsOn)'==''">$(AssemblyInfoGenerateFileDependsOn);AssemblyInfoGenerateReplacementVars</AssemblyInfoGenerateFileDependsOn>
+-->
     <AssemblyInfoOutputPath>$(BaseIntermediateOutputPath)gen\AssemblyInfo</AssemblyInfoOutputPath>
     <AssemblyInfoOutputPath Condition="'$(AssemblyInfoOutputPathOverride)'!=''">$(AssemblyInfoOutputPathOverride)</AssemblyInfoOutputPath>
 
@@ -103,7 +104,7 @@ using (var mutex = new Mutex(false, mutexName))
       </Code>
     </Task>
   </UsingTask>
-
+<!--
   <Target Name="AssemblyInfoDefaultValues">
     <PropertyGroup>
       <AssemblyInfoConfiguration Condition="'$(AssemblyInfoConfiguration)'==''">$(Configuration)</AssemblyInfoConfiguration>
@@ -133,12 +134,12 @@ using (var mutex = new Mutex(false, mutexName))
       <AssemblyInfoVars Include="%25AssemblyInfoComVisible%25"><Value>$(AssemblyInfoComVisible)</Value></AssemblyInfoVars>
     </ItemGroup>
   </Target>
-
+-->
   <Target Name="AssemblyInfoGenerateFile"
     Condition="'@(AssemblyInfoTemplateFiles)' != ''"
     BeforeTargets="$(AssemblyInfoRunBeforeTargets)"
     Inputs="$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)"
-    DependsOnTargets="$(AssemblyInfoGenerateFileDependsOn);AssemblyInfoGenerateReplacementVars"
+    DependsOnTargets="$(AssemblyInfoGenerateFileDependsOn)"
     Outputs="$(AssemblyInfoOutputPath)\%(AssemblyInfoTemplateFiles.Identity)" >
 
     <MakeDir Condition="!Exists($(AssemblyInfoOutputPath))" Directories="$(AssemblyInfoOutputPath)" />

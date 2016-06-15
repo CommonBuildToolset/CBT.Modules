@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Condition="'$(EnableAutoImportAssemblyInfoCommon)'=='true'">
+    <ValidateAssemblyInfoPropertiesSet Condition="'$(ValidateAssemblyInfoPropertiesSet)'==''">true</ValidateAssemblyInfoPropertiesSet>
+    <AssemblyInfoGenerateFileDependsOn Condition="'$(ValidateAssemblyInfoPropertiesSet)'=='true'">$(AssemblyInfoGenerateFileDependsOn);ValidateAssemblyInfoProperties</AssemblyInfoGenerateFileDependsOn>
+    <AssemblyInfoGenerateFileDependsOn>$(AssemblyInfoGenerateFileDependsOn);AssemblyInfoGenerateReplacementVars</AssemblyInfoGenerateFileDependsOn>
+  </PropertyGroup>
+  <Target Name="AssemblyInfoDefaultValues">
+    <PropertyGroup>
+      <AssemblyInfoConfiguration Condition="'$(AssemblyInfoConfiguration)'==''">$(Configuration)</AssemblyInfoConfiguration>
+      <AssemblyInfoCLSCompliant Condition="'$(AssemblyInfoCLSCompliant)'==''">true</AssemblyInfoCLSCompliant>
+      <AssemblyInfoComVisible Condition="'$(AssemblyInfoComVisible)'==''">false</AssemblyInfoComVisible>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="ValidateAssemblyInfoProperties" DependsOnTargets="AssemblyInfoDefaultValues">
+    <Warning Condition="'$(AssemblyInfoProductName)'==''" Text="msbuild property AssemblyInfoProductName is not defined."/>
+    <Warning Condition="'$(AssemblyInfoCompanyName)'==''" Text="msbuild property AssemblyInfoCompanyName is not defined."/>
+    <Warning Condition="'$(AssemblyInfoCopyright)'==''" Text="msbuild property AssemblyInfoCopyright is not defined."/>
+    <Warning Condition="'$(AssemblyInfoTrademark)'==''" Text="msbuild property AssemblyInfoTrademark is not defined."/>
+  </Target>
+
+  <Target Name="AssemblyInfoGenerateReplacementVars">
+    <ItemGroup>
+      <AssemblyInfoVars Include="%25AssemblyInfoTemplate%25"><Value>$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoProductName%25"><Value>$(AssemblyInfoProductName)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoTemplateName%25"><Value>%(AssemblyInfoTemplateFiles.FileName)%(AssemblyInfoTemplateFiles.Extension)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoCompanyName%25"><Value>$(AssemblyInfoCompanyName)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoCopyright%25"><Value>$(AssemblyInfoCopyright)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoTrademark%25"><Value>$(AssemblyInfoTrademark)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoCulture%25"><Value>$(AssemblyInfoCulture)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoConfiguration%25"><Value>$(AssemblyInfoConfiguration)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoCLSCompliant%25"><Value>$(AssemblyInfoCLSCompliant)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInfoComVisible%25"><Value>$(AssemblyInfoComVisible)</Value></AssemblyInfoVars>
+    </ItemGroup>
+  </Target>
+
+</Project>
