@@ -1,0 +1,104 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" >
+
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <!--
+    Versioning scheme:
+    - Autoversioned builds : VersionMajor.VersionMinor.(Number_Of_Days_Since VersionBuildNumberStartDate).Number_Of_Builds_Ran_Today_For_This_Project_For_This_Build_Definition
+    - Hardcoded builds     : VersionMajor.VersionMinor.VersionHardcodedBuildNumber.VersionHardcodedBuildRevision
+    
+    Configurable properties: VersionMajor, VersionMinor, VersionBuildNumberStartDate, VersionHardcodedBuildNumber, VersionHardcodedBuildRevision
+  -->
+
+  <PropertyGroup>
+    <VersionTemplateDirectory Condition="'$(VersionTemplateDirectory)'==''">$(MSBuildThisFileDirectory)Template\Basic</VersionTemplateDirectory>
+
+    <VersionGenerateFileDependsOn Condition="'$(VersionGenerateFileDependsOn)' == ''">VersionInfoGenerateReplacementVars</VersionGenerateFileDependsOn>
+
+    <!--
+    Note: when changing VersionMajor or VersionMinor, you probably want to also reset the VersionBuildNumberStartDate:
+    - If you want to reset the build number to zero: set VersionBuildNumberStartDate to current date
+    - If you want to reset the build number to say 1000: set VersionBuildNumberStartDate to 1000 days in the past.
+      Here's how one would figure out what date it was 1000 days ago in PowerShell: Write-Host (Get-Date).AddDays(-1000)
+    -->
+    <VersionMajor Condition="'$(VersionMajor)' == ''">1</VersionMajor>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">0</VersionMinor>
+
+    <!--
+      Please use international format yyyy-mm-dd
+    -->
+    <VersionBuildNumberStartDate Condition="'$(VersionBuildNumberStartDate)' == ''">$([System.DateTime]::Now.ToString())</VersionBuildNumberStartDate>
+    
+    <!-- For non lab builds, we enforce VersionMajor.VersionMinor.0.0, ignoring VersionHardcodedBuildNumber or VersionHardcodedBuildRevision if specified 
+    <VersionHardcodedBuildNumber Condition="'$(BuildingInTeamBuild)' != 'true'">0</VersionHardcodedBuildNumber>
+    <VersionHardcodedBuildRevision Condition="'$(BuildingInTeamBuild)' != 'true'">0</VersionHardcodedBuildRevision>
+    -->
+    <!-- We'll need to gen the build number if any of them is not hardcoded -->
+    <VersionGenerateBuildNumber Condition="'$(VersionHardcodedBuildNumber)' == '' or '$(VersionHardcodedBuildRevision)' == ''">true</VersionGenerateBuildNumber>
+    <VersionGenerateBuildNumber Condition="'$(VersionGenerateBuildNumber)' == ''">true</VersionGenerateBuildNumber>
+
+    <!-- May make sense to ask not to generate the version file; example would be a project that does not need the file but instead only needs the version -->
+    <VersionGenerateVersionFile Condition="'$(VersionGenerateVersionFile)' == ''">true</VersionGenerateVersionFile>
+    
+    <!--
+    Having the characteristics of the versioning scheme as part of the generated version file full path name allows us
+    to have multiple version files, based on local preferences such as major, minor, template, etc.
+    Typical scenario: there will be one VersionGeneratedFullPath per build.
+    Advanced scenario (multiple templates, mix of managed/native, different major/minor depending on part of tree, etc): there will be multiple generated files.
+    The global version file(s) are intentionally not added to the Clean itemgroup for the multi proc scenario as it will cause a break in the multi proc Rebuild scenario.  To delete these file(s) from an enlistment scorch or a non multi proc clean build is required.
+    -->
+    <VersionOutputPathPart1>$(VersionMajor)-$(VersionMinor)-$(VersionHardcodedBuildNumber)-$(VersionHardcodedBuildRevision)-$(VersionBuildNumberStartDate)-$(VersionProductName)</VersionOutputPathPart1>
+    <VersionOutputPath Condition="'$(VersionOutputPath)'==''">$(BaseIntermediateOutputPath)gen\AutoVersioning-$(VersionOutputPathPart1.GetHashCode().ToString("X"))-$(VersionOutputPathPart1.Length)</VersionOutputPath>
+
+  </PropertyGroup>
+  
+  <!--
+    Sets VersionBuildNumber, VersionBuildRevision and VersionFull
+  -->
+  <Target Name="VersionGetBuildNumber">
+    <!-- Validate inputs -->
+    <PropertyGroup>
+      <VersionGenerateVersionFile>$([System.Convert]::ToBoolean($(VersionGenerateVersionFile)))</VersionGenerateVersionFile>
+      <VersionGenerateBuildNumber>$([System.Convert]::ToBoolean($(VersionGenerateBuildNumber)))</VersionGenerateBuildNumber>
+
+      <VersionMajor>$([System.Convert]::ToUInt16($(VersionMajor)))</VersionMajor>
+      <VersionMinor>$([System.Convert]::ToUInt16($(VersionMinor)))</VersionMinor>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(VersionGenerateBuildNumber)'=='true'">
+      <VersionBuildNumber>$([System.DateTime]::Parse($([System.DateTime]::Now.ToString())).Subtract($([System.DateTime]::Parse($(VersionBuildNumberStartDate)))).Days)</VersionBuildNumber>
+    </PropertyGroup>
+
+    <!-- note: cannot rely on $(VersionGenerateBuildNumber) in case only one of them is hardcoded -->
+    <PropertyGroup>
+      <VersionBuildNumber Condition="'$(VersionHardcodedBuildNumber)'!=''">$(VersionHardcodedBuildNumber)</VersionBuildNumber>
+      <VersionBuildNumber Condition="'$(VersionBuildNumber)'==''">0</VersionBuildNumber>
+      <VersionBuildRevision Condition="'$(VersionHardcodedBuildRevision)'!=''">$(VersionHardcodedBuildRevision)</VersionBuildRevision>
+      <VersionBuildRevision Condition="'$(VersionBuildRevision)'==''">0</VersionBuildRevision>
+    </PropertyGroup>
+ 
+    <PropertyGroup>
+      <VersionFull>$(VersionMajor).$(VersionMinor).$(VersionBuildNumber).$(VersionBuildRevision)</VersionFull>
+      <EnableVersionAddLabelToVersionInformationalVersion Condition="'$(EnableVersionAddLabelToVersionInformationalVersion)' != ''">$([System.Convert]::ToBoolean($(EnableVersionAddLabelToVersionInformationalVersion)))</EnableVersionAddLabelToVersionInformationalVersion>
+      <EnableVersionAddLabelToVersionInformationalVersion Condition="'$(EnableVersionAddLabelToVersionInformationalVersion)' == '' And '$(VersionBuildLabel)'!=''">true</EnableVersionAddLabelToVersionInformationalVersion>
+	  <EnableVersionAddLabelToVersionInformationalVersion Condition="'$(EnableVersionAddLabelToVersionInformationalVersion)' == ''">false</EnableVersionAddLabelToVersionInformationalVersion>
+      <VersionInformationalVersion Condition="'$(VersionInformationalVersion)' == '' and '$(BuildLabel)' != '' and '$(EnableVersionAddLabelToVersionInformationalVersion)' == 'true'">$(VersionFull)$(VersionBuildLabel)</VersionInformationalVersion>
+      <VersionInformationalVersion Condition="'$(VersionInformationalVersion)' == ''">$(VersionFull)</VersionInformationalVersion>
+      <VersionAssemblyVersion Condition="'$(VersionAssemblyVersion)' == ''">$(VersionMajor).$(VersionMinor).0.0</VersionAssemblyVersion>
+      <VersionAssemblyFileVersion Condition="'$(VersionAssemblyFilVersion)' == ''">$(VersionFull)</VersionAssemblyFileVersion>
+    </PropertyGroup>
+
+    <Message Text="VersionGetBuildNumber: Full build number is: $(VersionFull)" />
+  </Target>
+
+  <Target Name="VersionInfoGenerateReplacementVars" DependsOnTargets="VersionGetBuildNumber">
+    <ItemGroup>
+      <AssemblyInfoVars Include="%25AssemblyVersion%25"><Value>$(VersionAssemblyVersion)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyFileVersion%25"><Value>$(VersionAssemblyFileVersion)</Value></AssemblyInfoVars>
+      <AssemblyInfoVars Include="%25AssemblyInformationalVersion%25"><Value>$(VersionInformationalVersion)</Value></AssemblyInfoVars>
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -2,8 +2,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup Condition="'$(EnableAutoImportAssemblyInfoCommon)'=='true'">
-    <ValidateAssemblyInfoPropertiesSet Condition="'$(ValidateAssemblyInfoPropertiesSet)'==''">true</ValidateAssemblyInfoPropertiesSet>
-    <AssemblyInfoGenerateFileDependsOn Condition="'$(ValidateAssemblyInfoPropertiesSet)'=='true'">$(AssemblyInfoGenerateFileDependsOn);ValidateAssemblyInfoProperties</AssemblyInfoGenerateFileDependsOn>
     <AssemblyInfoGenerateFileDependsOn>$(AssemblyInfoGenerateFileDependsOn);AssemblyInfoGenerateReplacementVars</AssemblyInfoGenerateFileDependsOn>
   </PropertyGroup>
   <Target Name="AssemblyInfoDefaultValues">
@@ -14,14 +12,7 @@
     </PropertyGroup>
   </Target>
 
-  <Target Name="ValidateAssemblyInfoProperties" DependsOnTargets="AssemblyInfoDefaultValues">
-    <Warning Condition="'$(AssemblyInfoProductName)'==''" Text="msbuild property AssemblyInfoProductName is not defined."/>
-    <Warning Condition="'$(AssemblyInfoCompanyName)'==''" Text="msbuild property AssemblyInfoCompanyName is not defined."/>
-    <Warning Condition="'$(AssemblyInfoCopyright)'==''" Text="msbuild property AssemblyInfoCopyright is not defined."/>
-    <Warning Condition="'$(AssemblyInfoTrademark)'==''" Text="msbuild property AssemblyInfoTrademark is not defined."/>
-  </Target>
-
-  <Target Name="AssemblyInfoGenerateReplacementVars">
+  <Target Name="AssemblyInfoGenerateReplacementVars" DependsOnTargets="AssemblyInfoDefaultValues">
     <ItemGroup>
       <AssemblyInfoVars Include="%25AssemblyInfoTemplate%25"><Value>$(AssemblyInfoTemplateDirectory)\%(AssemblyInfoTemplateFiles.Identity)</Value></AssemblyInfoVars>
       <AssemblyInfoVars Include="%25AssemblyInfoProductName%25"><Value>$(AssemblyInfoProductName)</Value></AssemblyInfoVars>

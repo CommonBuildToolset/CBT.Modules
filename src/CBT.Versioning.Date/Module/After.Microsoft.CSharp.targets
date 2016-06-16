@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <AssemblyInfoTemplateFiles Include="$(VersionTemplateDirectory)\AssemblyVersion.cs" Condition="'$(EnableAutoImportAssemblyVersion)' == 'true'">
+      <GeneratedFile>$(VersionOutputPath)\AssemblyVersion.cs</GeneratedFile>
+    </AssemblyInfoTemplateFiles>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Include="$(VersionOutputPath)\AssemblyVersion.cs" Condition="'$(EnableAutoImportAssemblyVersion)' == 'true'" >
+      <ExcludeFromSourceAnalysis>true</ExcludeFromSourceAnalysis>
+      <Link>AssemblyVersion.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+</Project>

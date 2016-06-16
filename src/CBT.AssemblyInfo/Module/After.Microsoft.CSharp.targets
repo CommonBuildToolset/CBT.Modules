@@ -2,7 +2,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <ItemGroup>
-    <AssemblyInfoTemplateFiles Include="AssemblyInfoCommon.cs" Condition="'$(EnableAutoImportAssemblyInfoCommon)' == 'true'"/>
+    <AssemblyInfoTemplateFiles Include="$(AssemblyInfoTemplateDirectory)\AssemblyInfoCommon.cs" Condition="'$(EnableAutoImportAssemblyInfoCommon)' == 'true'">
+      <GeneratedFile>$(AssemblyInfoOutputPath)\AssemblyInfoCommon.cs</GeneratedFile>
+    </AssemblyInfoTemplateFiles>
   </ItemGroup>
   
   <ItemGroup>

@@ -1,6 +1,4 @@
-﻿// <copyright file="%AssemblyInfoTemplateName%" company="%AssemblyInfoCompanyName%">
-// %AssemblyInfoCopyright%
-// </copyright>
+﻿// <copyright>%AssemblyInfoCopyright%</copyright>
 
 using System;
 using System.Reflection;

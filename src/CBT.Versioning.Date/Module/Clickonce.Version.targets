@@ -1,0 +1,29 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" >
+
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <!--
+    - EnableVersionClickOnce   : Will toggle automatic clickonce versioning.
+  -->
+
+  <PropertyGroup>
+    <VersionGenerateFileDependsOn>$(VersionGenerateFileDependsOn);VersionClickOnce</VersionGenerateFileDependsOn>
+ 
+    <EnableVersionClickOnce Condition="'$(EnableVersionClickOnce)' != ''">$([System.Convert]::ToBoolean($(EnableVersionClickOnce)))</EnableVersionClickOnce>
+    <EnableVersionClickOnce Condition="'$(EnableVersionClickOnce)' == ''">true</EnableVersionClickOnce>
+  </PropertyGroup>
+  
+  <!--
+    Sets ApplicationRevision, and ApplicationVersion for clickonce packages.
+    If the version of a clickonce package is not controlled via its msbuild project file then it will default to the build version.
+  -->
+  <Target Name="VersionClickOnce" Condition="'$(EnableVersionClickOnce)'=='true'">
+    <PropertyGroup>
+      <ApplicationRevision Condition="'$(ApplicationRevision)'==''">$(VersionBuildRevision)</ApplicationRevision>
+      <ApplicationVersion Condition="'$(ApplicationVersion)'==''">$(VersionMajor).$(VersionMinor).$(VersionBuildNumber).%2a</ApplicationVersion>
+    </PropertyGroup>
+  </Target>
+  
+</Project>

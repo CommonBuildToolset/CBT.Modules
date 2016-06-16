@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>CBT.AssemblyInfo</id>
+    <id>CBT.Versioning.Date</id>
     <version>1.0.0</version>
     <authors>CBT Developers</authors>
     <owners>CBT Developers</owners>
@@ -9,7 +9,7 @@
     <projectUrl>https://github.com/CommonBuildToolset</projectUrl>
     <iconUrl>https://avatars2.githubusercontent.com/u/16727685?v=3&amp;s=200</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Provides assemblyinfo generation for CBT based builds.</description>
+    <description>Provides versioning for CBT based builds that use a date seed.</description>
     <copyright>Copyright 2016</copyright>
     <tags>CBT Module</tags>
   </metadata>
