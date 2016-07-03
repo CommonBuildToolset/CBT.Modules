@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <Import Project="Version.targets" Condition="'$(EnableCBTAssemblyVersion)'=='true'"/>
+
+  <PropertyGroup Condition="'$(EnableCBTAssemblyVersion)'=='true'">
+    <AssemblyInfoGenerateFileDependsOn Condition="'$(VersionGenerateFileDependsOn)' != ''">$(AssemblyInfoGenerateFileDependsOn);$(VersionGenerateFileDependsOn)</AssemblyInfoGenerateFileDependsOn>
+    <EnableAutoImportAssemblyVersion Condition="'$(EnableAutoImportAssemblyVersion)' != ''">$([System.Convert]::ToBoolean($(EnableAutoImportAssemblyVersion)))</EnableAutoImportAssemblyVersion>
+    <EnableAutoImportAssemblyVersion Condition="'$(EnableAutoImportAssemblyVersion)' == ''">true</EnableAutoImportAssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(EnableAutoImportAssemblyVersion)' == 'true' And Exists('$(VersionTemplateDirectory)\$(AssemblyVersionTemplateFileName)') And '$(AssemblyVersionTemplateFileName)'!=''" >
+    <AssemblyInfoTemplateFiles Include="$(VersionTemplateDirectory)\$(AssemblyVersionTemplateFileName)">
+      <GeneratedFile>$(VersionOutputPath)\$(AssemblyVersionTemplateFileName)</GeneratedFile>
+    </AssemblyInfoTemplateFiles>
+  </ItemGroup>
+
+</Project>

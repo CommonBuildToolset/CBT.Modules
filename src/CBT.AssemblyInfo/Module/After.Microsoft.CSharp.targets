@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <ItemGroup>
-    <AssemblyInfoTemplateFiles Include="$(AssemblyInfoTemplateDirectory)\AssemblyInfoCommon.cs" Condition="'$(EnableAutoImportAssemblyInfoCommon)' == 'true'">
-      <GeneratedFile>$(AssemblyInfoOutputPath)\AssemblyInfoCommon.cs</GeneratedFile>
-    </AssemblyInfoTemplateFiles>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Include="$(AssemblyInfoOutputPath)\AssemblyInfoCommon.cs" Condition="'$(EnableAutoImportAssemblyInfoCommon)' == 'true'" >
-      <ExcludeFromSourceAnalysis>true</ExcludeFromSourceAnalysis>
-      <Link>$(AssemblyInfoCommonFile)</Link>
-    </Compile>
-  </ItemGroup>
-
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <AssemblyInfoGenerateFileBeforeTargets>$(AssemblyInfoGenerateFileBeforeTargets);CoreCompile</AssemblyInfoGenerateFileBeforeTargets>
+    <AssemblyInfoTemplateFileName Condition="'$(AssemblyInfoTemplateFileName)'==''">AssemblyInfoCommon.cs</AssemblyInfoTemplateFileName>
+  </PropertyGroup>
 </Project>

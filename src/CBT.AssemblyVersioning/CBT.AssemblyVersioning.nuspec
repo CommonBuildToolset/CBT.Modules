@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>CBT.Versioning.Date</id>
+    <id>CBT.AssemblyVersioning</id>
     <version>1.0.0</version>
     <authors>CBT Developers</authors>
     <owners>CBT Developers</owners>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Provides versioning for CBT based builds that use a date seed.</description>
     <copyright>Copyright 2016</copyright>
-    <tags>CBT Module</tags>
+    <tags>CBT Module versioning</tags>
   </metadata>
   <files>
     <file src="**\*" target="CBT" exclude="*.nuspec" />
