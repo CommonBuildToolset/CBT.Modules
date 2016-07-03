@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <EnableCBTAssemblyVersion Condition=" '$(EnableCBTAssemblyVersion)' != '' ">$([System.Convert]::ToBoolean($(EnableCBTAssemblyVersion)))</EnableCBTAssemblyVersion>
+    <EnableCBTAssemblyVersion Condition=" '$(EnableCBTAssemblyVersion)' == '' ">true</EnableCBTAssemblyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(EnableCBTAssemblyVersion)'=='true'">
+    <VersionTemplateDirectory Condition="'$(VersionTemplateDirectory)'==''">$(MSBuildThisFileDirectory)Template\Basic</VersionTemplateDirectory>
+    <VersionOutputPathPart1>$(VersionMajor)-$(VersionMinor)-$(VersionHardcodedBuildNumber)-$(VersionHardcodedBuildRevision)-$(VersionBuildNumberStartDate)-$(VersionProductName)</VersionOutputPathPart1>
+    <VersionOutputPath Condition="'$(VersionOutputPath)'==''">$(IntermediateOutputPath)\gen\AutoVersioning-$(VersionOutputPathPart1.GetHashCode().ToString("X"))-$(VersionOutputPathPart1.Length)</VersionOutputPath>
+  </PropertyGroup>
+
+</Project>

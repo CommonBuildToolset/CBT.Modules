@@ -1,0 +1,29 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" >
+
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <Import Project="AssemblyInfo.tasks"/>
+
+  <Target Name="AssemblyInfoGenerateFile"
+    Condition="'@(AssemblyInfoTemplateFiles)' != ''"
+    BeforeTargets="$(AssemblyInfoGenerateFileBeforeTargets)"
+    AfterTargets="$(AssemblyInfoGenerateFileAfterTargets)"
+    Inputs="%(AssemblyInfoTemplateFiles.Identity)"
+    DependsOnTargets="$(AssemblyInfoGenerateFileDependsOn)"
+    Outputs="%(AssemblyInfoTemplateFiles.GeneratedFile)" >
+    <PropertyGroup>
+      <AssemblyInfoGeneratedOutputPath>%(AssemblyInfoTemplateFiles.GeneratedFile)</AssemblyInfoGeneratedOutputPath>
+      <AssemblyInfoGeneratedOutputPath>$([System.IO.Directory]::GetParent('$(AssemblyInfoGeneratedOutputPath)'))</AssemblyInfoGeneratedOutputPath>
+    </PropertyGroup>
+    <MakeDir Condition="!Exists($(AssemblyInfoGeneratedOutputPath))" Directories="$(AssemblyInfoGeneratedOutputPath)" />
+
+    <Error Text="Couldn't find template file '%(AssemblyInfoTemplateFiles.Identity)'" Condition="!Exists('%(AssemblyInfoTemplateFiles.Identity)')" />
+    
+    <Message Text="Generating '%(AssemblyInfoTemplateFiles.GeneratedFile)' from '%(AssemblyInfoTemplateFiles.Identity)'" />
+
+    <AssemblyInfoWriteGeneratedFile TemplateFileName="%(AssemblyInfoTemplateFiles.Identity)" ResultFileName="%(AssemblyInfoTemplateFiles.GeneratedFile)" Replacements="@(AssemblyInfoVars)" />
+  </Target>
+
+</Project>
