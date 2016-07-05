@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>CBT.AssemblyVersioning</id>
-    <version>1.0.0</version>
+    <version>1.0.0-beta</version>
     <authors>CBT Developers</authors>
     <owners>CBT Developers</owners>
     <licenseUrl>https://raw.githubusercontent.com/CommonBuildToolset/CBT.Modules/master/LICENSE</licenseUrl>
@@ -12,6 +12,9 @@
     <description>Provides versioning for CBT based builds that use a date seed.</description>
     <copyright>Copyright 2016</copyright>
     <tags>CBT Module versioning</tags>
+    <dependencies>
+      <dependency id="CBT.AssemblyInfo" version="[1.0,)" />
+    </dependencies>
   </metadata>
   <files>
     <file src="**\*" target="CBT" exclude="*.nuspec" />
