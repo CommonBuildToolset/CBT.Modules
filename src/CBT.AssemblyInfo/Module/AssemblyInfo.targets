@@ -20,11 +20,11 @@
   <PropertyGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
     <CoreCompileDependsOn>GenerateAssemblyInfo;$(CoreCompileDependsOn)</CoreCompileDependsOn>
     
-    <AssemblyInfoGenerateDependsOn>
+    <GenerateAssemblyInfoDependsOn>
       _AssignAssemblyInfoOutputPaths;
-      _AssemblyInfoGenerateFile;
-      $(AssemblyInfoGenerateDependsOn)
-    </AssemblyInfoGenerateDependsOn>
+      _GenerateAssemblyInfoFile;
+      $(GenerateAssemblyInfoDependsOn)
+    </GenerateAssemblyInfoDependsOn>
     
     <!-- Default values to use for managed projects. -->
     <AssemblyInfoConfiguration Condition=" '$(AssemblyInfoConfiguration)' == '' ">$(Configuration)</AssemblyInfoConfiguration>
@@ -52,7 +52,7 @@
 
   <Target Name="GenerateAssemblyInfo"
     Condition=" '@(AssemblyInfoTemplateFile)' != '' "
-    DependsOnTargets="$(AssemblyInfoGenerateDependsOn)" />
+    DependsOnTargets="$(GenerateAssemblyInfoDependsOn)" />
   
   <Target Name="_AssignAssemblyInfoOutputPaths">
 
@@ -68,7 +68,7 @@
 
   </Target>
   
-  <Target Name="_AssemblyInfoGenerateFile"
+  <Target Name="_GenerateAssemblyInfoFile"
     Condition=" '@(AssemblyInfoTemplateFile)' != '' "
     DependsOnTargets="_AssignAssemblyInfoOutputPaths"
     Inputs="$(AssemblyInfoAllProjects);%(AssemblyInfoTemplateFile.Identity)"
