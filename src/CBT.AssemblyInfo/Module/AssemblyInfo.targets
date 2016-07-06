@@ -1,29 +1,164 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" >
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)') " />
+
+  <Import Project="$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)') " />
+  
   <PropertyGroup>
+    <MSBuildTasksPath Condition=" '$(MSBuildTasksPath)' == '' ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MSBuildTasksPath>
+    <MSBuildTasksPath Condition=" !Exists('$(MSBuildTasksPath)') ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MSBuildTasksPath>
+    
+    <EnableAutoImportAssemblyInfoCommon Condition=" '$(EnableAutoImportAssemblyInfoCommon)' != '' ">$([System.Convert]::ToBoolean($(EnableAutoImportAssemblyInfoCommon)))</EnableAutoImportAssemblyInfoCommon>
+    <EnableAutoImportAssemblyInfoCommon Condition=" '$(EnableAutoImportAssemblyInfoCommon)' == '' ">true</EnableAutoImportAssemblyInfoCommon>
+
+    <AssemblyInfoOutputPath Condition=" '$(AssemblyInfoOutputPath)' == '' ">$(IntermediateOutputPath)</AssemblyInfoOutputPath>
+
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <AssemblyInfoAllProjects>$(AssemblyInfoAllProjects);$(MSBuildThisFileFullPath);$(MSBuildProjectFullPath)</AssemblyInfoAllProjects>
   </PropertyGroup>
 
-  <Import Project="AssemblyInfo.tasks"/>
-
-  <Target Name="AssemblyInfoGenerateFile"
-    Condition="'@(AssemblyInfoTemplateFiles)' != ''"
-    BeforeTargets="$(AssemblyInfoGenerateFileBeforeTargets)"
-    AfterTargets="$(AssemblyInfoGenerateFileAfterTargets)"
-    Inputs="%(AssemblyInfoTemplateFiles.Identity)"
-    DependsOnTargets="$(AssemblyInfoGenerateFileDependsOn)"
-    Outputs="%(AssemblyInfoTemplateFiles.GeneratedFile)" >
-    <PropertyGroup>
-      <AssemblyInfoGeneratedOutputPath>%(AssemblyInfoTemplateFiles.GeneratedFile)</AssemblyInfoGeneratedOutputPath>
-      <AssemblyInfoGeneratedOutputPath>$([System.IO.Directory]::GetParent('$(AssemblyInfoGeneratedOutputPath)'))</AssemblyInfoGeneratedOutputPath>
-    </PropertyGroup>
-    <MakeDir Condition="!Exists($(AssemblyInfoGeneratedOutputPath))" Directories="$(AssemblyInfoGeneratedOutputPath)" />
-
-    <Error Text="Couldn't find template file '%(AssemblyInfoTemplateFiles.Identity)'" Condition="!Exists('%(AssemblyInfoTemplateFiles.Identity)')" />
+  <PropertyGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
+    <CoreCompileDependsOn>GenerateAssemblyInfo;$(CoreCompileDependsOn)</CoreCompileDependsOn>
     
-    <Message Text="Generating '%(AssemblyInfoTemplateFiles.GeneratedFile)' from '%(AssemblyInfoTemplateFiles.Identity)'" />
+    <AssemblyInfoGenerateDependsOn>
+      _AssignAssemblyInfoOutputPaths;
+      _AssemblyInfoGenerateFile;
+      $(AssemblyInfoGenerateDependsOn)
+    </AssemblyInfoGenerateDependsOn>
+    
+    <!-- Default values to use for managed projects. -->
+    <AssemblyInfoConfiguration Condition=" '$(AssemblyInfoConfiguration)' == '' ">$(Configuration)</AssemblyInfoConfiguration>
+    <AssemblyInfoCLSCompliant Condition=" '$(AssemblyInfoCLSCompliant)' == '' ">true</AssemblyInfoCLSCompliant>
+    <AssemblyInfoComVisible Condition=" '$(AssemblyInfoComVisible)' == '' ">false</AssemblyInfoComVisible>
+  </PropertyGroup>
 
-    <AssemblyInfoWriteGeneratedFile TemplateFileName="%(AssemblyInfoTemplateFiles.Identity)" ResultFileName="%(AssemblyInfoTemplateFiles.GeneratedFile)" Replacements="@(AssemblyInfoVars)" />
+  <ItemGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
+    <AssemblyInfoTemplateFile Include="$(MSBuildThisFileDirectory)Templates\AssemblyInfo$(DefaultLanguageSourceExtension)" Condition="Exists('$(MSBuildThisFileDirectory)Templates\AssemblyInfo$(DefaultLanguageSourceExtension)')" />
+  </ItemGroup>
+
+  <!-- Default replacements used in managed projects. -->
+  <ItemGroup>
+    <AssemblyInfoVars Include="TemplatePath"><Value>%(AssemblyInfoTemplateFile.FullPath)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="TemplateName"><Value>%(AssemblyInfoTemplateFile.FileName)%(AssemblyInfoTemplateFile.Extension)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="AssemblyInfoCLSCompliant"><Value>$(AssemblyInfoCLSCompliant)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="AssemblyInfoCompany"><Value>$(AssemblyInfoCompany)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="AssemblyInfoComVisible"><Value>$(AssemblyInfoComVisible)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="AssemblyInfoConfiguration"><Value>$(AssemblyInfoConfiguration)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="AssemblyInfoCopyright"><Value>$(AssemblyInfoCopyright)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="AssemblyInfoCulture"><Value>$(AssemblyInfoCulture)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="AssemblyInfoProduct"><Value>$(AssemblyInfoProduct)</Value></AssemblyInfoVars>
+    <AssemblyInfoVars Include="AssemblyInfoTrademark"><Value>$(AssemblyInfoTrademark)</Value></AssemblyInfoVars>
+  </ItemGroup>
+
+  <Target Name="GenerateAssemblyInfo"
+    Condition=" '@(AssemblyInfoTemplateFile)' != '' "
+    DependsOnTargets="$(AssemblyInfoGenerateDependsOn)" />
+  
+  <Target Name="_AssignAssemblyInfoOutputPaths">
+
+    <PropertyGroup>
+      <AssemblyInfoAllProjects Condition=" '@(AssemblyInfoTemplateFile)' != '' ">$(AssemblyInfoAllProjects);@(AssemblyInfoTemplateFile)</AssemblyInfoAllProjects>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <AssemblyInfoTemplateFile>
+        <OutputFile>$(AssemblyInfoOutputPath)%(Filename).g%(Extension)</OutputFile>
+      </AssemblyInfoTemplateFile>
+    </ItemGroup>
+
   </Target>
+  
+  <Target Name="_AssemblyInfoGenerateFile"
+    Condition=" '@(AssemblyInfoTemplateFile)' != '' "
+    DependsOnTargets="_AssignAssemblyInfoOutputPaths"
+    Inputs="$(AssemblyInfoAllProjects);%(AssemblyInfoTemplateFile.Identity)"
+    Outputs="%(AssemblyInfoTemplateFile.OutputFile)" >
+
+    <Error Text="Could not find assembly information template file '%(AssemblyInfoTemplateFile.Identity)'" Condition=" !Exists('%(AssemblyInfoTemplateFile.Identity)') " />
+    
+    <MakeDir Condition="!Exists('$(AssemblyInfoOutputPath)')" Directories="$(AssemblyInfoOutputPath)" />
+
+    <Message Text="Generating assembly information file '%(AssemblyInfoTemplateFile.OutputFile)' from template '%(AssemblyInfoTemplateFile.Identity)'" />
+
+    <GenerateAssemblyInfoFile
+      OutputFile="%(AssemblyInfoTemplateFile.OutputFile)" 
+      Replacements="@(AssemblyInfoVars)"
+      TemplateFileName="%(AssemblyInfoTemplateFile.Identity)">
+      
+      <Output TaskParameter="OutputFile" ItemName="Compile"/>
+      <Output TaskParameter="OutputFile" ItemName="FileWrites"/>
+      
+    </GenerateAssemblyInfoFile>
+
+  </Target>
+
+  <UsingTask TaskName="GenerateAssemblyInfoFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildTasksPath)">
+    <ParameterGroup>
+      <OutputFile Required="true" Output="true" ParameterType="Microsoft.Build.Framework.ITaskItem"/>
+      <Replacements ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <TemplateFileName Required="true" />
+    </ParameterGroup>
+
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Using Namespace="System.Threading" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+// get a hash of the file path; reason: there's a limit on name length for named mutexes
+string mutexName = OutputFile.ItemSpec.ToLowerInvariant().GetHashCode().ToString("X");
+
+using (var mutex = new Mutex(false, mutexName))
+{
+    bool owner = false;
+    try
+    {
+        try
+        {
+            owner = mutex.WaitOne(TimeSpan.FromMinutes(1)); // typically should be few ms; giving it 1 minute just in case
+            if (!owner)
+            {
+                throw new TimeoutException("Timeout waiting for mutex");
+            }
+        }
+        catch (AbandonedMutexException)
+        {
+            Log.LogWarning("Why did someone abandon the mutex?");
+            owner = true; // now mine
+        }
+
+        using (var sr = new StreamReader(TemplateFileName))
+        {
+            using (var sw = new StreamWriter(OutputFile.ItemSpec, false))
+            {
+                string line;
+                while ( (line = sr.ReadLine()) != null)
+                {
+                    foreach (var item in Replacements)
+                    {
+                        line = Regex.Replace(line, String.Format(@"\$\({0}\)", item.ItemSpec), item.GetMetadata("Value"));
+                    }
+                    sw.WriteLine(line);
+                }
+            }
+        }
+    }
+    finally
+    {
+        if (owner)
+        {
+            mutex.ReleaseMutex();
+        }
+    }
+}
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)') " />
+
+  <Import Project="$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)') " />
 
 </Project>
