@@ -8,13 +8,24 @@
     <MSBuildTasksPath Condition=" '$(MSBuildTasksPath)' == '' ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MSBuildTasksPath>
     <MSBuildTasksPath Condition=" !Exists('$(MSBuildTasksPath)') ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MSBuildTasksPath>
     
-    <EnableAutoImportAssemblyInfoCommon Condition=" '$(EnableAutoImportAssemblyInfoCommon)' != '' ">$([System.Convert]::ToBoolean($(EnableAutoImportAssemblyInfoCommon)))</EnableAutoImportAssemblyInfoCommon>
-    <EnableAutoImportAssemblyInfoCommon Condition=" '$(EnableAutoImportAssemblyInfoCommon)' == '' ">true</EnableAutoImportAssemblyInfoCommon>
-
     <AssemblyInfoOutputPath Condition=" '$(AssemblyInfoOutputPath)' == '' ">$(IntermediateOutputPath)</AssemblyInfoOutputPath>
 
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <AssemblyInfoAllProjects>$(AssemblyInfoAllProjects);$(MSBuildThisFileFullPath);$(MSBuildProjectFullPath)</AssemblyInfoAllProjects>
+
+    <!-- Please use international format yyyy-mm-dd -->
+    <VersionBuildNumberStartDate Condition="'$(VersionBuildNumberStartDate)' == ''">$([System.DateTime]::Now.ToString("yyyy-MM-dd"))</VersionBuildNumberStartDate>
+
+    <!--
+    Note: when changing VersionMajor or VersionMinor, you probably want to also reset the VersionBuildNumberStartDate:
+    - If you want to reset the build number to zero: set VersionBuildNumberStartDate to current date
+    - If you want to reset the build number to say 1000: set VersionBuildNumberStartDate to 1000 days in the past.
+      Here's how one would figure out what date it was 1000 days ago in PowerShell: Write-Host (Get-Date).AddDays(-1000)
+    -->
+    <VersionMajor Condition=" '$(VersionMajor)' == '' ">1</VersionMajor>
+    <VersionMinor Condition=" '$(VersionMinor)' == '' ">0</VersionMinor>
+    <VersionBuildNumber Condition=" '$(VersionBuildNumber)' == '' ">$([System.DateTime]::Now.Subtract($([System.DateTime]::Parse($(VersionBuildNumberStartDate)))).Days)</VersionBuildNumber>
+    <VersionBuildRevision Condition=" '$(VersionBuildRevision)' == '' ">0</VersionBuildRevision>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
@@ -22,10 +33,14 @@
     
     <GenerateAssemblyInfoDependsOn>
       _AssignAssemblyInfoOutputPaths;
+      DetermineAssemblyVersionInfo;
       _GenerateAssemblyInfoFile;
       $(GenerateAssemblyInfoDependsOn)
     </GenerateAssemblyInfoDependsOn>
-    
+
+    <!-- Default path to the AssemblyInfo template.  Override this property to use your own template. -->
+    <AssemblyInfoTemplatePath Condition=" '$(AssemblyInfoTemplatePath)' == '' ">$(MSBuildThisFileDirectory)Templates\AssemblyInfo$(DefaultLanguageSourceExtension)</AssemblyInfoTemplatePath>
+
     <!-- Default values to use for managed projects. -->
     <AssemblyInfoConfiguration Condition=" '$(AssemblyInfoConfiguration)' == '' ">$(Configuration)</AssemblyInfoConfiguration>
     <AssemblyInfoCLSCompliant Condition=" '$(AssemblyInfoCLSCompliant)' == '' ">true</AssemblyInfoCLSCompliant>
@@ -33,22 +48,48 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
-    <AssemblyInfoTemplateFile Include="$(MSBuildThisFileDirectory)Templates\AssemblyInfo$(DefaultLanguageSourceExtension)" Condition="Exists('$(MSBuildThisFileDirectory)Templates\AssemblyInfo$(DefaultLanguageSourceExtension)')" />
+
+    <AssemblyInfoTemplateFile Include="$(AssemblyInfoTemplatePath)" Condition="Exists('$(AssemblyInfoTemplatePath)')">
+      <AssemblyInfoCLSCompliant>$(AssemblyInfoCLSCompliant)</AssemblyInfoCLSCompliant>
+      <AssemblyInfoCompany>$(AssemblyInfoCompany)</AssemblyInfoCompany>
+      <AssemblyInfoComVisible>$(AssemblyInfoComVisible)</AssemblyInfoComVisible>
+      <AssemblyInfoConfiguration>$(AssemblyInfoConfiguration)</AssemblyInfoConfiguration>
+      <AssemblyInfoCopyright>$(AssemblyInfoCopyright)</AssemblyInfoCopyright>
+      <AssemblyInfoCulture>$(AssemblyInfoCulture)</AssemblyInfoCulture>
+      <AssemblyInfoProduct>$(AssemblyInfoProduct)</AssemblyInfoProduct>
+      <AssemblyInfoTrademark>$(AssemblyInfoTrademark)</AssemblyInfoTrademark>
+
+      <AutoGen>true</AutoGen>
+    </AssemblyInfoTemplateFile>
+
   </ItemGroup>
 
-  <!-- Default replacements used in managed projects. -->
-  <ItemGroup>
-    <AssemblyInfoVars Include="TemplatePath"><Value>%(AssemblyInfoTemplateFile.FullPath)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="TemplateName"><Value>%(AssemblyInfoTemplateFile.FileName)%(AssemblyInfoTemplateFile.Extension)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="AssemblyInfoCLSCompliant"><Value>$(AssemblyInfoCLSCompliant)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="AssemblyInfoCompany"><Value>$(AssemblyInfoCompany)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="AssemblyInfoComVisible"><Value>$(AssemblyInfoComVisible)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="AssemblyInfoConfiguration"><Value>$(AssemblyInfoConfiguration)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="AssemblyInfoCopyright"><Value>$(AssemblyInfoCopyright)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="AssemblyInfoCulture"><Value>$(AssemblyInfoCulture)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="AssemblyInfoProduct"><Value>$(AssemblyInfoProduct)</Value></AssemblyInfoVars>
-    <AssemblyInfoVars Include="AssemblyInfoTrademark"><Value>$(AssemblyInfoTrademark)</Value></AssemblyInfoVars>
-  </ItemGroup>
+  <Target Name="DetermineAssemblyVersionInfo"
+    DependsOnTargets="$(DetermineAssemblyVersionInfoDependsOn)">
+
+    <PropertyGroup>
+      <VersionFull Condition=" '$(VersionFull)' == '' ">$(VersionMajor).$(VersionMinor).$(VersionBuildNumber).$(VersionBuildRevision)</VersionFull>
+
+      <AssemblyInfoInformationalVersion Condition=" '$(AssemblyInfoInformationalVersion)' == '' ">$(VersionFull)$(VersionBuildLabel)</AssemblyInfoInformationalVersion>
+      <AssemblyInfoVersion Condition=" '$(AssemblyInfoVersion)' == '' ">$(VersionMajor).$(VersionMinor).0.0</AssemblyInfoVersion>
+      <AssemblyInfoFileVersion Condition=" '$(AssemblyInfoFileVersion)' == '' ">$(VersionFull)</AssemblyInfoFileVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <AssemblyInfoTemplateFile>
+        <AssemblyInfoFileVersion>$(AssemblyInfoFileVersion)</AssemblyInfoFileVersion>
+        <AssemblyInfoFileDescription>$(AssemblyInfoFileDescription)</AssemblyInfoFileDescription>
+        <AssemblyInfoInternalName>$(AssemblyInfoInternalName)</AssemblyInfoInternalName>
+        <AssemblyInfoOriginalFileName>$(AssemblyInfoOriginalFileName)</AssemblyInfoOriginalFileName>
+        <AssemblyInfoInformationalVersion>$(AssemblyInfoInformationalVersion)</AssemblyInfoInformationalVersion>
+        <AssemblyInfoVersion>$(AssemblyInfoVersion)</AssemblyInfoVersion>
+
+        <!-- Override the output file to include the version so that the project will be rebuilt if it changes -->
+        <OutputFile>$(AssemblyInfoOutputPath)%(Filename)-$(VersionFull).g%(Extension)</OutputFile>
+      </AssemblyInfoTemplateFile>
+    </ItemGroup>
+
+  </Target>
 
   <Target Name="GenerateAssemblyInfo"
     Condition=" '@(AssemblyInfoTemplateFile)' != '' "
@@ -59,9 +100,9 @@
     <PropertyGroup>
       <AssemblyInfoAllProjects Condition=" '@(AssemblyInfoTemplateFile)' != '' ">$(AssemblyInfoAllProjects);@(AssemblyInfoTemplateFile)</AssemblyInfoAllProjects>
     </PropertyGroup>
-    
-    <ItemGroup>
-      <AssemblyInfoTemplateFile>
+
+    <ItemGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
+      <AssemblyInfoTemplateFile Condition=" '%(AssemblyInfoTemplateFile.OutputFile)' == '' ">
         <OutputFile>$(AssemblyInfoOutputPath)%(Filename).g%(Extension)</OutputFile>
       </AssemblyInfoTemplateFile>
     </ItemGroup>
@@ -72,88 +113,53 @@
     Condition=" '@(AssemblyInfoTemplateFile)' != '' "
     DependsOnTargets="_AssignAssemblyInfoOutputPaths"
     Inputs="$(AssemblyInfoAllProjects);%(AssemblyInfoTemplateFile.Identity)"
-    Outputs="%(AssemblyInfoTemplateFile.OutputFile)" >
+    Outputs="%(AssemblyInfoTemplateFile.OutputFile)">
 
-    <Error Text="Could not find assembly information template file '%(AssemblyInfoTemplateFile.Identity)'" Condition=" !Exists('%(AssemblyInfoTemplateFile.Identity)') " />
-    
+    <Error Text="Could not find assembly information template file &quot;%(AssemblyInfoTemplateFile.Identity)&quot;." Condition=" !Exists('%(AssemblyInfoTemplateFile.Identity)') " />
+
     <MakeDir Condition="!Exists('$(AssemblyInfoOutputPath)')" Directories="$(AssemblyInfoOutputPath)" />
 
-    <Message Text="Generating assembly information file '%(AssemblyInfoTemplateFile.OutputFile)' from template '%(AssemblyInfoTemplateFile.Identity)'" />
+    <Message Text="Generating assembly information file &quot;%(AssemblyInfoTemplateFile.OutputFile)&quot; from template &quot;%(AssemblyInfoTemplateFile.Identity)&quot;." />
 
-    <GenerateAssemblyInfoFile
-      OutputFile="%(AssemblyInfoTemplateFile.OutputFile)" 
-      Replacements="@(AssemblyInfoVars)"
-      TemplateFileName="%(AssemblyInfoTemplateFile.Identity)">
-      
+    <GenerateAssemblyInfoFile InputFile="@(AssemblyInfoTemplateFile)" OutputFile="%(AssemblyInfoTemplateFile.OutputFile)">
+
       <Output TaskParameter="OutputFile" ItemName="Compile"/>
       <Output TaskParameter="OutputFile" ItemName="FileWrites"/>
-      
+
     </GenerateAssemblyInfoFile>
 
   </Target>
 
   <UsingTask TaskName="GenerateAssemblyInfoFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildTasksPath)">
     <ParameterGroup>
-      <OutputFile Required="true" Output="true" ParameterType="Microsoft.Build.Framework.ITaskItem"/>
-      <Replacements ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
-      <TemplateFileName Required="true" />
+      <InputFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
+      <OutputFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" Output="true" />
     </ParameterGroup>
-
     <Task>
       <Using Namespace="System" />
       <Using Namespace="System.IO" />
       <Using Namespace="System.Text.RegularExpressions" />
       <Using Namespace="System.Threading" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-// get a hash of the file path; reason: there's a limit on name length for named mutexes
-string mutexName = OutputFile.ItemSpec.ToLowerInvariant().GetHashCode().ToString("X");
-
-using (var mutex = new Mutex(false, mutexName))
+      <Code Type="Fragment" Language="cs"><![CDATA[
+using (Mutex mutex = new Mutex(false, OutputFile.ItemSpec.ToLowerInvariant().GetHashCode().ToString("X")))
 {
     bool owner = false;
     try
     {
-        try
-        {
-            owner = mutex.WaitOne(TimeSpan.FromMinutes(1)); // typically should be few ms; giving it 1 minute just in case
-            if (!owner)
-            {
-                throw new TimeoutException("Timeout waiting for mutex");
-            }
-        }
-        catch (AbandonedMutexException)
-        {
-            Log.LogWarning("Why did someone abandon the mutex?");
-            owner = true; // now mine
-        }
+        owner = mutex.WaitOne(TimeSpan.FromMinutes(1));
 
-        using (var sr = new StreamReader(TemplateFileName))
-        {
-            using (var sw = new StreamWriter(OutputFile.ItemSpec, false))
-            {
-                string line;
-                while ( (line = sr.ReadLine()) != null)
-                {
-                    foreach (var item in Replacements)
-                    {
-                        line = Regex.Replace(line, String.Format(@"\$\({0}\)", item.ItemSpec), item.GetMetadata("Value"));
-                    }
-                    sw.WriteLine(line);
-                }
-            }
-        }
+        if (!owner) throw new TimeoutException("Timed out waiting for exclusive access to AssemblyInfo output file.");
+
+        File.WriteAllText(OutputFile.ItemSpec, Regex.Replace(File.ReadAllText(InputFile.ItemSpec), @"\$\((?<Key>[^\)]+)\)", match => match.Groups["Key"] != null && match.Groups["Key"].Success ? InputFile.GetMetadata(match.Groups["Key"].Value).Trim() : String.Empty, RegexOptions.Multiline));
+
+        InputFile.CopyMetadataTo(OutputFile);
     }
     finally
     {
-        if (owner)
-        {
-            mutex.ReleaseMutex();
-        }
+        if (owner) mutex.ReleaseMutex();
     }
 }
-]]>
-      </Code>
+      ]]></Code>
     </Task>
   </UsingTask>
 
