@@ -4,6 +4,8 @@
 
   <Import Project="$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)') " />
   
+  <Import Project="$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props') " />
+    
   <PropertyGroup>
     <MSBuildTasksPath Condition=" '$(MSBuildTasksPath)' == '' ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MSBuildTasksPath>
     <MSBuildTasksPath Condition=" !Exists('$(MSBuildTasksPath)') ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MSBuildTasksPath>
@@ -11,7 +13,9 @@
     <AssemblyInfoOutputPath Condition=" '$(AssemblyInfoOutputPath)' == '' ">$(IntermediateOutputPath)</AssemblyInfoOutputPath>
 
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    
     <AssemblyInfoAllProjects>$(AssemblyInfoAllProjects);$(MSBuildThisFileFullPath);$(MSBuildProjectFullPath)</AssemblyInfoAllProjects>
+    <AssemblyInfoAllProjects Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props') ">$(AssemblyInfoAllProjects);$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props</AssemblyInfoAllProjects>
 
     <!-- Please use international format yyyy-mm-dd -->
     <VersionBuildNumberStartDate Condition="'$(VersionBuildNumberStartDate)' == ''">$([System.DateTime]::Now.ToString("yyyy-MM-dd"))</VersionBuildNumberStartDate>
