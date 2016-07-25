@@ -1,14 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <EnableCBTAssemblyInfoGeneration Condition=" '$(EnableCBTAssemblyInfoGeneration)' != '' ">$([System.Convert]::ToBoolean($(EnableCBTAssemblyInfoGeneration)))</EnableCBTAssemblyInfoGeneration>
     <EnableCBTAssemblyInfoGeneration Condition=" '$(EnableCBTAssemblyInfoGeneration)' == '' ">true</EnableCBTAssemblyInfoGeneration>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <AssemblyInfoTemplateDirectory Condition="'$(AssemblyInfoTemplateDirectory)'==''">$(MSBuildThisFileDirectory)Template\Basic</AssemblyInfoTemplateDirectory>
-    <AssemblyInfoOutputPath Condition="'$(AssemblyInfoOutputPath)'==''">$(IntermediateOutputPath)\gen\AssemblyInfo</AssemblyInfoOutputPath>
-  </PropertyGroup>
-
 </Project>

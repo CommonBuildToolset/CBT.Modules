@@ -2,16 +2,19 @@
 <package >
   <metadata>
     <id>CBT.AssemblyInfo</id>
-    <version>1.0.0</version>
+    <version>1.0.2-beta</version>
     <authors>CBT Developers</authors>
     <owners>CBT Developers</owners>
     <licenseUrl>https://raw.githubusercontent.com/CommonBuildToolset/CBT.Modules/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/CommonBuildToolset</projectUrl>
     <iconUrl>https://avatars2.githubusercontent.com/u/16727685?v=3&amp;s=200</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Provides assemblyinfo generation for CBT based builds.</description>
+    <description>Provides assembly info and version generation for CBT based builds.</description>
     <copyright>Copyright 2016</copyright>
     <tags>CBT Module</tags>
+    <dependencies>
+      <dependency id="CBT.Microsoft.Common.targets" version="[1.0,)" />
+    </dependencies>
   </metadata>
   <files>
     <file src="**\*" target="CBT" exclude="*.nuspec" />
