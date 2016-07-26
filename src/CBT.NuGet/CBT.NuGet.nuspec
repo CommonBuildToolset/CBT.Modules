@@ -18,7 +18,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Debug\CBT.NuGet.dll" target="CBT\Module" />
+    <file src="$bindir$\CBT.NuGet.dll" target="CBT\Module" />
     <file src="CBT.NuGet.targets" target="CBT\Module" />
     <file src="Build.props" target="CBT\Module" />
     <file src="After.Traversal.targets" target="CBT\Module" />
