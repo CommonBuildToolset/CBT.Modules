@@ -40,6 +40,15 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
+            // If packages directory was not specified, just execute the restore
+            //
+            if (String.IsNullOrEmpty(PackagesDirectory))
+            {
+                return base.Execute();
+            }
+
+            // Do restoration in a semaphore to prevent NuGet restore having locking issues
+            //
             string semaphoreName = PackagesDirectory.ToUpper().GetHashCode().ToString("X");
 
             bool releaseSemaphore;
