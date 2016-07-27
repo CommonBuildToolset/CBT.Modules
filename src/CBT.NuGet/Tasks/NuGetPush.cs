@@ -28,6 +28,11 @@ namespace CBT.NuGet.Tasks
         public string Package { get; set; }
 
         /// <summary>
+        /// Gets or sets the timeout for pushing to a server in seconds. Defaults to 300 seconds (5 minutes).
+        /// </summary>
+        public string PushTimeout { get; set; }
+
+        /// <summary>
         /// Get or sets the server URL. If not specified, nuget.org is used unless DefaultPushSource config value is set in the NuGet config file.
         /// </summary>
         public string Source { get; set; }
@@ -41,6 +46,8 @@ namespace CBT.NuGet.Tasks
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Source ", Source);
 
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-ApiKey ", ApiKey);
+
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Timeout ", PushTimeout);
 
             commandLineBuilder.AppendSwitchIfTrue("-DisableBuffering", DisableBuffering);
         }

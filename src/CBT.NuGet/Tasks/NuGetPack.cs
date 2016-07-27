@@ -37,6 +37,8 @@ namespace CBT.NuGet.Tasks
 
         public ITaskItem[] Properties { get; set; }
 
+        public string Suffix { get; set; }
+
         public bool Symbols { get; set; }
 
         public bool Tool { get; set; }
@@ -80,6 +82,8 @@ namespace CBT.NuGet.Tasks
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MinClientVersion ", MinClientVersion);
 
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildVersion ", MsBuildVersion);
+
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Suffix ", Suffix);
         }
 
         protected override void LogEventsFromTextOutput(string singleLine, MessageImportance messageImportance)

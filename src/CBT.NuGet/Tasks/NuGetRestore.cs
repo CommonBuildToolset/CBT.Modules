@@ -29,6 +29,11 @@ namespace CBT.NuGet.Tasks
         public string PackagesDirectory { get; set; }
 
         /// <summary>
+        /// Gets or sets timeout in seconds for resolving project to project references.
+        /// </summary>
+        public string Project2ProjectTimeOut { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating if package restore consent is granted before installing a package.
         /// </summary>
         public bool RequireConsent { get; set; }
@@ -181,6 +186,8 @@ namespace CBT.NuGet.Tasks
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-SolutionDirectory ", SolutionDirectory);
 
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildVersion ", MsBuildVersion);
+
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Project2ProjectTimeOut ", Project2ProjectTimeOut);
 
             base.GenerateCommandLineCommands(commandLineBuilder);
         }
