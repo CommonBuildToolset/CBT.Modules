@@ -1,6 +1,7 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
+using CBT.NuGet.Internal;
 
 namespace CBT.NuGet
 {
@@ -62,10 +63,7 @@ namespace CBT.NuGet
                 commandLineBuilder.AppendSwitchIfNotNull("-Verbosity ", _commandVerbosity.ToString());
             }
 
-            if (NonInteractive)
-            {
-                commandLineBuilder.AppendSwitch("-NonInteractive");
-            }
+            commandLineBuilder.AppendSwitchIfTrue("-NonInteractive", NonInteractive);
 
             return commandLineBuilder.ToString();
         }

@@ -7,8 +7,8 @@
     <AssemblyName>CBT.NuGet</AssemblyName>
   </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "/>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "/>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
     <Reference Include="Microsoft.Build, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -27,6 +27,7 @@
     <Compile Include="Internal\PackageInfo.cs" />
     <Compile Include="Tasks\NuGetAdd.cs" />
     <Compile Include="Tasks\NuGetConfig.cs" />
+    <Compile Include="Tasks\NuGetDelete.cs" />
     <Compile Include="Tasks\NuGetList.cs" />
     <Compile Include="Tasks\NuGetPack.cs" />
     <Compile Include="Tasks\NuGetPush.cs" />
@@ -38,7 +39,7 @@
     <None Include="After.Microsoft.Common.targets" />
     <None Include="After.Traversal.targets" />
     <None Include="build.props" />
-    <None Include="CBT.NuGet.nuspec"/>
+    <None Include="CBT.NuGet.nuspec" />
     <None Include="CBT.NuGet.targets" />
     <None Include="Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />
     <None Include="Microsoft.NuGet\Microsoft.NuGet.props" />
