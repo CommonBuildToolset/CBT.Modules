@@ -31,7 +31,7 @@ namespace CBT.NuGet.Internal
         {
             if (packageConfigPaths == null)
             {
-                throw new ArgumentNullException("packageConfigPaths");
+                throw new ArgumentNullException(nameof(packageConfigPaths));
             }
 
             _packageConfigPaths = packageConfigPaths;

@@ -1,5 +1,4 @@
-﻿using CBT.NuGet.Tasks;
-using Microsoft.Build.Framework;
+﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
 namespace CBT.NuGet

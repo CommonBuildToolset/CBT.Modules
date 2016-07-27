@@ -22,10 +22,7 @@ namespace CBT.NuGet.Tasks
         public bool IncludeDelisted { get; set; }
 
         [Output]
-        public ITaskItem[] Packages
-        {
-            get { return _packages.ToArray(); }
-        }
+        public ITaskItem[] Packages => _packages.ToArray();
 
         public bool Prerelease { get; set; }
 
@@ -56,7 +53,7 @@ namespace CBT.NuGet.Tasks
 
                 if (match.Success)
                 {
-                    _packages.Add(new TaskItem(String.Format("{0}.{1}", match.Groups["id"].Value, match.Groups["version"].Value), new Dictionary<string, string>
+                    _packages.Add(new TaskItem($"{match.Groups["id"].Value}.{match.Groups["version"].Value}", new Dictionary<string, string>
                     {
                         {"Id", match.Groups["id"].Value},
                         {"Version", match.Groups["version"].Value},
@@ -91,7 +88,7 @@ namespace CBT.NuGet.Tasks
 
                         if (match.Success)
                         {
-                            _lastTaskItem.ItemSpec = String.Format("{0}.{1}", _lastTaskItem.ItemSpec, match.Groups["version"].Value);
+                            _lastTaskItem.ItemSpec = $"{_lastTaskItem.ItemSpec}.{match.Groups["version"].Value}";
                             _lastTaskItem.SetMetadata("Version", match.Groups["version"].Value);
                         }
                         else

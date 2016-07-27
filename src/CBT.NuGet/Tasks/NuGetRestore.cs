@@ -196,7 +196,7 @@ namespace CBT.NuGet.Tasks
         {
             if (String.IsNullOrWhiteSpace(output))
             {
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             }
 
             if (!System.IO.File.Exists(output) || inputs == null || inputs.Length == 0)

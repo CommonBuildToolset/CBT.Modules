@@ -33,15 +33,9 @@ namespace CBT.NuGet
         /// </summary>
         public string Verbosity { get; set; }
 
-        protected CommandVerbosity CommandVerbosity
-        {
-            get { return _commandVerbosity; }
-        }
+        protected CommandVerbosity CommandVerbosity => _commandVerbosity;
 
-        protected override string ToolName
-        {
-            get { return "NuGet.exe"; }
-        }
+        protected override string ToolName => "NuGet.exe";
 
         public override bool Execute()
         {
