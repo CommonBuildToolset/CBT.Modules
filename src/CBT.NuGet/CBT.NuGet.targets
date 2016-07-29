@@ -33,9 +33,9 @@
       ToolPath="$(CBTNuGetPath)"
       />
 
-    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(CBTNuGetPackagesRestoredMarker)))" Condition=" '$(CBTDisableNuGetPackageRestoreOptimization)' != 'true' " />
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(CBTNuGetPackagesRestoredMarker)))" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' " />
 
-    <Touch AlwaysCreate="true" ForceTouch="true" Files="$(CBTNuGetPackagesRestoredMarker)" Condition=" '$(CBTDisableNuGetPackageRestoreOptimization)' != 'true' " />
+    <Touch AlwaysCreate="true" ForceTouch="true" Files="$(CBTNuGetPackagesRestoredMarker)" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' " />
 
     <CallTarget Targets="_CheckForCBTNuGetPackagesRestoredMarker" />
 
@@ -48,7 +48,7 @@
   <Target Name="_CheckForCBTNuGetPackagesRestoredMarker">
 
     <ItemGroup>
-      <FileWrites Include="$(CBTNuGetPackagesRestoredMarker)" Condition=" '$(CBTDisableNuGetPackageRestoreOptimization)' != 'true' And Exists('$(CBTNuGetPackagesRestoredMarker)') " />
+      <FileWrites Include="$(CBTNuGetPackagesRestoredMarker)" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' And Exists('$(CBTNuGetPackagesRestoredMarker)') " />
     </ItemGroup>
 
   </Target>

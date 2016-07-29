@@ -81,11 +81,11 @@ namespace CBT.NuGet.Tasks
             }
         }
 
-        public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool disableOptimization, string markerPath, string[] inputs)
+        public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs)
         {
             BuildEngine = new CBTBuildEngine();
 
-            if (!disableOptimization && IsFileUpToDate(markerPath, inputs))
+            if (enableOptimization && IsFileUpToDate(markerPath, inputs))
             {
                 Log.LogMessage(MessageImportance.Low, "NuGet packages are up-to-date");
 
@@ -122,7 +122,7 @@ namespace CBT.NuGet.Tasks
             {
                 ret = Execute();
 
-                if (!disableOptimization)
+                if (enableOptimization)
                 {
                     Log.LogMessage(MessageImportance.Low, "Creating marker file for NuGet package restore optimization: '{0}'", markerPath);
 
