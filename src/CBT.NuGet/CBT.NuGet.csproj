@@ -39,9 +39,7 @@
   <ItemGroup>
     <None Include="After.Microsoft.Common.targets" />
     <None Include="After.Traversal.targets" />
-    <None Include="build.props">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="build.props" />
     <None Include="CBT.NuGet.nuspec" />
     <None Include="CBT.NuGet.targets" />
     <None Include="Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />

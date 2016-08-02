@@ -51,8 +51,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnableImportBuildPackages)' != 'false' ">
-    <CBTBuildPackagePropsFile Condition=" '$(CBTBuildPackagePropsFile)' == '' ">$(CBTModulePath)\BuildPackages.props</CBTBuildPackagePropsFile>
-    <CBTBuildPackageTargetsFile Condition=" '$(CBTBuildPackageTargetsFile)' == '' ">$(CBTModulePath)\BuildPackages.targets</CBTBuildPackageTargetsFile>
+    <CBTBuildPackagePropsFile Condition=" '$(CBTBuildPackagePropsFile)' == '' ">$(CBTModulePath)\NuGetBuildPackages.props</CBTBuildPackagePropsFile>
+    <CBTBuildPackageTargetsFile Condition=" '$(CBTBuildPackageTargetsFile)' == '' ">$(CBTModulePath)\NuGetBuildPackages.targets</CBTBuildPackageTargetsFile>
     <CBTBuildPackageImportInputs Condition=" '$(CBTBuildPackageImportInputs)' == '' ">$(MSBuildThisFileFullPath);$(CBTNuGetTasksAssemblyPath);$(CBTModulePackageConfigPath)</CBTBuildPackageImportInputs>
     
     <CBTGlobalBuildPackagesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap('$(CBTNuGetTasksAssemblyPath)', 'CBT.NuGet.Tasks.ImportBuildPackages').Execute('$(CBTModulePackageConfigPath)', '$(CBTBuildPackagePropsFile)', '$(CBTBuildPackageTargetsFile)', $(CBTBuildPackageImportInputs.Split(';')), $(CBTAllModulePaths.Split(';'))))</CBTGlobalBuildPackagesCreated>
