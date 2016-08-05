@@ -25,6 +25,7 @@
     <Compile Include="Internal\ExtensionMethods.cs" />
     <Compile Include="Internal\NuGetPropertyGenerator.cs" />
     <Compile Include="Internal\PackageInfo.cs" />
+    <Compile Include="Tasks\ImportBuildPackages.cs" />
     <Compile Include="Tasks\NuGetAdd.cs" />
     <Compile Include="Tasks\NuGetConfig.cs" />
     <Compile Include="Tasks\NuGetDelete.cs" />
