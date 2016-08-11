@@ -3,17 +3,17 @@
   <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)') " />
 
   <Import Project="$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)') " />
-  
+
   <Import Project="$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props') " />
-    
+
   <PropertyGroup>
     <MSBuildTasksPath Condition=" '$(MSBuildTasksPath)' == '' ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</MSBuildTasksPath>
     <MSBuildTasksPath Condition=" !Exists('$(MSBuildTasksPath)') ">$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</MSBuildTasksPath>
-    
+
     <AssemblyInfoOutputPath Condition=" '$(AssemblyInfoOutputPath)' == '' ">$(IntermediateOutputPath)</AssemblyInfoOutputPath>
 
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    
+
     <AssemblyInfoAllProjects>$(AssemblyInfoAllProjects);$(MSBuildThisFileFullPath);$(MSBuildProjectFullPath)</AssemblyInfoAllProjects>
     <AssemblyInfoAllProjects Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props') ">$(AssemblyInfoAllProjects);$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props</AssemblyInfoAllProjects>
 
@@ -34,10 +34,11 @@
 
   <PropertyGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
     <CoreCompileDependsOn>GenerateAssemblyInfo;$(CoreCompileDependsOn)</CoreCompileDependsOn>
-    
+
     <GenerateAssemblyInfoDependsOn>
-      _AssignAssemblyInfoOutputPaths;
       DetermineAssemblyVersionInfo;
+      DetermineAssemblyFrameworkInfo;
+      _AssignAssemblyInfoOutputPaths;
       _GenerateAssemblyInfoFile;
       $(GenerateAssemblyInfoDependsOn)
     </GenerateAssemblyInfoDependsOn>
@@ -61,6 +62,8 @@
       <AssemblyInfoCopyright>$(AssemblyInfoCopyright)</AssemblyInfoCopyright>
       <AssemblyInfoCulture>$(AssemblyInfoCulture)</AssemblyInfoCulture>
       <AssemblyInfoProduct>$(AssemblyInfoProduct)</AssemblyInfoProduct>
+      <AssemblyInfoTargetFrameworkMoniker>$(TargetFrameworkMoniker)</AssemblyInfoTargetFrameworkMoniker>
+      <AssemblyInfoTargetFrameworkMonikerDisplayName>$(TargetFrameworkMonikerDisplayName)</AssemblyInfoTargetFrameworkMonikerDisplayName>
       <AssemblyInfoTrademark>$(AssemblyInfoTrademark)</AssemblyInfoTrademark>
 
       <AutoGen>true</AutoGen>
@@ -89,30 +92,43 @@
         <AssemblyInfoVersion>$(AssemblyInfoVersion)</AssemblyInfoVersion>
 
         <!-- Override the output file to include the version so that the project will be rebuilt if it changes -->
-        <OutputFile>$(AssemblyInfoOutputPath)%(Filename)-$(VersionFull).g%(Extension)</OutputFile>
+        <OutputFileHash>%(AssemblyInfoTemplateFile.OutputFileHash);$(VersionFull)</OutputFileHash>
       </AssemblyInfoTemplateFile>
     </ItemGroup>
 
   </Target>
 
+  <Target Name="DetermineAssemblyFrameworkInfo" Condition=" '$(GenerateTargetFrameworkAttribute)' == 'false' ">
+    <ItemGroup>
+      <AssemblyInfoTemplateFile>
+        <!-- Override the output file to include the framework version so that the project will be rebuilt if it changes -->
+        <OutputFileHash>%(AssemblyInfoTemplateFile.OutputFileHash);$(TargetFrameworkMonikerDisplayName)</OutputFileHash>
+      </AssemblyInfoTemplateFile>
+    </ItemGroup>
+  </Target>
+
   <Target Name="GenerateAssemblyInfo"
     Condition=" '@(AssemblyInfoTemplateFile)' != '' "
     DependsOnTargets="$(GenerateAssemblyInfoDependsOn)" />
-  
+
   <Target Name="_AssignAssemblyInfoOutputPaths">
 
     <PropertyGroup>
       <AssemblyInfoAllProjects Condition=" '@(AssemblyInfoTemplateFile)' != '' ">$(AssemblyInfoAllProjects);@(AssemblyInfoTemplateFile)</AssemblyInfoAllProjects>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
+      <_AssemblyInfoTemplateOutputFileHash>%(AssemblyInfoTemplateFile.OutputFileHash)</_AssemblyInfoTemplateOutputFileHash>
+    </PropertyGroup>
+
     <ItemGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
       <AssemblyInfoTemplateFile Condition=" '%(AssemblyInfoTemplateFile.OutputFile)' == '' ">
-        <OutputFile>$(AssemblyInfoOutputPath)%(Filename).g%(Extension)</OutputFile>
+        <OutputFile>$(AssemblyInfoOutputPath)%(Filename)-$(_AssemblyInfoTemplateOutputFileHash.ToUpperInvariant().GetHashCode().ToString('X2')).g%(Extension)</OutputFile>
       </AssemblyInfoTemplateFile>
     </ItemGroup>
 
   </Target>
-  
+
   <Target Name="_GenerateAssemblyInfoFile"
     Condition=" '@(AssemblyInfoTemplateFile)' != '' "
     DependsOnTargets="_AssignAssemblyInfoOutputPaths"

@@ -11,6 +11,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 /**************************************************************************************************
 
@@ -31,3 +32,4 @@ remove the conflicting assembly attribute defined in the project item Properties
 [assembly: AssemblyVersion("$(AssemblyInfoVersion)")]
 [assembly: CLSCompliant($(AssemblyInfoCLSCompliant))]
 [assembly: ComVisible($(AssemblyInfoComVisible))]
+[assembly: TargetFrameworkAttribute("$(AssemblyInfoTargetFrameworkMoniker)", FrameworkDisplayName = "$(AssemblyInfoTargetFrameworkMonikerDisplayName)")]
