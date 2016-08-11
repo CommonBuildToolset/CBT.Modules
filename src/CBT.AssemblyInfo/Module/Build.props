@@ -4,4 +4,8 @@
     <EnableCBTAssemblyInfoGeneration Condition=" '$(EnableCBTAssemblyInfoGeneration)' != '' ">$([System.Convert]::ToBoolean($(EnableCBTAssemblyInfoGeneration)))</EnableCBTAssemblyInfoGeneration>
     <EnableCBTAssemblyInfoGeneration Condition=" '$(EnableCBTAssemblyInfoGeneration)' == '' ">true</EnableCBTAssemblyInfoGeneration>
   </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(EnableCBTAssemblyInfoGeneration)' == 'true' ">
+    <GenerateTargetFrameworkAttribute Condition=" '$(GenerateTargetFrameworkAttribute)' == '' ">false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
 </Project>
