@@ -8,7 +8,7 @@ IF "%ProgramFiles(x86)%" NEQ "" (
 	SET "REFERENCEASSEMBLYROOT=%ProgramFiles%\Reference Assemblies"
 )
 
-FOR %%A IN (4.0.0,4.5.0,4.5.1,4.5.2,4.6.0,4.6.1) DO (
+FOR %%A IN (4.0.0,4.5.0,4.5.1,4.5.2,4.6.0,4.6.1,4.6.2) DO (
 	SET DisplayName=net%%A
 	SET DisplayName=!DisplayName:.=!
 	IF "!DisplayName:~5,1!" EQU "0" (
