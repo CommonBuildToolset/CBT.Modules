@@ -7,6 +7,8 @@
     <CBTEnablePackageRestore Condition=" '$(CBTEnablePackageRestore)' == '' ">true</CBTEnablePackageRestore>
     <CBTNuGetPath Condition=" '$(CBTNuGetPath)' == '' And '$(CBTModuleRestoreCommand)' != '' And $([System.IO.Path]::GetFileName($(CBTModuleRestoreCommand))) == 'NuGet.exe' And Exists($(CBTModuleRestoreCommand)) ">$([System.IO.Path]::GetDirectoryName($(CBTModuleRestoreCommand)))</CBTNuGetPath>
     <CBTEnableImportBuildPackages Condition=" '$(CBTEnableImportBuildPackages)' == '' ">true</CBTEnableImportBuildPackages>
+    <CBTNuGetIntermediateOutputPath Condition=" '$(IntermediateOutputPath)' != '' ">$(IntermediateOutputPath)</CBTNuGetIntermediateOutputPath>
+    <CBTNuGetIntermediateOutputPath Condition=" '$(IntermediateOutputPath)' == '' ">$(CBTIntermediateOutputPath)\$(MSBuildProjectDirectory.ToLower().GetHashcode().ToString('X'))</CBTNuGetIntermediateOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\project.json') ">
@@ -30,7 +32,7 @@
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' ">
-    <CBTNuGetPackagesRestoredMarker Condition=" '$(CBTNuGetPackagesRestoredMarker)' == '' ">$(IntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetPackagesRestored</CBTNuGetPackagesRestoredMarker>
+    <CBTNuGetPackagesRestoredMarker Condition=" '$(CBTNuGetPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetPackagesRestored</CBTNuGetPackagesRestoredMarker>
     <CBTNuGetRestoreRequireConsent Condition=" '$(CBTNuGetRestoreRequireConsent)' == '' ">false</CBTNuGetRestoreRequireConsent>
     <CBTNuGetDisableParallelProcessing Condition=" '$(CBTNuGetDisableParallelProcessing)' == '' ">false</CBTNuGetDisableParallelProcessing>
     <CBTNuGetNoCache Condition=" '$(CBTNuGetNoCache)' == '' ">false</CBTNuGetNoCache>
@@ -44,7 +46,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
-    <CBTNuGetPackagePropertyFile Condition=" '$(CBTNuGetPackagePropertyFile)' == '' ">$(IntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(CBTNuGetRestoreFile)')).props</CBTNuGetPackagePropertyFile>
+    <CBTNuGetPackagePropertyFile Condition=" '$(CBTNuGetPackagePropertyFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(CBTNuGetRestoreFile)')).props</CBTNuGetPackagePropertyFile>
     <CBTNuGetPackagePropertyNamePrefix Condition=" '$(CBTNuGetPackagePropertyNamePrefix)' == '' ">NuGetPath_</CBTNuGetPackagePropertyNamePrefix>
     <CBTNuGetPackagePropertyValuePrefix Condition=" '$(CBTNuGetPackagePropertyValuePrefix)' == '' ">%24(NuGetPackagesPath)\</CBTNuGetPackagePropertyValuePrefix>
 
