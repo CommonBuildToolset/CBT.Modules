@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Configuration">
+    <Description>Provides hooks into Microsoft.Common.props.</Description>
+    <ProjectGuid>702fcec1-154c-43f0-bad9-0f7c6b1497d2</ProjectGuid>
+    <Tags>CBT Module props</Tags>
+  </PropertyGroup>
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <ItemGroup>
+    <Content Include="CBT\Module\Build.props" />
+    <Content Include="CBT\Module\Extensions\After.Microsoft.Common.props" />
+    <Content Include="CBT\Module\Extensions\Before.Microsoft.Common.props" />
+    <Content Include="CBT\Module\module.config" />
+    <None Include="version.json" />
+  </ItemGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
+</Project>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Configuration">
+    <Description>Provides assembly info and version generation for CBT based builds.</Description>
+    <ProjectGuid>802789f0-b9a3-4c35-83fc-a12c55c0ad9d</ProjectGuid>
+    <Tags>CBT Module assemblyinfo version versioning assembly info</Tags>
+  </PropertyGroup>
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <ItemGroup>
+    <Dependency Include="CBT.Microsoft.Common.targets">
+      <Version>[1.0,)</Version>
+    </Dependency>
+    <None Include="version.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CBT\Module\After.Microsoft.Common.targets" />
+    <Content Include="CBT\Module\AssemblyInfo.targets" />
+    <Content Include="CBT\Module\Build.props" />
+    <Content Include="CBT\Module\module.config" />
+    <Content Include="CBT\Module\Templates\AssemblyInfo.cs" />
+    <Content Include="CBT\Module\Templates\AssemblyInfo.vb" />
+  </ItemGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
+</Project>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Configuration">
+    <Description>Provides hooks into Microsoft.VisualBasic.targets.</Description>
+    <ProjectGuid>8c05f4bb-d30a-4bfd-b0d0-c292b518fe0f</ProjectGuid>
+    <Tags>CBT Module VisualBasic VB</Tags>
+  </PropertyGroup>
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <ItemGroup>
+    <None Include="version.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CBT\Module\Build.props" />
+    <Content Include="CBT\Module\Extensions\After.Microsoft.VisualBasic.targets" />
+    <Content Include="CBT\Module\Extensions\Before.Microsoft.VisualBasic.targets" />
+    <Content Include="CBT\Module\module.config" />
+  </ItemGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
+</Project>

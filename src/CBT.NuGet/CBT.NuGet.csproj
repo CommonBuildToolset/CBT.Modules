@@ -37,15 +37,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="After.Microsoft.Common.targets" />
-    <None Include="After.Traversal.targets" />
-    <None Include="build.props" />
-    <None Include="CBT.NuGet.nuspec" />
-    <None Include="CBT.NuGet.targets" />
-    <None Include="Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />
-    <None Include="Microsoft.NuGet\Microsoft.NuGet.props" />
-    <None Include="Microsoft.NuGet\Microsoft.NuGet.targets" />
-    <None Include="Microsoft.NuGet\Newtonsoft.Json.dll" />
+    <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
