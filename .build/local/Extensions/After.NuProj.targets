@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="ReassignTargetPathIfTargetDirSpecified" AfterTargets="GetPackageFiles">
+    <ItemGroup>
+      <PackageFile Include="@(PackageFile)" Condition=" '%(PackageFile.TargetDir)' != '' " KeepMetadata="OriginalItemSpec;TargetPath">
+        <TargetPath>%(PackageFile.TargetDir)%(Filename)%(Extension)</TargetPath>
+      </PackageFile>
+      <PackageFile Remove="@(PackageFile)" Condition=" '%(PackageFile.TargetDir)' != '' " />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="GetNuPkgVersionEx" Condition=" '$(PublicRelease)' == 'true' " AfterTargets="GetNuPkgVersion">
+    <PropertyGroup>
+      <!-- Remove the pre-release tag when this is a public release -->
+      <Version>$(BuildVersion3Components)</Version>
+    </PropertyGroup>
+  </Target>
+</Project>

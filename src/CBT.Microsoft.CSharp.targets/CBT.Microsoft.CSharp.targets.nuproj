@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Configuration">
+    <Description>Provides hooks into Microsoft.CSharp.targets.</Description>
+    <ProjectGuid>e8a2fbca-6425-4912-a132-992cbcd788d7</ProjectGuid>
+    <Tags>CBT Module CSharp</Tags>
+  </PropertyGroup>
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <ItemGroup>
+    <None Include="version.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CBT\Module\Build.props" />
+    <Content Include="CBT\Module\Extensions\After.Microsoft.CSharp.targets" />
+    <Content Include="CBT\Module\Extensions\Before.Microsoft.CSharp.targets" />
+    <Content Include="CBT\Module\module.config" />
+  </ItemGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
+</Project>
