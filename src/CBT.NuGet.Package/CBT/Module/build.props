@@ -44,8 +44,9 @@
     <CBTNuGetNoCache Condition=" '$(CBTNuGetNoCache)' == '' ">false</CBTNuGetNoCache>
     <CBTNuGetNonInteractive Condition=" '$(CBTNuGetNonInteractive)' == '' ">true</CBTNuGetNonInteractive>
     <CBTNuGetTimeout Condition=" '$(CBTNuGetTimeout)' == '' ">0</CBTNuGetTimeout>
-    <CBTNuGetPackagePropertyNamePrefix Condition=" '$(CBTNuGetPackagePropertyNamePrefix)' == '' ">NuGetPath_</CBTNuGetPackagePropertyNamePrefix>
-    <CBTNuGetPackagePropertyValuePrefix Condition=" '$(CBTNuGetPackagePropertyValuePrefix)' == '' ">%24(NuGetPackagesPath)\</CBTNuGetPackagePropertyValuePrefix>
+    <CBTNuGetPackagePropertyVersionNamePrefix Condition=" '$(CBTNuGetPackagePropertyVersionNamePrefix)' == '' ">NuGetVersion_</CBTNuGetPackagePropertyVersionNamePrefix>
+    <CBTNuGetPackagePropertyPathNamePrefix Condition=" '$(CBTNuGetPackagePropertyPathNamePrefix)' == '' ">NuGetPath_</CBTNuGetPackagePropertyPathNamePrefix>
+    <CBTNuGetPackagePropertyPathValuePrefix Condition=" '$(CBTNuGetPackagePropertyPathValuePrefix)' == '' ">%24(NuGetPackagesPath)\</CBTNuGetPackagePropertyPathValuePrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnableGlobalPackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' And '$(IsRestoreOnly)' != 'true' ">
@@ -61,14 +62,14 @@
   <PropertyGroup Condition=" '$(CBTEnableGlobalPackageRestore)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
     <CBTNuGetGlobalPackagePropertyFile Condition=" '$(CBTNuGetGlobalPackagePropertyFile)' == '' ">$(CBTIntermediateOutputPath)\GlobalPackages.props</CBTNuGetGlobalPackagePropertyFile>
 
-    <CBTNuGetGlobalPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').GenerateNuGetProperties($(CBTNuGetGlobalPackagesRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetGlobalPackagePropertyFile), $(CBTNuGetPackagePropertyNamePrefix), $(CBTNuGetPackagePropertyValuePrefix)))</CBTNuGetGlobalPackagePropertiesCreated>
+    <CBTNuGetGlobalPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').GenerateNuGetProperties($(CBTNuGetGlobalPackagesRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetGlobalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetGlobalPackagePropertiesCreated>
   </PropertyGroup>
 
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
     <CBTNuGetPackagePropertyFile Condition=" '$(CBTNuGetPackagePropertyFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(CBTNuGetRestoreFile)')).props</CBTNuGetPackagePropertyFile>
 
-    <CBTNuGetPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').GenerateNuGetProperties($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyNamePrefix), $(CBTNuGetPackagePropertyValuePrefix)))</CBTNuGetPackagePropertiesCreated>
+    <CBTNuGetPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').GenerateNuGetProperties($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetPackagePropertiesCreated>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnableImportBuildPackages)' != 'false' ">
