@@ -5,8 +5,8 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
 
-  <Import Project="$(CBTLocalBuildExtensionsPath)\$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\$(MSBuildThisFile)') " />
-
   <Import Project="$(CBTModuleExtensionsPath)\$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\$(MSBuildThisFile)') " />
+
+  <Import Project="$(CBTLocalBuildExtensionsPath)\$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\$(MSBuildThisFile)') " />
   
 </Project>

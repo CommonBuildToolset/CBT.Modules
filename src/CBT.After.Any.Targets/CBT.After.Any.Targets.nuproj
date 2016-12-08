@@ -20,7 +20,7 @@
    <Dependency Include="CBT.Microsoft.Common.targets">
       <Version>1.0.0</Version>
     </Dependency>
-   <Dependency Include="CBT.After.Traversal.targets">
+   <Dependency Include="CBT.Traversal">
       <Version>1.0.0</Version>
     </Dependency>
   </ItemGroup>
