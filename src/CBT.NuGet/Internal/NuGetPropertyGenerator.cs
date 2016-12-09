@@ -37,7 +37,7 @@ namespace CBT.NuGet.Internal
             _packageConfigPaths = packageConfigPaths;
         }
 
-        public bool Generate(string outputPath, string propertyNamePrefix, string propertyValuePrefix)
+        public bool Generate(string outputPath, string propertyVersionNamePrefix, string propertyPathNamePrefix, string propertyPathValuePrefix)
         {
             ProjectRootElement project = ProjectRootElement.Create();
 
@@ -47,10 +47,8 @@ namespace CBT.NuGet.Internal
 
             foreach (PackageInfo packageInfo in ParsePackages())
             {
-                string propertyName = String.Format(CultureInfo.CurrentCulture, "{0}{1}", propertyNamePrefix, packageInfo.Id.Replace(".", "_"));
-                string propertyValue = String.Format(CultureInfo.CurrentCulture, "{0}{1}.{2}", propertyValuePrefix, packageInfo.Id, packageInfo.VersionString);
-
-                propertyGroup.SetProperty(propertyName, propertyValue);
+                propertyGroup.SetProperty(String.Format(CultureInfo.CurrentCulture, "{0}{1}", propertyPathNamePrefix, packageInfo.Id.Replace(".", "_")), String.Format(CultureInfo.CurrentCulture, "{0}{1}.{2}", propertyPathValuePrefix, packageInfo.Id, packageInfo.VersionString));
+                propertyGroup.SetProperty(String.Format(CultureInfo.CurrentCulture, "{0}{1}", propertyVersionNamePrefix, packageInfo.Id.Replace(".", "_")), String.Format(CultureInfo.CurrentCulture, "{0}", packageInfo.VersionString));
             }
 
             project.Save(outputPath);

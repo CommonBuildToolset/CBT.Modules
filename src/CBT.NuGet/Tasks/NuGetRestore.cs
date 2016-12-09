@@ -155,7 +155,7 @@ namespace CBT.NuGet.Tasks
             return ret;
         }
 
-        public bool GenerateNuGetProperties(string file, string[] inputs, string propsFile, string propertyNamePrefix, string propertyValuePrefix)
+        public bool GenerateNuGetProperties(string file, string[] inputs, string propsFile, string propertyVersionNamePrefix, string propertyPathNamePrefix, string propertyPathValuePrefix)
         {
             BuildEngine = new CBTBuildEngine();
 
@@ -168,7 +168,7 @@ namespace CBT.NuGet.Tasks
 
             Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", propsFile);
 
-            nuGetPropertyGenerator.Generate(propsFile, propertyNamePrefix, propertyValuePrefix);
+            nuGetPropertyGenerator.Generate(propsFile, propertyVersionNamePrefix, propertyPathNamePrefix, propertyPathValuePrefix);
 
             return true;
         }
