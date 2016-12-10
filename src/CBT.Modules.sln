@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.After.Any.Targets", "CBT.After.Any.Targets\CBT.After.Any.Targets.nuproj", "{80E75AA2-EACB-48B1-AC12-FA1062585EEE}"
 EndProject
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.NuGet.GlobalRestore", "CBT.NuGet.GlobalRestore\CBT.NuGet.GlobalRestore.nuproj", "{525E50EB-C6D9-497D-BC54-C625AB62B7D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{80E75AA2-EACB-48B1-AC12-FA1062585EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80E75AA2-EACB-48B1-AC12-FA1062585EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80E75AA2-EACB-48B1-AC12-FA1062585EEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{525E50EB-C6D9-497D-BC54-C625AB62B7D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{525E50EB-C6D9-497D-BC54-C625AB62B7D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{525E50EB-C6D9-497D-BC54-C625AB62B7D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{525E50EB-C6D9-497D-BC54-C625AB62B7D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
