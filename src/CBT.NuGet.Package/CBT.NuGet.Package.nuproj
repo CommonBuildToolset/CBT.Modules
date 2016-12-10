@@ -21,6 +21,7 @@
     </Dependency>
     <Content Include="CBT\Module\After.Microsoft.Common.targets" />
     <Content Include="CBT\Module\After.Traversal.targets" />
+    <Content Include="CBT\Module\module.config" />
     <Content Include="CBT\Module\build.props" />
     <Content Include="CBT\Module\CBT.NuGet.props" />
     <Content Include="CBT\Module\CBT.NuGet.targets" />
