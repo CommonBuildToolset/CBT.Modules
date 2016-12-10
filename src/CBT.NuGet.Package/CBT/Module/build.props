@@ -22,11 +22,11 @@
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == ''  And Exists('$(MSBuildProjectDirectory)\packages.config') ">
     <CBTNuGetRestoreFile>$(MSBuildProjectDirectory)\packages.config</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\packages.config</CBTNuGetAllProjects>
-    <CBTNuGetRestorePackagesDirectory Condition=" '$(CBTNuGetRestorePackagesDirectory)' == '' ">$(NuGetPackagesPath)</CBTNuGetRestorePackagesDirectory>
-    <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' ">true</CBTNuGetGeneratePackageProperties>
   </PropertyGroup>
 
   <PropertyGroup>
+    <CBTNuGetRestorePackagesDirectory Condition=" '$(CBTNuGetRestorePackagesDirectory)' == '' ">$(NuGetPackagesPath)</CBTNuGetRestorePackagesDirectory>
+    <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' ">true</CBTNuGetGeneratePackageProperties>
     <CBTNuGetPackagesRestoredMarker Condition=" '$(CBTNuGetPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetPackagesRestored</CBTNuGetPackagesRestoredMarker>
     <CBTNuGetRestoreRequireConsent Condition=" '$(CBTNuGetRestoreRequireConsent)' == '' ">false</CBTNuGetRestoreRequireConsent>
     <CBTNuGetDisableParallelProcessing Condition=" '$(CBTNuGetDisableParallelProcessing)' == '' ">false</CBTNuGetDisableParallelProcessing>
