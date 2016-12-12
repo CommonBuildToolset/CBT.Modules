@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.vbproj' Or '$(ForceImportCBTMicrosoftVisualBasicTargets)' == 'true' ">
-    <SavedCustomBeforeMicrosoftVisualBasicTargets>$(CustomBeforeMicrosoftVisualBasicTargets)</SavedCustomBeforeMicrosoftVisualBasicTargets>
-    <SavedCustomAfterMicrosoftVisualBasicTargets>$(CustomAfterMicrosoftVisualBasicTargets)</SavedCustomAfterMicrosoftVisualBasicTargets>
+  <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.vbproj' Or '$(CBTForceImportCBTMicrosoftVisualBasicTargets)' == 'true' ">
+    <CBTSavedCustomBeforeMicrosoftVisualBasicTargets>$(CustomBeforeMicrosoftVisualBasicTargets)</CBTSavedCustomBeforeMicrosoftVisualBasicTargets>
+    <CBTSavedCustomAfterMicrosoftVisualBasicTargets>$(CustomAfterMicrosoftVisualBasicTargets)</CBTSavedCustomAfterMicrosoftVisualBasicTargets>
 
     <CustomBeforeMicrosoftVisualBasicTargets>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.VisualBasic.targets</CustomBeforeMicrosoftVisualBasicTargets>
     <CustomAfterMicrosoftVisualBasicTargets>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.VisualBasic.targets</CustomAfterMicrosoftVisualBasicTargets>
