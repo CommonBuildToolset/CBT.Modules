@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <SavedCustomBeforeMicrosoftCommonTargets>$(CustomBeforeMicrosoftCommonTargets)</SavedCustomBeforeMicrosoftCommonTargets>
-    <SavedCustomAfterMicrosoftCommonTargets>$(CustomAfterMicrosoftCommonTargets)</SavedCustomAfterMicrosoftCommonTargets>
+    <CBTSavedCustomBeforeMicrosoftCommonTargets>$(CustomBeforeMicrosoftCommonTargets)</CBTSavedCustomBeforeMicrosoftCommonTargets>
+    <CBTSavedCustomAfterMicrosoftCommonTargets>$(CustomAfterMicrosoftCommonTargets)</CBTSavedCustomAfterMicrosoftCommonTargets>
 
     <CustomBeforeMicrosoftCommonTargets>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.Common.targets</CustomBeforeMicrosoftCommonTargets>
     <CustomAfterMicrosoftCommonTargets>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.Common.targets</CustomAfterMicrosoftCommonTargets>

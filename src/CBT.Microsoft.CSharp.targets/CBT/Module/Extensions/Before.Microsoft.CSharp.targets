@@ -5,7 +5,7 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
 
-  <Import Project="$(SavedCustomBeforeMicrosoftCSharpTargets)" Condition=" '$(SavedCustomBeforeMicrosoftCSharpTargets)' != '' And Exists('$(SavedCustomBeforeMicrosoftCSharpTargets)') " />
+  <Import Project="$(CBTSavedCustomBeforeMicrosoftCSharpTargets)" Condition=" '$(CBTSavedCustomBeforeMicrosoftCSharpTargets)' != '' And Exists('$(CBTSavedCustomBeforeMicrosoftCSharpTargets)') " />
   
   <Import Project="$(CBTLocalBuildExtensionsPath)\$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\$(MSBuildThisFile)') " />
   
