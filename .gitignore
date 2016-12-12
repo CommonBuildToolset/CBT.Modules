@@ -156,6 +156,8 @@ publish/
 #except CBT modules
 !CBT.NuGet.props
 !CBT.NuGet.targets
+!Before.CBT.NuGet.props
+!After.CBT.NuGet.props
 
 # Microsoft Azure Build Output
 csx/

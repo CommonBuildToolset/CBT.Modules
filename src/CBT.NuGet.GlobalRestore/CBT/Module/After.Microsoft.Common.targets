@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="NuGetRestoreGlobalPackages">
+
+  <PropertyGroup>
+    <RestoreNuGetPackagesDependsOn>RestoreGlobalNuGetPackages;$(RestoreNuGetPackagesDependsOn)</RestoreNuGetPackagesDependsOn>
+    <RestoreDependsOn>RestoreGlobalNuGetPackages;$(RestoreDependsOn)</RestoreDependsOn>
+  </PropertyGroup>
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.GenerateNuGetProperties" />
+
+  <Target Name="RestoreGlobalNuGetPackages"
+    Condition=" '$(CBTEnableGlobalPackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' "
+    DependsOnTargets="_CheckForCBTNuGetGlobalPackagesRestoredMarker"
+    Inputs="$(CBTNuGetAllProjects);$(CBTNuGetGlobalPackagesRestoreFile)"
+    Outputs="$(CBTNuGetGlobalPackagesRestoredMarker)">
+    <CallTarget Targets="NuGetRestoreGlobalPackages" />
+  </Target>
+  
+  <Target Name="NuGetRestoreGlobalPackages"
+    Condition=" '$(CBTNuGetGlobalPackagesRestored)' != 'true'"
+    Inputs="$(CBTNuGetAllProjects);$(CBTNuGetGlobalPackagesRestoreFile)"
+    Outputs="$(CBTNuGetGlobalPackagesRestoredMarker)">
+
+    <NuGetRestore
+      File="$(CBTNuGetGlobalPackagesRestoreFile)"
+      RequireConsent="$(CBTNuGetRestoreRequireConsent)"
+      PackagesDirectory="$(CBTNuGetRestorePackagesDirectory)"
+      SolutionDirectory="$(NuGetRestoreSolutionDirectory)"
+      MsBuildVersion="$(NuGetMsBuildVersion)"
+      DisableParallelProcessing="$(CBTNuGetDisableParallelProcessing)"
+      FallbackSource="$(NuGetFallbackSource)"
+      NoCache="$(CBTNuGetNoCache)"
+      PackageSaveMode="$(NuGetPackageSaveMode)"
+      Source="$(NuGetSource)"
+      ConfigFile="$(NuGetConfigFile)"
+      NonInteractive="$(CBTNuGetNonInteractive)"
+      Verbosity="$(NuGetVerbosity)"
+      Timeout="$(CBTNuGetTimeout)"
+      ToolPath="$(CBTNuGetPath)"
+      />
+
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(CBTNuGetGlobalPackagesRestoredMarker)))" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' " />
+
+    <Touch AlwaysCreate="true" ForceTouch="true" Files="$(CBTNuGetGlobalPackagesRestoredMarker)" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' " />
+
+    <CallTarget Targets="_CheckForCBTNuGetGlobalPackagesRestoredMarker" />
+
+    <GenerateNuGetProperties
+      Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' And '$(IsRestoreOnly)' == 'true' "
+      PackageRestoreFile="$(CBTNuGetGlobalPackagesRestoreFile)"
+      Inputs="$(CBTNuGetAllProjects.Split(';'))"
+      PropsFile="$(CBTNuGetGlobalPackagePropertyFile)"
+      PropertyVersionNamePrefix="$(CBTNuGetPackagePropertyVersionNamePrefix)"
+      PropertyPathNamePrefix="$(CBTNuGetPackagePropertyPathNamePrefix)"
+      PropertyPathValuePrefix="$(CBTNuGetPackagePropertyPathValuePrefix)"
+      />
+
+  </Target>
+
+  <Target Name="_CheckForCBTNuGetGlobalPackagesRestoredMarker">
+
+    <ItemGroup>
+      <FileWrites Include="$(CBTNuGetGlobalPackagesRestoredMarker)" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' And Exists('$(CBTNuGetGlobalPackagesRestoredMarker)') " />
+    </ItemGroup>
+
+  </Target>
+</Project>

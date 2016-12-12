@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="$(MSBuildThisFileDirectory)Extensions\Before.CBT.NuGet.props" />
+  
+  <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' And '$(IsRestoreOnly)' != 'true' ">
+    <!-- Restore packages if not running under Visual Studio and not running as part of NuGet's restore -->
+    <CBTNuGetPackagesRestored>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').Execute($(CBTNuGetRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetRestoreRequireConsent), $(NuGetRestoreSolutionDirectory), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';'))))</CBTNuGetPackagesRestored>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
+    <CBTNuGetPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetPackagePropertiesCreated>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(CBTEnableImportBuildPackages)' != 'false' ">
+    <CBTBuildPackagePropsFile Condition=" '$(CBTBuildPackagePropsFile)' == '' ">$(CBTModulePath)\NuGetBuildPackages.props</CBTBuildPackagePropsFile>
+    <CBTBuildPackageTargetsFile Condition=" '$(CBTBuildPackageTargetsFile)' == '' ">$(CBTModulePath)\NuGetBuildPackages.targets</CBTBuildPackageTargetsFile>
+    <CBTBuildPackageImportInputs Condition=" '$(CBTBuildPackageImportInputs)' == '' ">$(MSBuildThisFileFullPath);$(CBTNuGetTasksAssemblyPath);$(CBTModulePackageConfigPath)</CBTBuildPackageImportInputs>
+    
+    <CBTGlobalBuildPackagesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap('$(CBTNuGetTasksAssemblyPath)', 'CBT.NuGet.Tasks.ImportBuildPackages').Execute('$(CBTModulePackageConfigPath)', '$(CBTBuildPackagePropsFile)', '$(CBTBuildPackageTargetsFile)', $(CBTBuildPackageImportInputs.Split(';')), $(CBTAllModulePaths.Split(';'))))</CBTGlobalBuildPackagesCreated>
+  </PropertyGroup>
+ 
+  <Import Project="$(MSBuildThisFileDirectory)Extensions\After.CBT.NuGet.props" />
+</Project>

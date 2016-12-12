@@ -22,45 +22,29 @@
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == ''  And Exists('$(MSBuildProjectDirectory)\packages.config') ">
     <CBTNuGetRestoreFile>$(MSBuildProjectDirectory)\packages.config</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\packages.config</CBTNuGetAllProjects>
-    <CBTNuGetRestorePackagesDirectory Condition=" '$(CBTNuGetRestorePackagesDirectory)' == '' ">$(NuGetPackagesPath)</CBTNuGetRestorePackagesDirectory>
-    <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' ">true</CBTNuGetGeneratePackageProperties>
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Disable package restoration if there is no packages.config/project.json -->
-    <CBTEnablePackageRestore Condition=" '$(CBTNuGetRestoreFile)' == '' ">false</CBTEnablePackageRestore>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' ">
+    <CBTNuGetRestorePackagesDirectory Condition=" '$(CBTNuGetRestorePackagesDirectory)' == '' ">$(NuGetPackagesPath)</CBTNuGetRestorePackagesDirectory>
+    <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' ">true</CBTNuGetGeneratePackageProperties>
     <CBTNuGetPackagesRestoredMarker Condition=" '$(CBTNuGetPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetPackagesRestored</CBTNuGetPackagesRestoredMarker>
     <CBTNuGetRestoreRequireConsent Condition=" '$(CBTNuGetRestoreRequireConsent)' == '' ">false</CBTNuGetRestoreRequireConsent>
     <CBTNuGetDisableParallelProcessing Condition=" '$(CBTNuGetDisableParallelProcessing)' == '' ">false</CBTNuGetDisableParallelProcessing>
     <CBTNuGetNoCache Condition=" '$(CBTNuGetNoCache)' == '' ">false</CBTNuGetNoCache>
     <CBTNuGetNonInteractive Condition=" '$(CBTNuGetNonInteractive)' == '' ">true</CBTNuGetNonInteractive>
     <CBTNuGetTimeout Condition=" '$(CBTNuGetTimeout)' == '' ">0</CBTNuGetTimeout>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' And '$(IsRestoreOnly)' != 'true' ">
-    <!-- Restore packages if not running under Visual Studio and not running as part of NuGet's restore -->
-    <CBTNuGetPackagesRestored>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').Execute($(CBTNuGetRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetRestoreRequireConsent), $(NuGetRestoreSolutionDirectory), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';'))))</CBTNuGetPackagesRestored>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
     <CBTNuGetPackagePropertyFile Condition=" '$(CBTNuGetPackagePropertyFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(CBTNuGetRestoreFile)')).props</CBTNuGetPackagePropertyFile>
     <CBTNuGetPackagePropertyVersionNamePrefix Condition=" '$(CBTNuGetPackagePropertyVersionNamePrefix)' == '' ">NuGetVersion_</CBTNuGetPackagePropertyVersionNamePrefix>
     <CBTNuGetPackagePropertyPathNamePrefix Condition=" '$(CBTNuGetPackagePropertyPathNamePrefix)' == '' ">NuGetPath_</CBTNuGetPackagePropertyPathNamePrefix>
     <CBTNuGetPackagePropertyPathValuePrefix Condition=" '$(CBTNuGetPackagePropertyPathValuePrefix)' == '' ">%24(NuGetPackagesPath)\</CBTNuGetPackagePropertyPathValuePrefix>
+ </PropertyGroup>
 
-    <CBTNuGetPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').GenerateNuGetProperties($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetPackagePropertiesCreated>
+  <PropertyGroup>
+    <!-- Disable package restoration if there is no packages.config/project.json -->
+    <CBTEnablePackageRestore Condition=" '$(CBTNuGetRestoreFile)' == '' ">false</CBTEnablePackageRestore>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(CBTEnableImportBuildPackages)' != 'false' ">
-    <CBTBuildPackagePropsFile Condition=" '$(CBTBuildPackagePropsFile)' == '' ">$(CBTModulePath)\NuGetBuildPackages.props</CBTBuildPackagePropsFile>
-    <CBTBuildPackageTargetsFile Condition=" '$(CBTBuildPackageTargetsFile)' == '' ">$(CBTModulePath)\NuGetBuildPackages.targets</CBTBuildPackageTargetsFile>
-    <CBTBuildPackageImportInputs Condition=" '$(CBTBuildPackageImportInputs)' == '' ">$(MSBuildThisFileFullPath);$(CBTNuGetTasksAssemblyPath);$(CBTModulePackageConfigPath)</CBTBuildPackageImportInputs>
-    
-    <CBTGlobalBuildPackagesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap('$(CBTNuGetTasksAssemblyPath)', 'CBT.NuGet.Tasks.ImportBuildPackages').Execute('$(CBTModulePackageConfigPath)', '$(CBTBuildPackagePropsFile)', '$(CBTBuildPackageTargetsFile)', $(CBTBuildPackageImportInputs.Split(';')), $(CBTAllModulePaths.Split(';'))))</CBTGlobalBuildPackagesCreated>
-  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)CBT.NuGet.props"/>
 
   <Import Project="$(MSBuildThisFileDirectory)CBT.NuGet.targets" />
 

@@ -155,24 +155,6 @@ namespace CBT.NuGet.Tasks
             return ret;
         }
 
-        public bool GenerateNuGetProperties(string file, string[] inputs, string propsFile, string propertyVersionNamePrefix, string propertyPathNamePrefix, string propertyPathValuePrefix)
-        {
-            BuildEngine = new CBTBuildEngine();
-
-            if (IsFileUpToDate(propsFile, inputs))
-            {
-                return true;
-            }
-
-            NuGetPropertyGenerator nuGetPropertyGenerator = new NuGetPropertyGenerator(file);
-
-            Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", propsFile);
-
-            nuGetPropertyGenerator.Generate(propsFile, propertyVersionNamePrefix, propertyPathNamePrefix, propertyPathValuePrefix);
-
-            return true;
-        }
-
         protected override void GenerateCommandLineCommands(CommandLineBuilder commandLineBuilder)
         {
             commandLineBuilder.AppendSwitch("restore");
@@ -192,7 +174,7 @@ namespace CBT.NuGet.Tasks
             base.GenerateCommandLineCommands(commandLineBuilder);
         }
 
-        private static bool IsFileUpToDate(string output, params string[] inputs)
+        internal static bool IsFileUpToDate(string output, params string[] inputs)
         {
             if (String.IsNullOrWhiteSpace(output))
             {
