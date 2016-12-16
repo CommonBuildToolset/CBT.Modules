@@ -3,19 +3,15 @@
   <PropertyGroup Label="Configuration">
     <Description>Provides NuGet related build tasks for CBT.</Description>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <ProjectGuid>20b4c0c1-5c4e-4dd0-9994-d89e78c3b161</ProjectGuid>
+    <ProjectGuid>9cf55e9d-97e1-4fc4-abe7-2e5701a8485f</ProjectGuid>
     <Tags>CBT Module NuGet</Tags>
     <Title>CBT NuGet Module</Title>
   </PropertyGroup>
-
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
-
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
-
   <ItemGroup>
     <Content Include="CBT\Module\Build.props" />
     <None Include="version.json" />
   </ItemGroup>
-
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
 </Project>
