@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Configuration">
+    <Description>Provides NuGet related build tasks for CBT.</Description>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <ProjectGuid>9cf55e9d-97e1-4fc4-abe7-2e5701a8485f</ProjectGuid>
+    <Tags>CBT Module NuGet</Tags>
+    <Title>CBT NuGet Module</Title>
+  </PropertyGroup>
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <ItemGroup>
+    <Content Include="CBT\Module\Build.props" />
+    <Content Include="CBT\Module\CBT.UnifiedOutputDir.props" />
+    <Content Include="CBT\Module\module.config" />
+    <None Include="version.json" />
+  </ItemGroup>
+  <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
+</Project>
