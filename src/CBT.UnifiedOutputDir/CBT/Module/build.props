@@ -1,37 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
 
-    <!-- CBTSelfContainedBuildOutput indicates whether to isolate the build output on a per-project basis. -->
-    <CBTSelfContainedBuildOutput Condition="'$(CBTSelfContainedBuildOutput)' != ''">$([System.Convert]::ToBoolean($(CBTSelfContainedBuildOutput)))</CBTSelfContainedBuildOutput>
-    <CBTSelfContainedBuildOutput Condition="'$(CBTSelfContainedBuildOutput)' == ''">true</CBTSelfContainedBuildOutput>
-
-    <CBTIntermediateOutputRootDir Condition=" '$(CBTIntermediateOutputRootDir)'=='' ">$(EnlistmentRoot)\obj</CBTIntermediateOutputRootDir>
-
-    <BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' =='' ">$(CBTIntermediateOutputRootDir)</BaseIntermediateOutputPath>
-    <!-- IntermediateOutputPath requires a trailing slash to prevent MSB8004 warning -->
-    <IntermediateOutputPath Condition=" '$(IntermediateOutputPath)' =='' ">$(BaseIntermediateOutputPath)\$(Platform)\$(Configuration)\$(MSBuildProjectFile)\</IntermediateOutputPath>
-
-    <!-- Ensure IntermediateOutputPath is unique in situations where project files have identical names such as traversal projects a.k.a. dirs.proj. -->
-    <CBTEnableHashedIntermediateOutputPath Condition="'$(CBTEnableHashedIntermediateOutputPath)'!=''">$([System.Convert]::ToBoolean($(CBTEnableHashedIntermediateOutputPath)))</CBTEnableHashedIntermediateOutputPath>
-    <CBTEnableHashedIntermediateOutputPath Condition="'$(CBTEnableHashedIntermediateOutputPath)'==''">true</CBTEnableHashedIntermediateOutputPath>
-    <IntermediateOutputPath Condition="'$(CBTEnableHashedIntermediateOutputPath)' == 'true'">$([System.IO.Path]::Combine($(IntermediateOutputPath),$(MSBuildProjectFullPath.SubString($(EnlistmentRoot.Length)).GetHashCode().ToString("X"))))\</IntermediateOutputPath>
-
-    <CBTOutputRootDir Condition=" '$(CBTOverrideBaseOutputPath)' != '' ">$(CBTOverrideBaseOutputPath)</CBTOutputRootDir>
-    <CBTOutputPathPlatformPart Condition="'$(CBTOutputPathPlatformPart)' == ''">$(Platform)</CBTOutputPathPlatformPart>
-    <CBTOutputRootDir Condition=" '$(CBTOutputRootDir)' == '' ">$(EnlistmentRoot)\bin\$(CBTOutputPathPlatformPart)\$(Configuration)</CBTOutputRootDir>
-    <CBTOutputRootDir>$(CBTOutputRootDir.TrimEnd({'\\'}))</CBTOutputRootDir>
-
-    <CBTRelativeOutputPathAppend Condition="'$(CBTRelativeOutputPathAppend)' == ''">$(MSBuildProjectName)</CBTRelativeOutputPathAppend>
-    <CBTRelativeOutputPath Condition="'$(CBTSelfContainedBuildOutput)' == 'true'">$([System.IO.Path]::Combine($(CBTRelativeOutputPath), $(CBTRelativeOutputPathAppend)))</CBTRelativeOutputPath>
-
-    <!-- These variables are the ones that the standard MSBuild targets recognize.  We override them here.  -->
-    <OutDir Condition=" '$(OutDir)' =='' ">$([System.IO.Path]::Combine($(CBTOutputRootDir), $(CBTRelativeOutputPath)))</OutDir>
-
-    <!-- OutDir requires a trailing slash to prevent MSB8004 warning -->
-    <OutDir>$(OutDir.TrimEnd("\\"))\</OutDir>
-    <!-- This ensures OutputPath always matches OutDir, especially when TFS overrides OutDir. -->
-    <OutputPath>$(OutDir)</OutputPath>
-  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)\CBT.UnifiedOutputDir.props"/>
 
 </Project>
