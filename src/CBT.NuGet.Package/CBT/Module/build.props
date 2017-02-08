@@ -7,8 +7,8 @@
     <CBTEnablePackageRestore Condition=" '$(CBTEnablePackageRestore)' == '' ">true</CBTEnablePackageRestore>
     <CBTNuGetPath Condition=" '$(CBTNuGetPath)' == '' And '$(CBTModuleRestoreCommand)' != '' And $([System.IO.Path]::GetFileName($(CBTModuleRestoreCommand))) == 'NuGet.exe' And Exists($(CBTModuleRestoreCommand)) ">$([System.IO.Path]::GetDirectoryName($(CBTModuleRestoreCommand)))</CBTNuGetPath>
     <CBTEnableImportBuildPackages Condition=" '$(CBTEnableImportBuildPackages)' == '' ">true</CBTEnableImportBuildPackages>
-    <CBTNuGetIntermediateOutputPath Condition=" '$(IntermediateOutputPath)' != '' ">$(IntermediateOutputPath)</CBTNuGetIntermediateOutputPath>
-    <CBTNuGetIntermediateOutputPath Condition=" '$(IntermediateOutputPath)' == '' ">$(CBTIntermediateOutputPath)\$(MSBuildProjectDirectory.ToLower().GetHashcode().ToString('X'))</CBTNuGetIntermediateOutputPath>
+    <CBTNuGetIntermediateOutputPath Condition=" '$(CBTNuGetIntermediateOutputPath)' == '' And '$(IntermediateOutputPath)' != '' ">$(IntermediateOutputPath)</CBTNuGetIntermediateOutputPath>
+    <CBTNuGetIntermediateOutputPath Condition=" '$(CBTNuGetIntermediateOutputPath)' == '' And '$(IntermediateOutputPath)' == '' ">$(CBTIntermediateOutputPath)\$(MSBuildProjectDirectory.ToLower().GetHashcode().ToString('X'))</CBTNuGetIntermediateOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\project.json') ">
