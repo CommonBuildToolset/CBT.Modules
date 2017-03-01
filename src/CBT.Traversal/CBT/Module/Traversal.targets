@@ -22,7 +22,7 @@
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Build" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
-    <MSBuild  Projects="@(ProjectFile)" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored)" />
+    <MSBuild Projects="@(ProjectFile)" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalBuildGlobalProperties)" />
 
     <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Build" Condition=" '@(PostTraversalProjectFile)' != '' " />
   </Target>
@@ -30,7 +30,7 @@
   <Target Name="Clean" DependsOnTargets="$(CleanDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Clean" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
-    <MSBuild Projects="@(ProjectFile)" Targets="Clean" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored)" />
+    <MSBuild Projects="@(ProjectFile)" Targets="Clean" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalCleanGlobalProperties)" />
 
     <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Clean" Condition="'@(PostTraversalProjectFile)'!=''" />
   </Target>
@@ -40,7 +40,7 @@
   <Target Name="Restore" DependsOnTargets="$(RestoreDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Restore" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
-    <MSBuild Projects="@(ProjectFile)" Targets="Restore" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);IsRestoreOnly=true" />
+    <MSBuild Projects="@(ProjectFile)" Targets="Restore" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);IsRestoreOnly=true;$(TraversalGlobalProperties);$(TraversalRestoreGlobalProperties)" />
 
     <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Restore" Condition="'@(PostTraversalProjectFile)'!=''" />
   </Target>
@@ -48,7 +48,7 @@
   <Target Name="Test" DependsOnTargets="$(TestDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Test" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
-    <MSBuild Projects="@(ProjectFile)" Targets="Test" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored)" />
+    <MSBuild Projects="@(ProjectFile)" Targets="Test" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalTestGlobalProperties)" />
 
     <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Test" Condition="'@(PostTraversalProjectFile)'!=''" />
   </Target>
