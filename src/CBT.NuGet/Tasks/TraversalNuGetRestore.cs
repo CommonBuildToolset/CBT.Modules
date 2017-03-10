@@ -32,6 +32,13 @@ namespace CBT.NuGet.Tasks
 
             List<Tuple<string, string>> aggregatedPackages = projectCollection.LoadedProjects.Select(i => Path.Combine(i.DirectoryPath, "packages.config")).Where(System.IO.File.Exists).AsParallel().SelectMany(GetPackages).Distinct().OrderBy(i => i.Item1).ToList();
 
+            if (aggregatedPackages.Count == 0)
+            {
+                Log.LogMessage(MessageImportance.Low, "No packages were found to aggregate");
+
+                return true;
+            }
+
             WriteAggregatePackagesConfig(File, aggregatedPackages);
 
             Log.LogMessage(MessageImportance.Low, $"Successfully aggregated packages to '{File}'");
