@@ -1,13 +1,15 @@
 ﻿using CBT.NuGet.Internal;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using System;
+using System.Diagnostics;
 
 namespace CBT.NuGet.Tasks
 {
     /// <summary>
     /// Generate NuGet properties.
     ///
-    /// Generate properties that contain the path and version of a given nuget package.
+    /// Generate properties that contain the path and version of a given NuGet package.
     /// </summary>
     public sealed class GenerateNuGetProperties : Task
     {
@@ -50,16 +52,9 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
-            BuildEngine = new CBTBuildEngine();
-
-            if (NuGetRestore.IsFileUpToDate(PropsFile, Inputs))
-            {
-                return true;
-            }
+            Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", PropsFile);
 
             NuGetPropertyGenerator nuGetPropertyGenerator = new NuGetPropertyGenerator(PackageRestoreFile);
-
-            Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", PropsFile);
 
             nuGetPropertyGenerator.Generate(PropsFile, PropertyVersionNamePrefix, PropertyPathNamePrefix, PropertyPathValuePrefix);
 
@@ -68,15 +63,38 @@ namespace CBT.NuGet.Tasks
 
         public bool Execute(string packageRestoreFile, string[] inputs, string propsFile, string propertyVersionNamePrefix, string propertyPathNamePrefix, string propertyPathValuePrefix)
         {
+            try
+            {
+                BuildEngine = new CBTBuildEngine();
 
-            PackageRestoreFile = packageRestoreFile;
-            Inputs = inputs;
-            PropsFile = propsFile;
-            PropertyVersionNamePrefix = propertyVersionNamePrefix;
-            PropertyPathNamePrefix = propertyPathNamePrefix;
-            PropertyPathValuePrefix = propertyPathValuePrefix;
+                Log.LogMessage(MessageImportance.Low, "Generate NuGet packages properties:");
+                Log.LogMessage(MessageImportance.Low, $"  PackageRestoreFile = {packageRestoreFile}");
+                Log.LogMessage(MessageImportance.Low, $"  Inputs = {String.Join(";", inputs)}");
+                Log.LogMessage(MessageImportance.Low, $"  PropsFile = {propsFile}");
+                Log.LogMessage(MessageImportance.Low, $"  PropertyVersionNamePrefix = {propertyVersionNamePrefix}");
+                Log.LogMessage(MessageImportance.Low, $"  PropertyPathNamePrefix = {propertyPathNamePrefix}");
+                Log.LogMessage(MessageImportance.Low, $"  PropertyPathValuePrefix = {propertyPathValuePrefix}");
 
-            return Execute();
+                if (NuGetRestore.IsFileUpToDate(Log, propsFile, inputs))
+                {
+                    Log.LogMessage(MessageImportance.Low, $"NuGet package properties file '{propsFile}' is up-to-date");
+                    return true;
+                }
+
+                PackageRestoreFile = packageRestoreFile;
+                Inputs = inputs;
+                PropsFile = propsFile;
+                PropertyVersionNamePrefix = propertyVersionNamePrefix;
+                PropertyPathNamePrefix = propertyPathNamePrefix;
+                PropertyPathValuePrefix = propertyPathValuePrefix;
+
+                return Execute();
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.ToString());
+                return false;
+            }
         }
 
     }
