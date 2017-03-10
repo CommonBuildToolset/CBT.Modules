@@ -1,8 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' ">
+    <CBTNuGetTraversalRestoreFile Condition=" '$(CBTNuGetTraversalRestoreFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile)\packages.config</CBTNuGetTraversalRestoreFile>
+    <CBTNuGetTraversalPackagePropertyFile Condition=" '$(CBTNuGetTraversalPackagePropertyFile)' == '' ">$(CBTNuGetTraversalRestoreFile).props</CBTNuGetTraversalPackagePropertyFile>
+    <CBTNuGetAllProjects>$(MSBuildProjectFullPath);$(MSBuildThisFileFullPath);$(CBTNuGetAllProjects)</CBTNuGetAllProjects>
+    <CBTNuGetTraversalRestoreGlobalProperties Condition=" '$(CBTNuGetTraversalRestoreGlobalProperties)' == '' ">BuildingInsideVisualStudio=true;DesignTimeBuild=true;CBTModulesRestored=true;CBTNuGetGeneratePackageProperties=false;CBTNuGetTraversalPackagePropertiesCreated=true;CBTNuGetTraversalPackagesRestored=true</CBTNuGetTraversalRestoreGlobalProperties>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' And '$(CBTNuGetTraversalPackagesRestored)' != 'true' ">
+    <CBTNuGetTraversalPackagesRestored>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.TraversalNuGetRestore').Execute($(CBTNuGetTraversalRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetRestoreRequireConsent), $(NuGetRestoreSolutionDirectory), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';')), $(MSBuildToolsVersion), $(MSBuildProjectFullPath), $(CBTNuGetTraversalRestoreGlobalProperties)))</CBTNuGetTraversalPackagesRestored>
+    <TraversalGlobalProperties>$(TraversalGlobalProperties);CBTNuGetTraversalPackagesRestored=$(CBTNuGetTraversalPackagesRestored)</TraversalGlobalProperties>
+    <CBTNuGetTraversalPackagePropertiesCreated Condition=" '$(CBTNuGetTraversalPackagesRestored)' == 'true' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetTraversalRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetTraversalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetTraversalPackagePropertiesCreated>
+  </PropertyGroup>
   
-  <Target Name="RestoreNuGetPackages" DependsOnTargets="$(RestoreNuGetPackagesDependsOn)">
-    <MSBuild Projects="@(ProjectFile)" Targets="RestoreNuGetPackages" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored)" />
+  <Import Project="$(CBTNuGetTraversalPackagePropertyFile)" Condition=" '$(CBTNuGetTraversalPackagePropertiesCreated)' == 'true' "/>
+
+  <!--
+  
+  Disabled at this time because traversal is only ever done at the command-line and targets are only needed when Visual Studio is involved
+  
+  <PropertyGroup>
+    <RestoreDependsOn>RestoreNuGetPackages;$(RestoreDependsOn)</RestoreDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="RestoreNuGetPackages"
+     Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' And '$(CBTNuGetTraversalPackagesRestored)' != 'true' "
+     DependsOnTargets="_CheckForCBTNuGetPackagesRestoredMarker;$(RestoreNuGetPackagesDependsOn)"
+     Inputs="$(CBTNuGetAllProjects);$(CBTNuGetTraversalRestoreFile)"
+     Outputs="$(CBTNuGetPackagesRestoredMarker)">
+
+    <TraversalNuGetRestore
+      GlobalProperties="$(CBTNuGetTraversalRestoreGlobalProperties)"
+      MSBuildToolsVersion="$(MSBuildToolsVersion)"
+      Project="$(MSBuildProjectFullPath)"
+      File="$(CBTNuGetTraversalRestoreFile)"
+      ConfigFile="$(NuGetConfigFile)"
+      DisableParallelProcessing="$(CBTNuGetDisableParallelProcessing)"
+      FallbackSource="$(NuGetFallbackSource)"
+      MsBuildVersion="$(NuGetMsBuildVersion)"
+      NoCache="$(CBTNuGetNoCache)"
+      NonInteractive="$(CBTNuGetNonInteractive)"
+      PackageSaveMode="$(NuGetPackageSaveMode)"
+      PackagesDirectory="$(CBTNuGetRestorePackagesDirectory)"
+      RequireConsent="$(CBTNuGetRestoreRequireConsent)"
+      SolutionDirectory="$(NuGetRestoreSolutionDirectory)"
+      Source="$(NuGetSource)"
+      Timeout="$(CBTNuGetTimeout)"
+      ToolPath="$(CBTNuGetPath)"
+      Verbosity="$(NuGetVerbosity)"
+    />
+
+    <PropertyGroup>
+      <TraversalRestoreGlobalProperties>$(TraversalRestoreGlobalProperties);CBTNuGetTraversalPackagesRestored=true</TraversalRestoreGlobalProperties>
+      <CBTNuGetTraversalPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetTraversalRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetTraversalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetTraversalPackagePropertiesCreated>
+    </PropertyGroup>
+    
+    <CallTarget Targets="_CheckForCBTNuGetPackagesRestoredMarker" />
+
   </Target>
+  -->
   
 </Project>

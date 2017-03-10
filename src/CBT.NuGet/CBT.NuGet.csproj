@@ -23,6 +23,7 @@
     <Compile Include="DownloadCommandBase.cs" />
     <Compile Include="Internal\CBTBuildEngine.cs" />
     <Compile Include="Internal\ExtensionMethods.cs" />
+    <Compile Include="Internal\MSBuildProjectLoader.cs" />
     <Compile Include="Internal\NuGetPropertyGenerator.cs" />
     <Compile Include="Internal\PackageInfo.cs" />
     <Compile Include="Tasks\GenerateNuGetProperties.cs" />
@@ -36,6 +37,7 @@
     <Compile Include="Tasks\NuGetRestore.cs" />
     <Compile Include="Tasks\NuGetSetApiKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tasks\TraversalNuGetRestore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="version.json" />

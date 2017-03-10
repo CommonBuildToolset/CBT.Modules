@@ -10,11 +10,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 [assembly: AssemblyCopyright("Copyright © 2016")]
-[assembly: AssemblyDescription("MSBuild task library for NuGet actions")]
+[assembly: AssemblyDescription("Unit tests for CBT.NuGet.dll")]
 [assembly: AssemblyProduct("Common Build Toolset (CBT)")]
-[assembly: AssemblyTitle("CBT.NuGet")]
+[assembly: AssemblyTitle("CBT.NuGet.UnitTests")]
 [assembly: AssemblyTrademark("")]
 [assembly: CLSCompliant(false)]
 [assembly: ComVisible(false)]
-
-[assembly: InternalsVisibleTo("CBT.NuGet.UnitTests")]

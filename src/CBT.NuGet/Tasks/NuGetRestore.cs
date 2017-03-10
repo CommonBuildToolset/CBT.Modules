@@ -13,7 +13,7 @@ namespace CBT.NuGet.Tasks
     ///
     /// If a solution is specified, this command restores NuGet packages that are installed in the solution and in projects contained in the solution. Otherwise, the command restores packages listed in the specified packages.config file, Microsoft Build project, or project.json file.
     /// </summary>
-    public sealed class NuGetRestore : DownloadCommandBase
+    public class NuGetRestore : DownloadCommandBase
     {
         [Required]
         public string File { get; set; }
