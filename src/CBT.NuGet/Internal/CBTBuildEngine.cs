@@ -138,7 +138,7 @@ namespace CBT.NuGet.Internal
                 }
                 else
                 {
-                    Console.Out.WriteLine(buildEventArgs.Message);
+                    Trace.TraceInformation(buildEventArgs.Message);
                 }
             }
             else
