@@ -68,7 +68,7 @@ namespace CBT.NuGet.Tasks
 
                         return releaseSemaphore;
                     }
-                
+
                     return base.Execute();
                 }
                 finally
@@ -83,9 +83,32 @@ namespace CBT.NuGet.Tasks
 
         public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs)
         {
-            BuildEngine = new CBTBuildEngine();
+            if (BuildEngine == null)
+            {
+                BuildEngine = new CBTBuildEngine();
+            }
 
-            if (enableOptimization && IsFileUpToDate(markerPath, inputs))
+            Log.LogMessage(MessageImportance.Low, "Restore NuGet Packages:");
+            Log.LogMessage(MessageImportance.Low, $"  File = {file}");
+            Log.LogMessage(MessageImportance.Low, $"  MSBuildVersion = {msBuildVersion}");
+            Log.LogMessage(MessageImportance.Low, $"  PackagesDirectory = {packagesDirectory}");
+            Log.LogMessage(MessageImportance.Low, $"  RequireConsent = {requireConsent}");
+            Log.LogMessage(MessageImportance.Low, $"  SolutionDirectory = {solutionDirectory}");
+            Log.LogMessage(MessageImportance.Low, $"  DisableParallelProcessing = {disableParallelProcessing}");
+            Log.LogMessage(MessageImportance.Low, $"  FallbackSources = {String.Join(";", fallbackSources)}");
+            Log.LogMessage(MessageImportance.Low, $"  NoCache = {noCache}");
+            Log.LogMessage(MessageImportance.Low, $"  PackageSaveMode = {packageSaveMode}");
+            Log.LogMessage(MessageImportance.Low, $"  Sources = {String.Join(";", sources)}");
+            Log.LogMessage(MessageImportance.Low, $"  ConfigFile = {configFile}");
+            Log.LogMessage(MessageImportance.Low, $"  NonInteractive = {nonInteractive}");
+            Log.LogMessage(MessageImportance.Low, $"  Verbosity = {verbosity}");
+            Log.LogMessage(MessageImportance.Low, $"  Timeout = {timeout}");
+            Log.LogMessage(MessageImportance.Low, $"  ToolPath = {toolPath}");
+            Log.LogMessage(MessageImportance.Low, $"  EnableOptimization = {enableOptimization}");
+            Log.LogMessage(MessageImportance.Low, $"  MarkerPath = {markerPath}");
+            Log.LogMessage(MessageImportance.Low, $"  Inputs = {String.Join(";", inputs)}");
+
+            if (enableOptimization && IsFileUpToDate(Log, markerPath, inputs))
             {
                 Log.LogMessage(MessageImportance.Low, "NuGet packages are up-to-date");
 
@@ -174,21 +197,43 @@ namespace CBT.NuGet.Tasks
             base.GenerateCommandLineCommands(commandLineBuilder);
         }
 
-        internal static bool IsFileUpToDate(string output, params string[] inputs)
+        public static bool IsFileUpToDate(TaskLoggingHelper log, string input, params string[] outputs)
         {
-            if (String.IsNullOrWhiteSpace(output))
+            if (String.IsNullOrWhiteSpace(input))
             {
-                throw new ArgumentNullException(nameof(output));
+                throw new ArgumentNullException(nameof(input));
             }
 
-            if (!System.IO.File.Exists(output) || inputs == null || inputs.Length == 0)
+            if (!System.IO.File.Exists(input))
             {
+                log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because it does not exist.");
+                return false;
+            }
+            if (outputs == null || outputs.Length == 0)
+            {
+                log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because no outputs were specified.");
                 return false;
             }
 
-            long lastWriteTime = System.IO.File.GetLastWriteTimeUtc(output).Ticks;
+            DateTime lastWriteTime = System.IO.File.GetLastWriteTimeUtc(input);
 
-            return inputs.Where(i => !String.IsNullOrWhiteSpace(i)).All(i => System.IO.File.Exists(i) && System.IO.File.GetLastWriteTimeUtc(i).Ticks <= lastWriteTime);
+            foreach (var output in outputs.Where(i => !String.IsNullOrWhiteSpace(i)))
+            {
+                if (!System.IO.File.Exists(output))
+                {
+                    log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because the output file '{output}' does not exist.");
+                    return false;
+                }
+
+                var outputLastWriteTime = System.IO.File.GetLastWriteTimeUtc(output);
+
+                if (outputLastWriteTime.Ticks > lastWriteTime.Ticks)
+                {
+                    log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because the output file '{output}' is newer ({lastWriteTime:O} > {outputLastWriteTime:O}).");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
