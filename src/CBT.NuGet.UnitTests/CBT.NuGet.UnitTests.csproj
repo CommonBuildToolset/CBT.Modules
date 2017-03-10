@@ -1,10 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{E1A167BF-825E-4250-9A56-29A685B83736}</ProjectGuid>
+    <ProjectGuid>{DF1E58FD-D11A-4DFF-9437-16257D12DE2D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CBT.NuGet</RootNamespace>
-    <AssemblyName>CBT.NuGet</AssemblyName>
+    <RootNamespace>CBT.NuGet.UnitTests</RootNamespace>
+    <AssemblyName>CBT.NuGet.UnitTests</AssemblyName>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
   </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
@@ -15,31 +18,20 @@
     <Reference Include="Microsoft.Build.Utilities.v4.0, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"/>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandBase.cs" />
-    <Compile Include="CommandVerbosity.cs" />
-    <Compile Include="DownloadCommandBase.cs" />
-    <Compile Include="Internal\CBTBuildEngine.cs" />
-    <Compile Include="Internal\ExtensionMethods.cs" />
-    <Compile Include="Internal\MSBuildProjectLoader.cs" />
-    <Compile Include="Internal\NuGetPropertyGenerator.cs" />
-    <Compile Include="Internal\PackageInfo.cs" />
-    <Compile Include="Tasks\GenerateNuGetProperties.cs" />
-    <Compile Include="Tasks\ImportBuildPackages.cs" />
-    <Compile Include="Tasks\NuGetAdd.cs" />
-    <Compile Include="Tasks\NuGetConfig.cs" />
-    <Compile Include="Tasks\NuGetDelete.cs" />
-    <Compile Include="Tasks\NuGetList.cs" />
-    <Compile Include="Tasks\NuGetPack.cs" />
-    <Compile Include="Tasks\NuGetPush.cs" />
-    <Compile Include="Tasks\NuGetRestore.cs" />
-    <Compile Include="Tasks\NuGetSetApiKey.cs" />
+    <Compile Include="MSBuildProjectHelper.cs" />
+    <Compile Include="MSBuildProjectLoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="version.json" />
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CBT.NuGet\CBT.NuGet.csproj">
+      <Project>{e1a167bf-825e-4250-9a56-29a685b83736}</Project>
+      <Name>CBT.NuGet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
