@@ -61,8 +61,6 @@ namespace CBT.NuGet.Internal
 
         private IEnumerable<PackageInfo> ParsePackages()
         {
-            IDictionary<string, PackageInfo> packages = new Dictionary<string, PackageInfo>(StringComparer.OrdinalIgnoreCase);
-
             foreach (string packageConfigPath in _packageConfigPaths.Where(i => !String.IsNullOrWhiteSpace(i) && File.Exists(i)))
             {
                 XDocument document = XDocument.Load(packageConfigPath);
@@ -84,21 +82,10 @@ namespace CBT.NuGet.Internal
                             continue;
                         }
 
-                        PackageInfo packageInfo = new PackageInfo(item.Id, item.Version);
-
-                        if (packages.ContainsKey(packageInfo.Id))
-                        {
-                            packages[packageInfo.Id] = packageInfo;
-                        }
-                        else
-                        {
-                            packages.Add(packageInfo.Id, packageInfo);
-                        }
+                        yield return new PackageInfo(item.Id, item.Version);
                     }
                 }
             }
-
-            return packages.Values;
         }
     }
 }
