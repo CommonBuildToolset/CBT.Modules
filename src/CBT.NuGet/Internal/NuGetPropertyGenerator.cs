@@ -45,10 +45,13 @@ namespace CBT.NuGet.Internal
 
             propertyGroup.SetProperty("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)");
 
+            ProjectItemGroupElement itemGroup = project.AddItemGroup();
+
             foreach (PackageInfo packageInfo in ParsePackages())
             {
                 propertyGroup.SetProperty(String.Format(CultureInfo.CurrentCulture, "{0}{1}", propertyPathNamePrefix, packageInfo.Id.Replace(".", "_")), String.Format(CultureInfo.CurrentCulture, "{0}{1}.{2}", propertyPathValuePrefix, packageInfo.Id, packageInfo.VersionString));
                 propertyGroup.SetProperty(String.Format(CultureInfo.CurrentCulture, "{0}{1}", propertyVersionNamePrefix, packageInfo.Id.Replace(".", "_")), String.Format(CultureInfo.CurrentCulture, "{0}", packageInfo.VersionString));
+                itemGroup.AddItem("CBTNuGetPackageDir", String.Format(CultureInfo.CurrentCulture, "{0}{1}.{2}", propertyPathValuePrefix, packageInfo.Id, packageInfo.VersionString));
             }
 
             project.Save(outputPath);
