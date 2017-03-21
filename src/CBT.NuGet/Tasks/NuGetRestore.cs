@@ -145,25 +145,21 @@ namespace CBT.NuGet.Tasks
             {
                 ret = Execute();
 
-                if (enableOptimization)
+                if (enableOptimization && !String.IsNullOrWhiteSpace(markerPath))
                 {
-                    Log.LogMessage(MessageImportance.Low, "Creating marker file for NuGet package restore optimization: '{0}'", markerPath);
-
                     string dir = Path.GetDirectoryName(markerPath);
-
-                    using (Mutex mutex = new Mutex(false, markerPath.ToUpper().GetHashCode().ToString("X")))
+                    if (!String.IsNullOrWhiteSpace(dir))
                     {
-                        if (!mutex.WaitOne(TimeSpan.FromMinutes(30)))
-                        {
-                            return false;
-                        }
+                        Log.LogMessage(MessageImportance.Low, "Creating marker file for NuGet package restore optimization: '{0}'", markerPath);
 
-                        if (!System.IO.File.Exists(markerPath))
+                        using (Mutex mutex = new Mutex(false, markerPath.ToUpper().GetHashCode().ToString("X")))
                         {
-                            if (!String.IsNullOrWhiteSpace(dir) && !Directory.Exists(dir))
+                            if (!mutex.WaitOne(TimeSpan.FromMinutes(30)))
                             {
-                                Directory.CreateDirectory(dir);
+                                return false;
                             }
+
+                            Directory.CreateDirectory(dir);
 
                             System.IO.File.WriteAllText(markerPath, String.Empty);
                         }
