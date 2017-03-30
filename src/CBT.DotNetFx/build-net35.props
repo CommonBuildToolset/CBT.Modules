@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
-    <FrameworkPathOverride Condition=" '$(FrameworkPathOverride)' == '' And '$(TargetFrameworkVersion)' == 'v3.5' ">$(MSBuildThisFileDirectory)net35\Profile\Client</FrameworkPathOverride>
+    <FrameworkPathOverride Condition=" '$(FrameworkPathOverride)' == '' And '$(TargetFrameworkVersion)' == 'v3.5' ">$(MSBuildThisFileDirectory)net35\Profile\Client\</FrameworkPathOverride>
     <_TargetFrameworkDirectories Condition=" '$(_TargetFrameworkDirectories)' == '' ">$(FrameworkPathOverride);$(Registry:HKEY_LOCAL_MACHINE\Software\Microsoft\.NETFramework@InstallRoot)</_TargetFrameworkDirectories>
   </PropertyGroup>
 

@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5.2</TargetFrameworkVersion>
-    <FrameworkPathOverride Condition=" '$(FrameworkPathOverride)' == '' And '$(TargetFrameworkVersion)' == 'v4.5.2' ">$(MSBuildThisFileDirectory)net452</FrameworkPathOverride>
+    <FrameworkPathOverride Condition=" '$(FrameworkPathOverride)' == '' And '$(TargetFrameworkVersion)' == 'v4.5.2' ">$(MSBuildThisFileDirectory)net452\</FrameworkPathOverride>
   </PropertyGroup>
 
 </Project>
