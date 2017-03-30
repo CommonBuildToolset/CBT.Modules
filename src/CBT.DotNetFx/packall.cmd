@@ -8,6 +8,8 @@ IF "%ProgramFiles(x86)%" NEQ "" (
 	SET "REFERENCEASSEMBLYROOT=%ProgramFiles%\Reference Assemblies"
 )
 
+CALL :Net35
+
 FOR %%A IN (4.0.0,4.5.0,4.5.1,4.5.2,4.6.0,4.6.1,4.6.2) DO (
 	SET DisplayName=net%%A
 	SET DisplayName=!DisplayName:.=!
@@ -28,3 +30,10 @@ FOR %%A IN (4.0.0,4.5.0,4.5.1,4.5.2,4.6.0,4.6.1,4.6.2) DO (
 		NuGet PACK "%~dp0CBT.DotNetFx.nuspec" -Properties "Version=%%A%NETFXTAG%;DisplayName=!DisplayName!;DisplayVersion=!DisplayVersion!;Root=!ROOT!" -NoPackageAnalysis -NoDefaultExcludes -O "%~dp0.."
 	)
 )
+
+GOTO :EOF
+
+:Net35
+SET "ROOT=%REFERENCEASSEMBLYROOT%\Microsoft\Framework"
+NuGet PACK "%~dp0CBT.DotNetFx.3.5.nuspec" -Properties "Version=3.5.0%NETFXTAG%;DisplayName=net35;DisplayVersion=v3.5;Root=%ROOT%" -NoPackageAnalysis -NoDefaultExcludes -O "%~dp0.."
+IF ERRORLEVEL 1 EXIT /B 1
