@@ -5,6 +5,6 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory)\Extensions\After.Any.targets" />
+  <Import Project="$(AfterAnyTargets)" />
   
 </Project>
