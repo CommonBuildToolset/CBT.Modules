@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="NuGetRestoreGlobalPackages">
+
+  <PropertyGroup>
+    <RestoreNuGetPackagesDependsOn>$(RestoreNuGetPackagesDependsOn);AggregateNugetPackages</RestoreNuGetPackagesDependsOn>
+    <RestoreDependsOn>$(RestoreDependsOn);AggregateNugetPackages</RestoreDependsOn>
+  </PropertyGroup>
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.AggregatePackages" />
+  
+  <Target Name="AggregateNugetPackages"
+    Condition=" '$(CBTAggregatePackage)' != '' And '$(CBTEnableAggregatePackageRestore)' == 'true'"
+    Inputs="$(MSBuildAllProjects)"
+    Outputs="$(CBTNuGetAggregatePackagePropertyFile)">
+
+    <AggregatePackages
+      AggregateDestinationRoot="$(CBTAggregateDestPackageRoot)"
+      PackagesToAggregate="$(CBTAggregatePackage)"
+      PropsFile="$(CBTNuGetAggregatePackagePropertyFile)"
+      />
+
+  </Target>
+
+</Project>

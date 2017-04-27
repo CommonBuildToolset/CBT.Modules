@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup> 
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects> 
+  </PropertyGroup> 
+ 
+  <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)') " /> 
+  <Import Project="$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)') " /> 
+
+  <PropertyGroup>
+    <CBTEnableAggregatePackageRestore Condition=" '$(CBTEnableAggregatePackageRestore)' == '' ">true</CBTEnableAggregatePackageRestore>
+    <CBTAggregatePackageImport Condition=" '$(CBTAggregatePackageImport)'=='' and Exists('$(MSBuildProjectDirectory)\CBT.AggregatePackages.props')">$(MSBuildProjectDirectory)\CBT.AggregatePackages.props</CBTAggregatePackageImport>
+    <CBTAggregateDestPackageRoot Condition=" '$(CBTAggregateDestPackageRoot)'=='' ">$(NuGetPackagesPath)\.agg</CBTAggregateDestPackageRoot>
+  </PropertyGroup>
+
+  <Import Project="$(CBTAggregatePackageImport)" Condition=" '$(CBTAggregatePackageImport)'!='' and '$(CBTEnableAggregatePackageRestore)'=='true' "/>
+
+  <PropertyGroup Condition=" '$(CBTEnableAggregatePackageRestore)' == 'true' "> 
+    <CBTNuGetAggregatePackagePropertyFile Condition=" '$(CBTNuGetAggregatePackagePropertyFile)' == '' ">$(IntermediateOutputPath)\AggregatePackages.props</CBTNuGetAggregatePackagePropertyFile> 
+    <CBTNuGetAggregatePackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.AggregatePackages').Execute('$(CBTAggregateDestPackageRoot)', '$(CBTAggregatePackage)', '$(CBTNuGetAggregatePackagePropertyFile)'))</CBTNuGetAggregatePackagePropertiesCreated> 
+  </PropertyGroup>
+
+  <Import Project="$(CBTNuGetAggregatePackagePropertyFile)" Condition=" '$(CBTNuGetAggregatePackagePropertiesCreated)' == 'true' And Exists('$(CBTNuGetAggregatePackagePropertyFile)') "/>
+
+  <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)') " /> 
+  <Import Project="$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)') " /> 
+
+</Project>
