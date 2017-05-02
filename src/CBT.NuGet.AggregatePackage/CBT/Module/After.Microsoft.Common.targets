@@ -3,7 +3,6 @@
 
   <PropertyGroup>
     <RestoreNuGetPackagesDependsOn>$(RestoreNuGetPackagesDependsOn);AggregateNugetPackages</RestoreNuGetPackagesDependsOn>
-    <RestoreDependsOn>$(RestoreDependsOn);AggregateNugetPackages</RestoreDependsOn>
   </PropertyGroup>
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.AggregatePackages" />
   
