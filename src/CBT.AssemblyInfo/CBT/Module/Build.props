@@ -8,4 +8,24 @@
   <PropertyGroup Condition=" '$(EnableCBTAssemblyInfoGeneration)' == 'true' ">
     <GenerateTargetFrameworkAttribute Condition=" '$(GenerateTargetFrameworkAttribute)' == '' ">false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Please use international format yyyy-mm-dd -->
+    <VersionBuildNumberStartDate Condition=" '$(VersionBuildNumberStartDate)' == '' ">$([System.DateTime]::Now.ToString("yyyy-MM-dd"))</VersionBuildNumberStartDate>
+
+    <!--
+    Note: when changing VersionMajor or VersionMinor, you probably want to also reset the VersionBuildNumberStartDate:
+    - If you want to reset the build number to zero: set VersionBuildNumberStartDate to current date
+    - If you want to reset the build number to say 1000: set VersionBuildNumberStartDate to 1000 days in the past.
+      Here's how one would figure out what date it was 1000 days ago in PowerShell: Write-Host (Get-Date).AddDays(-1000)
+    -->
+    <VersionMajor Condition=" '$(VersionMajor)' == '' ">1</VersionMajor>
+    <VersionMinor Condition=" '$(VersionMinor)' == '' ">0</VersionMinor>
+    <VersionBuildNumber Condition=" '$(VersionBuildNumber)' == '' ">$([System.DateTime]::Now.Subtract($([System.DateTime]::Parse($(VersionBuildNumberStartDate)))).Days)</VersionBuildNumber>
+    <VersionBuildRevision Condition=" '$(VersionBuildRevision)' == '' ">0</VersionBuildRevision>
+    <Version4PartVersion Condition=" '$(Version4PartVersion)' == '' ">$([System.Version]::new($(VersionMajor).$(VersionMinor).$(VersionBuildNumber).$(VersionBuildRevision)))</Version4PartVersion>
+    <AssemblyInfoInformationalVersion Condition=" '$(AssemblyInfoInformationalVersion)' == '' ">$(Version4PartVersion)$(VersionBuildLabel)</AssemblyInfoInformationalVersion>
+    <AssemblyInfoAssemblyVersion Condition=" '$(AssemblyInfoAssemblyVersion)' == '' ">$(VersionMajor).$(VersionMinor).0.0</AssemblyInfoAssemblyVersion>
+    <AssemblyInfoFileVersion Condition=" '$(AssemblyInfoFileVersion)' == '' ">$(Version4PartVersion)</AssemblyInfoFileVersion>
+
+  </PropertyGroup>
 </Project>
