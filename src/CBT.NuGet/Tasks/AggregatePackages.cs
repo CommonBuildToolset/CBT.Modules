@@ -45,10 +45,8 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
-            // Property=path*package1!package2
-            // Property=path,pkg1,!pkg2;
-            
-            Dictionary<string, string> propertiesToCreate = new Dictionary<string, string>();
+
+            IDictionary<string, string> propertiesToCreate = new Dictionary<string, string>();
 
             foreach (var pkg in ParsePackagesToAggregate())
             {
@@ -57,7 +55,6 @@ namespace CBT.NuGet.Tasks
                     if (!CreateAggregatePackage(pkg))
                     {
                         Log.LogError("Failed to create aggregate package {0} for input of {1}", pkg.OutPropertyId, PackagesToAggregate);
-                        return false;
                     }
                 }
                 catch (DirectoryNotFoundException)
@@ -72,12 +69,21 @@ namespace CBT.NuGet.Tasks
                 propertiesToCreate.Add(pkg.OutPropertyId, pkg.OutPropertyValue);
             }
 
-            if (!CreatePropsFile(propertiesToCreate, PropsFile))
+            try
             {
-                return false;
+                CreatePropsFile(propertiesToCreate, PropsFile);
+            }
+            catch (Exception e)
+            {
+                Log.LogErrorFromException(e);
             }
 
-            return true;
+            if (Log.HasLoggedErrors)
+            {
+                Log.LogError("Define aggregate packages in the format of 'MYAGGPROPERTY=c:\\pkg1|c:\\pkg2|!c:\\pkg3;MYAAGPROPERTY2=c:\\pkg1|c:\\pkg2' where ; seperates aggregate packages and | seperates paths to be aggregated for a package and ! denotes content that should be excluded from the aggregate.");
+            }
+
+            return !Log.HasLoggedErrors;
         }
 
         public bool Execute(string aggregateDestRoot, string packagesToAggregate, string propsFile)
@@ -88,8 +94,8 @@ namespace CBT.NuGet.Tasks
             PropsFile = propsFile;
             return Execute();
         }
-        
-        private bool CreatePropsFile(Dictionary<string,string> propertyPairs, string propsFile)
+
+        private void CreatePropsFile(IDictionary<string, string> propertyPairs, string propsFile)
         {
             ProjectRootElement project = ProjectRootElement.Create();
 
@@ -102,8 +108,6 @@ namespace CBT.NuGet.Tasks
             }
 
             project.Save(propsFile);
-
-            return File.Exists(propsFile);
         }
 
         internal IEnumerable<AggregatePackage> ParsePackagesToAggregate()
@@ -115,44 +119,59 @@ namespace CBT.NuGet.Tasks
                                                    .Where(i => !String.IsNullOrWhiteSpace(i))
                                                    .Select(i => i.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries))
                                                    .Select(i => new
-                                                                {
-                                                                    PropertyName = i.First(),
-                                                                    Options = i.Length == 2 ? i.Last() : null
-                                                                })
+                                                   {
+                                                       PropertyName = i.First(),
+                                                       Options = i.Length == 2 ? i.Last() : null
+                                                   })
             )
             {
-                if(String.IsNullOrWhiteSpace(item.Options))
+                IList<PackageOperation> packageOperations = ParsePackageOperations(item.Options).ToList();
+
+                if (packageOperations.Count == 0)
                 {
                     // Invalid item because nothing is on the right side of the equal sign or there was no equal sign
+                    Log.LogError($"No valid paths were found to aggregate for '{item.PropertyName}' with options '{item.Options}'");
                     continue;
                 }
 
-                yield return new AggregatePackage(item.PropertyName, ParseAggregateOptions(item.Options).ToList(), AggregateDestRoot);
+                yield return new AggregatePackage(item.PropertyName, packageOperations, AggregateDestRoot);
             }
         }
 
-        internal IEnumerable<PackageOperations> ParseAggregateOptions(string option)
+        private IEnumerable<PackageOperation> ParsePackageOperations(string options)
         {
             // pkg1|pkg2|!pkg
 
-            foreach (var folder in option.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+            if (String.IsNullOrWhiteSpace(options))
+            {
+                yield break;
+            }
+
+            foreach (var option in options.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
                                                    .Select(i => i.Trim())
                                                    .Where(i => !String.IsNullOrWhiteSpace(i)))
             {
-                AggregateOperation aggregateOperation = folder.First() == '!' ? AggregateOperation.Remove : AggregateOperation.Add;
+                AggregateOperation aggregateOperation = option.First() == (char)AggregateOperation.Remove ? AggregateOperation.Remove : AggregateOperation.Add;
 
-                yield return new PackageOperations { Operation = aggregateOperation, Folder = folder.TrimStart('!').Trim() };
+                string folder = option.TrimStart((char)AggregateOperation.Remove).Trim();
+
+                if (!Directory.Exists(folder))
+                {
+                    Log.LogError($"Path to aggregate '{folder}' does not exist.");
+                    continue;
+                }
+
+                yield return new PackageOperation { Operation = aggregateOperation, Folder = folder };
             }
         }
 
         internal bool CreateAggregatePackage(AggregatePackage package)
         {
             // The assumption is that in order for the source of an aggregate to change the package source folder must of changed for a new version.
-            // And therefor it is assumed this never needs to be regenerated (assumped corruption would be cleaned up manually).
-            // This is a flawed assumption if someone passes a non nuget package folder to aggregate.  Must consider what to do.
+            // And therefor it is assumed this never needs to be regenerated (assumed corruption would be cleaned up manually).
             if (Directory.Exists(package.OutPropertyValue))
             {
-                Log.LogMessage(MessageImportance.Low, "{0} already created. Skipping", package.OutPropertyValue);
+                Log.LogMessage(MessageImportance.Low, $"{package.OutPropertyValue} already created. Skipping");
                 return true;
             }
 
@@ -167,25 +186,25 @@ namespace CBT.NuGet.Tasks
                     // check again to see if aggregate package is already created while waiting.
                     if (Directory.Exists(package.OutPropertyValue))
                     {
-                        Log.LogMessage(MessageImportance.Low, "{0} already created. Skipping", package.OutPropertyValue);
+                        Log.LogMessage(MessageImportance.Low, $"{package.OutPropertyValue} already created. Skipping");
                         return true;
                     }
 
                     if (Directory.Exists(outTmpDir))
                     {
-                        Log.LogMessage(MessageImportance.Low, "{0} not cleaned up from previous build cleaning now.", outTmpDir);
+                        Log.LogMessage(MessageImportance.Low, $"{outTmpDir} not cleaned up from previous build cleaning now.");
                         Directory.Delete(outTmpDir, true);
                     }
                     foreach (var srcPkg in package.PackagesToAggregate)
                     {
                         if (srcPkg.Operation.Equals(AggregatePackage.AggregateOperation.Add))
                         {
-                            Log.LogMessage(MessageImportance.Low, "Adding {0} to aggregate of {1}", srcPkg.Folder, package.OutPropertyValue);
+                            Log.LogMessage(MessageImportance.Low, $"Adding {srcPkg.Folder} to aggregate of {package.OutPropertyValue}");
                             FileUtilities.DirectoryCopy(srcPkg.Folder, outTmpDir, true, true);
                         }
                         if (srcPkg.Operation.Equals(AggregatePackage.AggregateOperation.Remove))
                         {
-                            Log.LogMessage(MessageImportance.Low, "Removing {0} from aggregate of {1}", srcPkg.Folder, package.OutPropertyValue);
+                            Log.LogMessage(MessageImportance.Low, $"Removing {srcPkg.Folder} from aggregate of {package.OutPropertyValue}");
                             FileUtilities.DirectoryRemove(srcPkg.Folder, outTmpDir, true);
                         }
                     }
