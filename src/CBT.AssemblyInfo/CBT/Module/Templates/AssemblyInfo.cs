@@ -29,7 +29,7 @@ remove the conflicting assembly attribute defined in the project item Properties
 [assembly: AssemblyInformationalVersion("$(AssemblyInfoInformationalVersion)")]
 [assembly: AssemblyProduct("$(AssemblyInfoProduct)")]
 [assembly: AssemblyTrademark("$(AssemblyInfoTrademark)")]
-[assembly: AssemblyVersion("$(AssemblyInfoVersion)")]
+[assembly: AssemblyVersion("$(AssemblyInfoAssemblyVersion)")]
 [assembly: CLSCompliant($(AssemblyInfoCLSCompliant))]
 [assembly: ComVisible($(AssemblyInfoComVisible))]
 [assembly: TargetFrameworkAttribute("$(AssemblyInfoTargetFrameworkMoniker)", FrameworkDisplayName = "$(AssemblyInfoTargetFrameworkMonikerDisplayName)")]
