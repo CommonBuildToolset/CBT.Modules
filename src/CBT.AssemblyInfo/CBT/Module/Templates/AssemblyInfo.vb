@@ -19,10 +19,10 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyConfiguration("$(AssemblyInfoConfiguration)")>
 <Assembly: AssemblyCopyright("$(AssemblyInfoCopyright)")>
 <Assembly: AssemblyCulture("$(AssemblyInfoCulture)")>
-<Assembly: AssemblyFileVersion("%AssemblyFileVersion%")> 
-<Assembly: AssemblyInformationalVersion("%AssemblyInformationalVersion%")>
+<Assembly: AssemblyFileVersion("$(AssemblyInfoFileVersion)")>
+<Assembly: AssemblyInformationalVersion("$(AssemblyInfoInformationalVersion)")>
 <Assembly: AssemblyProduct("$(AssemblyInfoProduct)")>
 <Assembly: AssemblyTrademark("$(AssemblyInfoTrademark)")>
-<Assembly: AssemblyVersion("%AssemblyVersion%")> 
+<Assembly: AssemblyVersion("$(AssemblyInfoAssemblyVersion)")>
 <Assembly: CLSCompliant($(AssemblyInfoCLSCompliant))>
 <Assembly: ComVisible($(AssemblyInfoComVisible))>

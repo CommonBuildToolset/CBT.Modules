@@ -17,19 +17,6 @@
     <AssemblyInfoAllProjects>$(AssemblyInfoAllProjects);$(MSBuildThisFileFullPath);$(MSBuildProjectFullPath)</AssemblyInfoAllProjects>
     <AssemblyInfoAllProjects Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props') ">$(AssemblyInfoAllProjects);$(CBTLocalBuildExtensionsPath)\AssemblyInfo.props</AssemblyInfoAllProjects>
 
-    <!-- Please use international format yyyy-mm-dd -->
-    <VersionBuildNumberStartDate Condition="'$(VersionBuildNumberStartDate)' == ''">$([System.DateTime]::Now.ToString("yyyy-MM-dd"))</VersionBuildNumberStartDate>
-
-    <!--
-    Note: when changing VersionMajor or VersionMinor, you probably want to also reset the VersionBuildNumberStartDate:
-    - If you want to reset the build number to zero: set VersionBuildNumberStartDate to current date
-    - If you want to reset the build number to say 1000: set VersionBuildNumberStartDate to 1000 days in the past.
-      Here's how one would figure out what date it was 1000 days ago in PowerShell: Write-Host (Get-Date).AddDays(-1000)
-    -->
-    <VersionMajor Condition=" '$(VersionMajor)' == '' ">1</VersionMajor>
-    <VersionMinor Condition=" '$(VersionMinor)' == '' ">0</VersionMinor>
-    <VersionBuildNumber Condition=" '$(VersionBuildNumber)' == '' ">$([System.DateTime]::Now.Subtract($([System.DateTime]::Parse($(VersionBuildNumberStartDate)))).Days)</VersionBuildNumber>
-    <VersionBuildRevision Condition=" '$(VersionBuildRevision)' == '' ">0</VersionBuildRevision>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
@@ -74,14 +61,6 @@
   <Target Name="DetermineAssemblyVersionInfo"
     DependsOnTargets="$(DetermineAssemblyVersionInfoDependsOn)">
 
-    <PropertyGroup>
-      <VersionFull Condition=" '$(VersionFull)' == '' ">$(VersionMajor).$(VersionMinor).$(VersionBuildNumber).$(VersionBuildRevision)</VersionFull>
-
-      <AssemblyInfoInformationalVersion Condition=" '$(AssemblyInfoInformationalVersion)' == '' ">$(VersionFull)$(VersionBuildLabel)</AssemblyInfoInformationalVersion>
-      <AssemblyInfoVersion Condition=" '$(AssemblyInfoVersion)' == '' ">$(VersionMajor).$(VersionMinor).0.0</AssemblyInfoVersion>
-      <AssemblyInfoFileVersion Condition=" '$(AssemblyInfoFileVersion)' == '' ">$(VersionFull)</AssemblyInfoFileVersion>
-    </PropertyGroup>
-
     <ItemGroup>
       <AssemblyInfoTemplateFile>
         <AssemblyInfoFileVersion>$(AssemblyInfoFileVersion)</AssemblyInfoFileVersion>
@@ -89,10 +68,10 @@
         <AssemblyInfoInternalName>$(AssemblyInfoInternalName)</AssemblyInfoInternalName>
         <AssemblyInfoOriginalFileName>$(AssemblyInfoOriginalFileName)</AssemblyInfoOriginalFileName>
         <AssemblyInfoInformationalVersion>$(AssemblyInfoInformationalVersion)</AssemblyInfoInformationalVersion>
-        <AssemblyInfoVersion>$(AssemblyInfoVersion)</AssemblyInfoVersion>
+        <AssemblyInfoAssemblyVersion>$(AssemblyInfoAssemblyVersion)</AssemblyInfoAssemblyVersion>
 
         <!-- Override the output file to include the version so that the project will be rebuilt if it changes -->
-        <OutputFileHash>%(AssemblyInfoTemplateFile.OutputFileHash);$(VersionFull)</OutputFileHash>
+        <OutputFileHash>%(AssemblyInfoTemplateFile.OutputFileHash);$(Version4PartVersion)</OutputFileHash>
       </AssemblyInfoTemplateFile>
     </ItemGroup>
 
