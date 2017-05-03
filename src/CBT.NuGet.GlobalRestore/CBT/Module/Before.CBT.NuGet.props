@@ -24,5 +24,14 @@
     <CBTNuGetGlobalPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetGlobalPackagesRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetGlobalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetGlobalPackagePropertiesCreated> 
   </PropertyGroup>
 
+  <ItemGroup>
+    <CBTParseError Condition=" '$(CBTNuGetGlobalPackagesRestored)' == 'false' " Include="Global packages were not restored and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.Nuget.GlobalRestore.1000</Code>
+    </CBTParseError>
+    <CBTParseError Condition=" '$(CBTNuGetGlobalPackagePropertiesCreated)' == 'false' " Include="Global packages properites were not created and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.Nuget.GlobalRestore.1001</Code>
+    </CBTParseError>
+  </ItemGroup>
+
   <Import Project="$(CBTNuGetGlobalPackagePropertyFile)" Condition=" '$(CBTNuGetGlobalPackagePropertiesCreated)' == 'true' And Exists('$(CBTNuGetGlobalPackagePropertyFile)') "/>
 </Project>

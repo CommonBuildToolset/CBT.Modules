@@ -19,6 +19,18 @@
     
     <CBTGlobalBuildPackagesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap('$(CBTNuGetTasksAssemblyPath)', 'CBT.NuGet.Tasks.ImportBuildPackages').Execute('$(CBTModulePackageConfigPath)', '$(CBTBuildPackagePropsFile)', '$(CBTBuildPackageTargetsFile)', $(CBTBuildPackageImportInputs.Split(';')), $(CBTAllModulePaths.Split(';'))))</CBTGlobalBuildPackagesCreated>
   </PropertyGroup>
+
+  <ItemGroup>
+    <CBTParseError Condition=" '$(CBTNuGetPackagesRestored)' == 'false' " Include="Nuget packages were not restored and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.Nuget.1000</Code>
+    </CBTParseError>
+    <CBTParseError Condition=" '$(CBTNuGetPackagePropertiesCreated)' == 'false' " Include="Nuget package properties were not generated and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.Nuget.1001</Code>
+    </CBTParseError>
+    <CBTParseError Condition=" '$(CBTGlobalBuildPackagesCreated)' == 'false' " Include="Global build package imports were not generated and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.Nuget.1002</Code>
+    </CBTParseError>
+  </ItemGroup>
  
   <Import Project="$(MSBuildThisFileDirectory)Extensions\After.CBT.NuGet.props" />
 </Project>
