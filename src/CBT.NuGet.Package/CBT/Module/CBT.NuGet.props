@@ -31,6 +31,12 @@
       <Code>CBT.Nuget.1002</Code>
     </CBTParseError>
   </ItemGroup>
- 
+
+  <Import Project="$(CBTNuGetPackagePropertyFile)" Condition=" '$(CBTNuGetPackagePropertiesCreated)' == 'true' And Exists('$(CBTNuGetPackagePropertyFile)') "/>
+
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props" Condition=" '$(IncludeNuGetImports)' != 'false' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Imports\Microsoft.Common.Props\ImportBefore\Microsoft.NuGet.ImportBefore.props') "/>
+
+  <Import Project="$(CBTBuildPackagePropsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
+
   <Import Project="$(MSBuildThisFileDirectory)Extensions\After.CBT.NuGet.props" />
 </Project>
