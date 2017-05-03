@@ -15,6 +15,7 @@
       AggregateDestinationRoot="$(CBTAggregateDestPackageRoot)"
       PackagesToAggregate="$(CBTAggregatePackage)"
       PropsFile="$(CBTNuGetAggregatePackagePropertyFile)"
+      ImmutableRoots="$(CBTNugetAggregatePackageImmutableRoots)"
       />
 
   </Target>

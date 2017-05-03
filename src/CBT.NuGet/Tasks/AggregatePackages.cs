@@ -43,6 +43,12 @@ namespace CBT.NuGet.Tasks
         [Required]
         public string AggregateDestRoot { get; set; }
 
+        /// <summary>
+        /// Gets or sets the root paths of folders that are considered to be immutable and that the content will never change for that unique folder name.  Example a nuget package.
+        /// </summary>
+        [Required]
+        public string ImmutableRoots { get; set; }
+
         public override bool Execute()
         {
 
@@ -86,12 +92,13 @@ namespace CBT.NuGet.Tasks
             return !Log.HasLoggedErrors;
         }
 
-        public bool Execute(string aggregateDestRoot, string packagesToAggregate, string propsFile)
+        public bool Execute(string aggregateDestRoot, string packagesToAggregate, string propsFile, string immutableRoots)
         {
             BuildEngine = new CBTBuildEngine();
             AggregateDestRoot = aggregateDestRoot;
             PackagesToAggregate = packagesToAggregate;
             PropsFile = propsFile;
+            ImmutableRoots = immutableRoots;
             return Execute();
         }
 
@@ -134,7 +141,7 @@ namespace CBT.NuGet.Tasks
                     continue;
                 }
 
-                yield return new AggregatePackage(item.PropertyName, packageOperations, AggregateDestRoot);
+                yield return new AggregatePackage(item.PropertyName, packageOperations, AggregateDestRoot, ImmutableRoots);
             }
         }
 
