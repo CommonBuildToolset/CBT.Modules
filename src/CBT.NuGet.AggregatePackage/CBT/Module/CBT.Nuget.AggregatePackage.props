@@ -18,10 +18,16 @@
 
   <PropertyGroup Condition=" '$(CBTEnableAggregatePackageRestore)' == 'true' "> 
     <CBTNuGetAggregatePackagePropertyFile Condition=" '$(CBTNuGetAggregatePackagePropertyFile)' == '' ">$(IntermediateOutputPath)\AggregatePackages.props</CBTNuGetAggregatePackagePropertyFile> 
-    <CBTNuGetAggregatePackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.AggregatePackages').Execute('$(CBTAggregateDestPackageRoot)', '$(CBTAggregatePackage)', '$(CBTNuGetAggregatePackagePropertyFile)'))</CBTNuGetAggregatePackagePropertiesCreated> 
+    <CBTNuGetAggregatePackageGenerated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.AggregatePackages').Execute('$(CBTAggregateDestPackageRoot)', '$(CBTAggregatePackage)', '$(CBTNuGetAggregatePackagePropertyFile)'))</CBTNuGetAggregatePackageGenerated> 
   </PropertyGroup>
 
-  <Import Project="$(CBTNuGetAggregatePackagePropertyFile)" Condition=" '$(CBTNuGetAggregatePackagePropertiesCreated)' == 'true' And Exists('$(CBTNuGetAggregatePackagePropertyFile)') "/>
+  <ItemGroup>
+    <CBTParseError Condition=" '$(CBTNuGetAggregatePackageGenerated)' == 'false' " Include="Aggregate packages were not generated and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.Nuget.AggregatePackage.1000</Code>
+    </CBTParseError>
+  </ItemGroup>
+
+  <Import Project="$(CBTNuGetAggregatePackagePropertyFile)" Condition=" '$(CBTNuGetAggregatePackageGenerated)' == 'true' And Exists('$(CBTNuGetAggregatePackagePropertyFile)') "/>
 
   <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)') " /> 
   <Import Project="$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)') " /> 
