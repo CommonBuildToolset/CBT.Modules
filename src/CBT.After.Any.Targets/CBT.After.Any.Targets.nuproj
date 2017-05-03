@@ -11,10 +11,7 @@
     <None Include="version.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CBT\Module\Extensions\After.Any.targets" />
-    <Content Include="CBT\Module\After.Microsoft.Common.targets" />
-    <Content Include="CBT\Module\After.Traversal.targets" />
-    <Content Include="CBT\Module\module.config" />
+    <Content Include="CBT\**\*" />
   </ItemGroup>
   <ItemGroup>
    <Dependency Include="CBT.Microsoft.Common.targets">
