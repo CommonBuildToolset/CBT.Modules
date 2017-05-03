@@ -3,7 +3,6 @@
 
   <PropertyGroup>
     <RestoreNuGetPackagesDependsOn>RestoreGlobalNuGetPackages;$(RestoreNuGetPackagesDependsOn)</RestoreNuGetPackagesDependsOn>
-    <RestoreDependsOn>RestoreGlobalNuGetPackages;$(RestoreDependsOn)</RestoreDependsOn>
   </PropertyGroup>
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.GenerateNuGetProperties" />
 

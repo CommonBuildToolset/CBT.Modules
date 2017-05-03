@@ -15,6 +15,15 @@
     <CBTNuGetTraversalPackagePropertiesCreated Condition=" '$(CBTNuGetTraversalPackagesRestored)' == 'true' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetTraversalRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetTraversalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetTraversalPackagePropertiesCreated>
   </PropertyGroup>
   
+  <ItemGroup>
+    <CBTParseError Condition=" '$(CBTNuGetTraversalPackagesRestored)' == 'false' " Include="Traversal packages were not restored and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.Nuget.1003</Code>
+    </CBTParseError>
+    <CBTParseError Condition=" '$(CBTNuGetTraversalPackagePropertiesCreated)' == 'false' " Include="Traversal package properties were not created and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.Nuget.1004</Code>
+    </CBTParseError>
+  </ItemGroup>
+
   <Import Project="$(CBTNuGetTraversalPackagePropertyFile)" Condition=" '$(CBTNuGetTraversalPackagePropertiesCreated)' == 'true' "/>
 
   <!--
