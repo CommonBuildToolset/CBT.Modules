@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Build.Construction;
+﻿using Microsoft.Build.Construction;
 using Microsoft.MSBuildProjectBuilder;
 using NUnit.Framework;
 using Shouldly;
