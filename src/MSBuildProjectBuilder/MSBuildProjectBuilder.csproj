@@ -31,7 +31,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Item.cs" />
+    <Compile Include="metadata.cs" />
     <Compile Include="Property.cs" />
+    <Compile Include="ItemGroup.cs" />
     <Compile Include="PropertyGroup.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

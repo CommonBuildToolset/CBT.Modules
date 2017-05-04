@@ -46,7 +46,7 @@ namespace MSBuildProjectBuilder.UnitTest
             _project.Create()
                 .AddPropertyGroup("'true'=='true'", "GroupLabel", out propertyGroup1)
                 .AddPropertyGroup("'true1'=='true1'", "GroupLabel2", out propertyGroup2)
-                .AddPropertyGroupAfterElement("'cat'!='dog'","GroupLabel3", propertyGroup1, out propertyGroup3);
+                .AddPropertyGroupAfterElement("'cat'!='dog'", "GroupLabel3", propertyGroup1, out propertyGroup3);
             _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
         }
 

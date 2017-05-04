@@ -27,7 +27,7 @@ namespace MSBuildProjectBuilder.UnitTest
   <PropertyGroup>
     <TestProperty Label=""TestLabel"" Condition=""'true'=='true'"">TestValue</TestProperty>
   </PropertyGroup>
-</Project>";            
+</Project>";
             _project.Create()
                 .AddProperty("TestProperty", "TestValue", "'true'=='true'", "TestLabel");
             _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
