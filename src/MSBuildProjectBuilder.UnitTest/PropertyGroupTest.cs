@@ -2,6 +2,7 @@
 using Microsoft.MSBuildProjectBuilder;
 using NUnit.Framework;
 using Shouldly;
+using System.Text.RegularExpressions;
 
 namespace MSBuildProjectBuilder.UnitTest
 {
@@ -26,7 +27,7 @@ namespace MSBuildProjectBuilder.UnitTest
 </Project>";
             ProjectPropertyGroupElement propertyGroup;
             _project.AddPropertyGroup("'true'=='true'", "GroupLabel", out propertyGroup);
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
         }
 
         [Test]
@@ -46,7 +47,7 @@ namespace MSBuildProjectBuilder.UnitTest
                 .AddPropertyGroup("'true'=='true'", "GroupLabel", out propertyGroup1)
                 .AddPropertyGroup("'true1'=='true1'", "GroupLabel2", out propertyGroup2)
                 .AddPropertyGroupAfterElement("'cat'!='dog'","GroupLabel3", propertyGroup1, out propertyGroup3);
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
         }
 
         [Test]
@@ -66,7 +67,7 @@ namespace MSBuildProjectBuilder.UnitTest
                 .AddPropertyGroup("'true'=='true'", "GroupLabel", out propertyGroup1)
                 .AddPropertyGroup("'true1'=='true1'", "GroupLabel2", out propertyGroup2)
                 .AddPropertyGroupBeforeElement("'cat'!='dog'", "GroupLabel3", propertyGroup1, out propertyGroup3);
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
         }
     }
 }

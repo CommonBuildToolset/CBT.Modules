@@ -2,6 +2,7 @@
 using Microsoft.MSBuildProjectBuilder;
 using NUnit.Framework;
 using Shouldly;
+using System.Text.RegularExpressions;
 
 namespace MSBuildProjectBuilder.UnitTest
 {
@@ -29,7 +30,7 @@ namespace MSBuildProjectBuilder.UnitTest
 </Project>";            
             _project.Create()
                 .AddProperty("TestProperty", "TestValue", "'true'=='true'", "TestLabel");
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
 
             expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
@@ -40,7 +41,7 @@ namespace MSBuildProjectBuilder.UnitTest
 </Project>";
             _project.Create()
                 .AddProperty("TestProperty");
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
 
             ProjectPropertyGroupElement propertyGroup;
             ProjectPropertyElement property;
@@ -60,7 +61,7 @@ namespace MSBuildProjectBuilder.UnitTest
                 .AddPropertyGroup(null, "newGroup", out propertyGroup)
                 .AddProperty("NewProperty", "NewValue", null, null, propertyGroup)
                 .AddProperty("NewProperty2", "NewValue2", null, null, propertyGroup, out property);
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
         }
 
         [Test]
@@ -83,7 +84,7 @@ namespace MSBuildProjectBuilder.UnitTest
                 .AddProperty("NewProperty2", "NewValue2", null, null, propertyGroup, out property)
                 .AddProperty("NewProperty", "NewValue", null, null, propertyGroup)
                 .AddPropertyAfterPropertyElement("Test2", "value2", null, null, property, out property2);
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
         }
 
         [Test]
@@ -106,7 +107,7 @@ namespace MSBuildProjectBuilder.UnitTest
                 .AddProperty("NewProperty2", "NewValue2", null, null, propertyGroup, out property)
                 .AddProperty("NewProperty", "NewValue", null, null, propertyGroup)
                 .AddPropertyBeforePropertyElement("Test2", "value2", null, null, property, out property2);
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
         }
     }
 }

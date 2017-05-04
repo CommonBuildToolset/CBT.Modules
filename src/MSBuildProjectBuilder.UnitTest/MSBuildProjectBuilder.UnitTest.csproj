@@ -31,6 +31,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="PropertyTest.cs" />
     <Compile Include="PropertyGroupTest.cs" />
     <Compile Include="ProjectTest.cs" />

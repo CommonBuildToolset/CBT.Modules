@@ -1,6 +1,7 @@
 ﻿using Microsoft.MSBuildProjectBuilder;
 using NUnit.Framework;
 using Shouldly;
+using System.Text.RegularExpressions;
 
 namespace MSBuildProjectBuilder.UnitTest
 {
@@ -21,16 +22,16 @@ namespace MSBuildProjectBuilder.UnitTest
             string expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <Project ToolsVersion=""14.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
-</Project>".Replace("\r\n", string.Empty).Replace("\n", string.Empty);
+</Project>";
             _project.Create();
-            _project.ProjectRoot.RawXml.Replace("\r\n", string.Empty).Replace("\n", string.Empty);.ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
 
             expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"" DefaultTargets=""TestDefaultTarget"" InitialTargets=""TestInitialTarget"" Label=""TestLabel"">
-</Project>".Replace("\r\n", string.Empty).Replace("\n", string.Empty);
+</Project>";
             _project.Create("test.csproj", "4.0", "TestDefaultTarget", "TestInitialTarget", "TestLabel");
-            _project.ProjectRoot.RawXml.Replace("\r\n", string.Empty).Replace("\n", string.Empty);.ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
         }
     }
 }
