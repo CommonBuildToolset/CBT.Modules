@@ -21,16 +21,16 @@ namespace MSBuildProjectBuilder.UnitTest
             string expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <Project ToolsVersion=""14.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
-</Project>";
+</Project>".Replace("\r\n", string.Empty).Replace("\n", string.Empty);
             _project.Create();
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.Replace("\r\n", string.Empty).Replace("\n", string.Empty);.ShouldBe(expectedOutput);
 
             expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"" DefaultTargets=""TestDefaultTarget"" InitialTargets=""TestInitialTarget"" Label=""TestLabel"">
-</Project>";
+</Project>".Replace("\r\n", string.Empty).Replace("\n", string.Empty);
             _project.Create("test.csproj", "4.0", "TestDefaultTarget", "TestInitialTarget", "TestLabel");
-            _project.ProjectRoot.RawXml.Replace("\r\n", System.Environment.NewLine).ShouldBe(expectedOutput);
+            _project.ProjectRoot.RawXml.Replace("\r\n", string.Empty).Replace("\n", string.Empty);.ShouldBe(expectedOutput);
         }
     }
 }
