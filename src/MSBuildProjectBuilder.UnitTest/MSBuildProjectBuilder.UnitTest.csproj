@@ -22,18 +22,10 @@
   </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), build.props))\build.props" />
   <ItemGroup>
-    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Build.14.3.0\lib\net45\Microsoft.Build.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Build.Framework.14.3.0\lib\net45\Microsoft.Build.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Shouldly, Version=2.8.2.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
-      <HintPath>packages\Shouldly.2.8.2\lib\net40\Shouldly.dll</HintPath>
-    </Reference>
+    <Reference Include="$(NuGetPath_Microsoft_Build)\lib\net45\Microsoft.Build.dll" />
+    <Reference Include="$(NuGetPath_Microsoft_Build_Framework)\lib\net45\Microsoft.Build.Framework.dll" />
+    <Reference Include="$(NuGetPath_NUnit)\lib\net45\nunit.framework.dll" />
+    <Reference Include="$(NuGetPath_Shouldly)\lib\net40\Shouldly.dll" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
