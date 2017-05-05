@@ -4,8 +4,6 @@ namespace Microsoft.MSBuildProjectBuilder
 {
     public partial class ProjectBuilder
     {
-        public ProjectRootElement ProjectRoot { get; private set; }
-
         public ProjectBuilder Create(string fileName = null, string toolsVersion = null, string defaultTargets = null, string initialTargets = null, string label = null)
         {
             ProjectRoot = string.IsNullOrWhiteSpace(fileName) ? ProjectRootElement.Create() : ProjectRootElement.Create(fileName);
@@ -18,14 +16,13 @@ namespace Microsoft.MSBuildProjectBuilder
             {
                 ProjectRoot.InitialTargets = initialTargets;
             }
-            if (!string.IsNullOrWhiteSpace(label))
-            {
-                ProjectRoot.Label = label;
-            }
             if (!string.IsNullOrWhiteSpace(toolsVersion))
             {
                 ProjectRoot.ToolsVersion = toolsVersion;
             }
+
+            lastElements.Clear();
+            lastElements.Add(ProjectRoot);
             return this;
         }
     }

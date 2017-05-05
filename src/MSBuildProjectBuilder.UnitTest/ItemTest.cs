@@ -1,11 +1,10 @@
-﻿using Microsoft.Build.Construction;
-using Microsoft.MSBuildProjectBuilder;
+﻿using Microsoft.MSBuildProjectBuilder;
 using NUnit.Framework;
 using Shouldly;
-using System.Text.RegularExpressions;
 
 namespace MSBuildProjectBuilder.UnitTest
 {
+
     [TestFixture]
     public class ItemTest
     {
@@ -24,75 +23,39 @@ namespace MSBuildProjectBuilder.UnitTest
             string expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <Project ToolsVersion=""14.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
-  <ItemGroup>
-    <TestItem Include=""TestValue"" Label=""TestLabel"" Condition=""'true'=='true'"" />
+  <ItemGroup Label=""groupLabel"">
+    <item1 Include=""value1"" Label=""my item label"" Condition=""my item condition"" />
+    <item2 Include=""value2"" Label=""my item label"" Condition=""my item condition"" />
   </ItemGroup>
 </Project>";
             _project.Create()
-                .AddItem("TestItem", "TestValue", "'true'=='true'", "TestLabel");
-            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
+                .AddItemGroup()
+                .WithLabel("groupLabel")
+                .AddItem(new[] { new Item("item1", "value1"), new Item("item2", "value2")})
+                .WithLabel("my item label")
+                .WithCondition("my item condition")
+                .ProjectRoot.RawXml.NormalizeNewLine()
+                .ShouldBe(expectedOutput.NormalizeNewLine());
 
-            ProjectItemGroupElement itemGroup;
-            ProjectItemElement item;
             expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <Project ToolsVersion=""14.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
-  <ItemGroup Label=""newGroup"">
-    <NewItem Include=""NewValue"" />
-    <NewItem2 Include=""NewValue2"" />
+  <ItemGroup>
+    <item1 Include=""value1"" Label=""my item label"" Condition=""my item condition"" />
+    <item2 Include=""value2"" Label=""my item label"" Condition=""my item condition"" />
+  </ItemGroup>
+  <ItemGroup>
+    <Name Include=""Value"" />
   </ItemGroup>
 </Project>";
-            _project.Create()
-                .AddItemGroup(null, "newGroup", out itemGroup)
-                .AddItem("NewItem", "NewValue", null, null, itemGroup)
-                .AddItem("NewItem2", "NewValue2", null, null, itemGroup, out item);
-            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
-        }
-
-        [Test]
-        public void AddItemAfterItemElement()
-        {
-            ProjectItemGroupElement itemGroup;
-            ProjectItemElement item;
-            ProjectItemElement item2;
-            string expectedOutput =
-@"<?xml version=""1.0"" encoding=""utf-16""?>
-<Project ToolsVersion=""14.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
-  <ItemGroup Label=""newGroup"">
-    <NewItem2 Include=""NewValue2"" />
-    <Test2 Include=""value2"" />
-    <NewItem Include=""NewValue"" />
-  </ItemGroup>
-</Project>";
-            _project.Create()
-                .AddItemGroup(null, "newGroup", out itemGroup)
-                .AddItem("NewItem2", "NewValue2", null, null, itemGroup, out item)
-                .AddItem("NewItem", "NewValue", null, null, itemGroup)
-                .AddItemAfterItemElement("Test2", "value2", null, null, item, out item2);
-            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
-        }
-
-        [Test]
-        public void AddItemBeforeItemElement()
-        {
-            ProjectItemGroupElement itemGroup;
-            ProjectItemElement item;
-            ProjectItemElement item2;
-            string expectedOutput =
-@"<?xml version=""1.0"" encoding=""utf-16""?>
-<Project ToolsVersion=""14.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
-  <ItemGroup Label=""newGroup"">
-    <Test2 Include=""value2"" />
-    <NewItem2 Include=""NewValue2"" />
-    <NewItem Include=""NewValue"" />
-  </ItemGroup>
-</Project>";
-            _project.Create()
-                .AddItemGroup(null, "newGroup", out itemGroup)
-                .AddItem("NewItem2", "NewValue2", null, null, itemGroup, out item)
-                .AddItem("NewItem", "NewValue", null, null, itemGroup)
-                .AddItemBeforeItemElement("Test2", "value2", null, null, item, out item2);
-            _project.ProjectRoot.RawXml.NormalizeNewLine().ShouldBe(expectedOutput.NormalizeNewLine());
+            _project = new ProjectBuilder();
+            _project.AddItem(new[] { new Item("item1", "value1"), new Item("item2", "value2") })
+                .WithLabel("my item label")
+                .WithCondition("my item condition")
+                .AddItemGroup()
+                .AddItem(new [] { new Item("Name", "Value")})
+                .ProjectRoot.RawXml.NormalizeNewLine()
+                .ShouldBe(expectedOutput.NormalizeNewLine());
         }
     }
 }

@@ -35,8 +35,6 @@
     <Compile Include="ItemGroupTest.cs" />
     <Compile Include="MetadataTest.cs" />
     <Compile Include="ItemTest.cs" />
-    <Compile Include="PropertyTest.cs" />
-    <Compile Include="PropertyGroupTest.cs" />
     <Compile Include="ProjectTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
