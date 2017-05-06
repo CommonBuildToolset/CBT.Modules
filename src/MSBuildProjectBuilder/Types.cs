@@ -8,10 +8,6 @@ namespace Microsoft.MSBuildProjectBuilder
 
         public NameValuePair(string name, string value)
         {
-            if (value == null)
-            {
-                value = string.Empty;
-            }
             Value = value;
             Name = name;
         }

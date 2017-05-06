@@ -41,7 +41,13 @@ namespace Microsoft.MSBuildProjectBuilder
                 {
                     foreach (var meta in metadatas)
                     {
-                        metadataElements.Add(projectItemElement.AddMetadata(meta.Name, meta.Value));
+                        ProjectMetadataElement mdE = ProjectRoot.CreateMetadataElement(meta.Name);
+                        if (meta.Value != null)
+                        {
+                            mdE.Value = meta.Value;
+                        }
+                        projectItemElement.AppendChild(mdE);
+                        metadataElements.Add(mdE);
                     }
                 }
                 else

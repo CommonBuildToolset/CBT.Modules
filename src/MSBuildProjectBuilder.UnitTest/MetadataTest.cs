@@ -28,8 +28,7 @@ namespace MSBuildProjectBuilder.UnitTest
     <TestItem Include=""IncludeValue"">
       <TestMName Condition=""MyCondition"" Label=""MyLabel"">MValue</TestMName>
       <M2Name>M2Value</M2Name>
-      <M3Name Label=""Rabbit"">
-      </M3Name>
+      <M3Name Label=""Rabbit"" />
     </TestItem>
   </ItemGroup>
 </Project>";
