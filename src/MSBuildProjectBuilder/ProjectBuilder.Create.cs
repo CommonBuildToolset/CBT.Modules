@@ -7,22 +7,11 @@ namespace Microsoft.MSBuildProjectBuilder
         public ProjectBuilder Create(string fileName = null, string toolsVersion = null, string defaultTargets = null, string initialTargets = null, string label = null)
         {
             ProjectRoot = string.IsNullOrWhiteSpace(fileName) ? ProjectRootElement.Create() : ProjectRootElement.Create(fileName);
-            // do not overwrite default values unless set.
-            if (!string.IsNullOrWhiteSpace(defaultTargets))
-            {
-                ProjectRoot.DefaultTargets = defaultTargets;
-            }
-            if (!string.IsNullOrWhiteSpace(initialTargets))
-            {
-                ProjectRoot.InitialTargets = initialTargets;
-            }
-            if (!string.IsNullOrWhiteSpace(toolsVersion))
-            {
-                ProjectRoot.ToolsVersion = toolsVersion;
-            }
-
-            lastElements.Clear();
-            lastElements.Add(ProjectRoot);
+            ProjectRoot.DefaultTargets = defaultTargets ?? ProjectRoot.DefaultTargets;
+            ProjectRoot.InitialTargets = initialTargets ?? ProjectRoot.InitialTargets;
+            ProjectRoot.ToolsVersion = toolsVersion ?? ProjectRoot.ToolsVersion;
+            ProjectRoot.Label = label ?? string.Empty;
+            _lastGroupContainer = ProjectRoot;
             return this;
         }
     }

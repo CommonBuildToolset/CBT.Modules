@@ -18,19 +18,17 @@ namespace MSBuildProjectBuilder.UnitTest
         {
             string expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
-<Project ToolsVersion=""14.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+<Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <ItemGroup Label=""test label"" Condition=""test Condition"" />
 </Project>";
             _project.Create()
-                .AddItemGroup()
-                .WithLabel("test label")
-                .WithCondition("test Condition")
-                .ProjectRoot.RawXml.NormalizeNewLine()
-                .ShouldBe(expectedOutput.NormalizeNewLine());
+                .AddItemGroup("test Condition", "test label")
+                .ProjectRoot
+                .RawXmlShouldBe(expectedOutput);
 
             expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
-<Project ToolsVersion=""14.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+<Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <ItemGroup />
   <ItemGroup Label=""test label"" Condition=""test Condition"" />
   <ItemGroup Condition=""New Condition"" />
@@ -38,13 +36,10 @@ namespace MSBuildProjectBuilder.UnitTest
             _project = new ProjectBuilder();
             _project
                 .AddItemGroup()
-                .AddItemGroup()
-                .WithLabel("test label")
-                .WithCondition("test Condition")
-                .AddItemGroup()
-                .WithCondition("New Condition")
-                .ProjectRoot.RawXml.NormalizeNewLine()
-                .ShouldBe(expectedOutput.NormalizeNewLine());
+                .AddItemGroup("test Condition", "test label")
+                .AddItemGroup("New Condition")
+                .ProjectRoot
+                .RawXmlShouldBe(expectedOutput);
         }
     }
 }

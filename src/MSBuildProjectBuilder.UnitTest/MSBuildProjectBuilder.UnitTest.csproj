@@ -22,10 +22,10 @@
   </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), build.props))\build.props" />
   <ItemGroup>
-    <Reference Include="$(NuGetPath_Microsoft_Build)\lib\net45\Microsoft.Build.dll" />
-    <Reference Include="$(NuGetPath_Microsoft_Build_Framework)\lib\net45\Microsoft.Build.Framework.dll" />
-    <Reference Include="$(NuGetPath_NUnit)\lib\net45\nunit.framework.dll" />
-    <Reference Include="$(NuGetPath_Shouldly)\lib\net40\Shouldly.dll" />
+    <Reference Include="C:\Users\joshking\.nuget\packages\Microsoft.Build.Framework.14.3.0\lib\net45\Microsoft.Build.Framework.dll" />
+    <Reference Include="C:\Users\joshking\.nuget\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll" />
+    <Reference Include="C:\Users\joshking\.nuget\packages\Shouldly.2.8.2\lib\net40\Shouldly.dll" />
+    <Reference Include="Microsoft.Build" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />

@@ -1,43 +1,35 @@
 ﻿using Microsoft.Build.Construction;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.MSBuildProjectBuilder
 {
     public partial class ProjectBuilder
     {
-        public ProjectBuilder AddItemGroup()
+
+        public ProjectBuilder AddItemGroup(string condition = null, string label = null)
         {
-            // The assumption here is that the groups that this will apply to such as ProjectRootElement, ProjectTargetElement, ProjectWhenElement will only have been added as single items. 
-            // Example .AddTarget("Name") and not .AddTarget(new[]{ new Target("Name1"),Target("Name2")})
-            // .AddTarget and .AddWhen should not accept an array.  If that changes this will need to be reworked as it only processes the first valid item it finds.
             // If no project is created then create it automatically.
-            if (!lastElements.Any())
+            if (ProjectRoot == null)
             {
                 Create();
             }
+            ProjectItemGroupElement newItemGroup = ProjectRoot.CreateItemGroupElement();
+            newItemGroup.Label = label;
+            newItemGroup.Condition = condition;
 
-            ProjectElement lE = lastElements.FirstOrDefault();
-            do
-            {
-
-                Dictionary<Type, Action> @switch = new Dictionary<Type, Action> {
-                    { typeof(ProjectRootElement), () => lastElements.Add((lE as ProjectRootElement).AddItemGroup()) },
-                    { typeof(ProjectTargetElement), () => lastElements.Add((lE as ProjectTargetElement).AddItemGroup()) },
+            Dictionary<Type, Action> @switch = new Dictionary<Type, Action> {
+                    { typeof(ProjectRootElement), () => (_lastGroupContainer as ProjectRootElement).AppendChild(newItemGroup) },
+                    { typeof(ProjectTargetElement), () => (_lastGroupContainer as ProjectTargetElement).AppendChild(newItemGroup) },
                 };
-                Action action;
-                if (@switch.TryGetValue(lE.GetType(), out action))
-                {
-                    lastElements.Clear();
-                    action();
-                    return this;
-                }
-                lE = lE.Parent;
-            }
-            while (lE != null);
 
-            throw new InvalidOperationException("Invalid project object, AddItemGroup failed."); ;
+            Action action;
+            if (@switch.TryGetValue(_lastGroupContainer.GetType(), out action))
+            {
+                action();
+                _lastItemGroupElement = newItemGroup;
+            }
+            return this;
         }
     }
 }

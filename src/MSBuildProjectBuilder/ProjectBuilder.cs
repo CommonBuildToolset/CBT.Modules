@@ -7,7 +7,12 @@ namespace Microsoft.MSBuildProjectBuilder
     {
         public ProjectRootElement ProjectRoot { get; private set; }
 
-        private ICollection<ProjectElement> lastElements = new List<ProjectElement>();
+        private ICollection<ProjectItemElement> _lastItemElements = new List<ProjectItemElement>();
+
+        private ProjectItemGroupElement _lastItemGroupElement = null;
+
+        private ProjectElement _lastGroupContainer = null;
 
     }
+
 }

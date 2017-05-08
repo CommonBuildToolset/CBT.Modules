@@ -1,50 +1,61 @@
 ﻿using Microsoft.Build.Construction;
-using System;
 using System.Linq;
 
 namespace Microsoft.MSBuildProjectBuilder
 {
     public partial class ProjectBuilder
     {
+
         public ProjectBuilder AddItem(params Item[] items)
         {
             if (items == null || items.Length == 0)
             {
-                throw new ArgumentException("At least one Item must be specified to be added.");
+                // if call .AddItem() but not specifying an item just return;
+                return this;
             }
 
-            // If no project is created then create it automatically.
-            if (!lastElements.Any())
+            // If no item group is created then create it automatically.
+            if (_lastItemGroupElement == null)
             {
-                Create();
+                AddItemGroup();
             }
-
-            ProjectElement lE = null;
-            do
+            _lastItemElements.Clear();
+            foreach (var item in items)
             {
-                lE = lastElements.FirstOrDefault();
-                ProjectItemGroupElement itemGroup = lE as ProjectItemGroupElement;
-                if (itemGroup != null)
-                {
-                    lastElements.Clear();
-                    foreach (var item in items)
-                    {
-                        ProjectItemElement projectItem = ProjectRoot.CreateItemElement(item.Name);
-                        projectItem.Include = item.Value;
-                        itemGroup.AppendChild(projectItem);
-                        lastElements.Add(projectItem);
-                    }
-                    return this;
-                }
-                // if at root of project or root of target or root of when block create empty item group.
-                if ((lE is ProjectRootElement) || (lE is ProjectTargetElement))
-                {
-                    AddItemGroup();
-                }
-            }
-            while (lE != null && (lE is ProjectItemGroupElement) == false);
+                ProjectItemElement projectItem = ProjectRoot.CreateItemElement(item.Name);
+                projectItem.Include = item.Value;
+                projectItem.Label = item.Label;
+                projectItem.Condition = item.Condition;
 
-            throw new InvalidOperationException("Invalid project object, AddItem failed."); ;
+                _lastItemGroupElement.AppendChild(projectItem);
+                if (item.Metadata != null && item.Metadata.Length > 0)
+                {
+                    AddMetadataToItem(projectItem, item.Metadata);
+                }
+                _lastItemElements.Add(projectItem);
+            }
+            return this;
+        }
+
+        public ProjectBuilder WithItemMetadata(params ItemMetadata[] metadatas)
+        {
+            foreach (var pI in _lastItemElements.AsEnumerable())
+            {
+                AddMetadataToItem(pI, metadatas);
+            }
+            return this;
+        }
+
+        private void AddMetadataToItem(ProjectItemElement item, ItemMetadata[] metadata)
+        {
+            foreach (var meta in metadata)
+            {
+                ProjectMetadataElement metaDataElement = ProjectRoot.CreateMetadataElement(meta.Name);
+                metaDataElement.Value = meta.Value;
+                metaDataElement.Condition = meta.Condition;
+                metaDataElement.Label = meta.Label;
+                item.AppendChild(metaDataElement);
+            }
         }
     }
 }
