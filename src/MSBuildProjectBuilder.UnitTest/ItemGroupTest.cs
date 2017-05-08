@@ -1,19 +1,13 @@
 ﻿using Microsoft.MSBuildProjectBuilder;
-using NUnit.Framework;
-using Shouldly;
+using Xunit;
 
 namespace MSBuildProjectBuilder.UnitTest
 {
-    [TestFixture]
     public class ItemGroupTest
     {
-        private ProjectBuilder _project;
-        [OneTimeSetUp]
-        public void TestInitialize()
-        {
-            _project = new ProjectBuilder();
-        }
-        [Test]
+        private ProjectBuilder _project = new ProjectBuilder();
+
+        [Fact]
         public void AddItemGroup()
         {
             string expectedOutput =

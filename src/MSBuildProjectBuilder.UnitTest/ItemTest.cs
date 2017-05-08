@@ -1,23 +1,14 @@
 ﻿using Microsoft.MSBuildProjectBuilder;
-using NUnit.Framework;
-using Shouldly;
+using Xunit;
 
 namespace MSBuildProjectBuilder.UnitTest
 {
 
-    [TestFixture]
     public class ItemTest
     {
-        private ProjectBuilder _project;
+        private ProjectBuilder _project = new ProjectBuilder();
 
-        [OneTimeSetUp]
-        public void TestInitialize()
-        {
-            // UnitTest need to call .Create() to create a new empty project so test don't just keep adding to the current project.
-            _project = new ProjectBuilder();
-        }
-
-        [Test]
+        [Fact]
         public void AddItem()
         {
             string expectedOutput =

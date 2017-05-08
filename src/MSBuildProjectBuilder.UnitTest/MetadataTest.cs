@@ -1,24 +1,13 @@
-﻿using Microsoft.Build.Construction;
-using Microsoft.MSBuildProjectBuilder;
-using NUnit.Framework;
-using Shouldly;
-using System.Text.RegularExpressions;
+﻿using Microsoft.MSBuildProjectBuilder;
+using Xunit;
 
 namespace MSBuildProjectBuilder.UnitTest
 {
-    [TestFixture]
     public class MetadataTest
     {
-        private ProjectBuilder _project;
+        private ProjectBuilder _project = new ProjectBuilder();
 
-        [OneTimeSetUp]
-        public void TestInitialize()
-        {
-            // UnitTest need to call .Create() to create a new empty project so test don't just keep adding to the current project.
-            _project = new ProjectBuilder();
-        }
-
-        [Test]
+        [Fact]
         public void AddMetadata()
         {
             string expectedOutput =

@@ -1,22 +1,14 @@
 ﻿using Microsoft.MSBuildProjectBuilder;
-using NUnit.Framework;
-using Shouldly;
-using System.Text.RegularExpressions;
+using Xunit;
 
 namespace MSBuildProjectBuilder.UnitTest
 {
-    [TestFixture]
     public class ProjectTest
     {
-        private ProjectBuilder _project;
 
-        [OneTimeSetUp]
-        public void TestInitialize()
-        {
-            _project = new ProjectBuilder();
-        }
+        private ProjectBuilder _project = new ProjectBuilder();
 
-        [Test]
+        [Fact]
         public void Create()
         {
             string expectedOutput =
