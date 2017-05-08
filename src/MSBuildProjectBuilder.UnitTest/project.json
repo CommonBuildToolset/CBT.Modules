@@ -1,0 +1,13 @@
+﻿{
+  "dependencies": {
+    "NUnit": "3.6.1",
+    "NUnit3TestAdapter": "3.7.0",
+    "Shouldly": "2.8.2"
+  },
+  "frameworks": {
+    "net45": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}
