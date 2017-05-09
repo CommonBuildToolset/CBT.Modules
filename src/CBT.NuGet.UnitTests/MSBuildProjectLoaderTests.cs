@@ -1,5 +1,6 @@
 ﻿using CBT.NuGet.Internal;
 using Microsoft.Build.Evaluation;
+using Microsoft.MSBuildProjectBuilder;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -23,18 +24,20 @@ namespace CBT.NuGet.UnitTests
             _dirsAPath = Path.Combine(_basePath, "dirsA.proj");
             _projectAPath = Path.Combine(_basePath, "ProjectA.proj");
             _projectBPath = Path.Combine(_basePath, "ProjectB.proj");
+            
+            var projB = ProjectBuilder.Create(_projectBPath).ProjectRoot;
+            projB.Save();
 
-            MSBuildProjectHelper.CreateProject(_projectAPath,
-                new[]
-                {
-                    MSBuildProjectHelper.CreateProject(_projectBPath).FullPath
-                });
+            ProjectBuilder
+                .Create(_projectAPath)
+                .AddItem($"ProjectReference={projB.FullPath}")
+                .ProjectRoot.Save();
 
-            MSBuildProjectHelper.CreateTraversalProject(_dirsAPath,
-                new[]
-                {
-                    _projectAPath
-                });
+            ProjectBuilder
+                .Create(_dirsAPath)
+                .AddProperty("IsTraversal=true")
+                .AddItem($"ProjectFile={_projectAPath}")
+                .ProjectRoot.Save();
         }
 
         public void Dispose()
