@@ -1,12 +1,12 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("MSBuildProjectBuilder.UnitTest")]
+[assembly: AssemblyTitle("MSBuildProjectBuilder.UnitTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MSBuildProjectBuilder.UnitTest")]
+[assembly: AssemblyProduct("MSBuildProjectBuilder.UnitTests")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

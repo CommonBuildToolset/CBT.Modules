@@ -1,35 +1,35 @@
 ﻿using Microsoft.MSBuildProjectBuilder;
 using Xunit;
 
-namespace MSBuildProjectBuilder.UnitTest
+namespace MSBuildProjectBuilder.UnitTests
 {
-    public class PropertyGroupTest
+    public class ItemGroupTest
     {
 
         [Fact]
-        public void AddPropertyGroup()
+        public void AddItemGroup()
         {
             string expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
-  <PropertyGroup Label=""test label"" Condition=""test Condition"" />
+  <ItemGroup Label=""test label"" Condition=""test Condition"" />
 </Project>";
             ProjectBuilder.Create()
-                .AddPropertyGroup("test Condition", "test label")
+                .AddItemGroup("test Condition", "test label")
                 .ProjectRoot
                 .RawXmlShouldBe(expectedOutput);
 
             expectedOutput =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
-  <PropertyGroup />
-  <PropertyGroup Label=""test label"" Condition=""test Condition"" />
-  <PropertyGroup Condition=""New Condition"" />
+  <ItemGroup />
+  <ItemGroup Label=""test label"" Condition=""test Condition"" />
+  <ItemGroup Condition=""New Condition"" />
 </Project>";
             ProjectBuilder.Create()
-                .AddPropertyGroup()
-                .AddPropertyGroup("test Condition", "test label")
-                .AddPropertyGroup("New Condition")
+                .AddItemGroup()
+                .AddItemGroup("test Condition", "test label")
+                .AddItemGroup("New Condition")
                 .ProjectRoot
                 .RawXmlShouldBe(expectedOutput);
         }
