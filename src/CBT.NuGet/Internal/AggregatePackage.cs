@@ -40,7 +40,7 @@ namespace CBT.NuGet.Internal
         {
             OutPropertyId = outPropertyId;
             PackagesToAggregate = packagesToAggregate;
-            immutableRootPaths = immutableRoots.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(i => Path.GetFullPath(i.Trim())).Where(j => !string.IsNullOrWhiteSpace(j)).ToArray();
+            immutableRootPaths = (immutableRoots ?? string.Empty).Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(i => Path.GetFullPath(i.Trim())).Where(j => !string.IsNullOrWhiteSpace(j)).ToArray();
             OutPropertyValue = Path.Combine(destinationRoot, $"{outPropertyId}.{GetOutputPropertyHash()}");
         }
 

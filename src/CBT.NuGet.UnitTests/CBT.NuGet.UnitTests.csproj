@@ -20,6 +20,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregatePackageTests.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MSBuildProjectLoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
