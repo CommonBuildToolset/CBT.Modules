@@ -123,8 +123,8 @@ namespace CBT.NuGet.UnitTests
         [Fact]
         public void WritePropsAggregatePackageTest()
         {
-            string propsFile = Path.Combine(_basePath, "pkg", "props\\foo.props");
-            string propsFileExpect = Path.Combine(_basePath, "pkg", "props\\foo.props");
+            string propsFile = Path.Combine(_basePath, "props", "foo.props");
+            string propsFileExpect = Path.Combine(_basePath, "props", "fooExpected.props");
             Dictionary<string, string> props = new Dictionary<string, string>();
             props.Add("foo", "Myvalue");
             props.Add("foo2", "MyValue");
