@@ -5,7 +5,6 @@ namespace MSBuildProjectBuilder.UnitTest
 {
     public class MetadataTest
     {
-        private ProjectBuilder _project = new ProjectBuilder();
 
         [Fact]
         public void AddMetadata()
@@ -43,7 +42,7 @@ namespace MSBuildProjectBuilder.UnitTest
     </foo>
   </ItemGroup>
 </Project>";
-            _project.Create()
+            ProjectBuilder.Create()
                 .AddItem(
                     "TestItem=IncludeValue",
                     new Item("name", "value", metadata: new ItemMetadata[] { "foo=bar", "bar=baz", new ItemMetadata("met", "cow", "con", "lab") }),
