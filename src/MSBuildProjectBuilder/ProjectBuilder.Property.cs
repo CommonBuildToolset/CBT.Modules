@@ -1,5 +1,4 @@
 ﻿using Microsoft.Build.Construction;
-using System.Linq;
 
 namespace Microsoft.MSBuildProjectBuilder
 {

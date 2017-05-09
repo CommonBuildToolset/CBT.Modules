@@ -25,19 +25,19 @@ namespace CBT.NuGet.UnitTests
             _projectAPath = Path.Combine(_basePath, "ProjectA.proj");
             _projectBPath = Path.Combine(_basePath, "ProjectB.proj");
             
-            var projB = ProjectBuilder.Create(_projectBPath).ProjectRoot;
-            projB.Save();
+            var projB = ProjectBuilder.Create()
+                .Save(_projectBPath);
 
             ProjectBuilder
-                .Create(_projectAPath)
-                .AddItem($"ProjectReference={projB.FullPath}")
-                .ProjectRoot.Save();
+                .Create()
+                .AddItem($"ProjectReference={projB.ProjectRoot.FullPath}")
+                .Save(_projectAPath);
 
             ProjectBuilder
-                .Create(_dirsAPath)
+                .Create()
                 .AddProperty("IsTraversal=true")
                 .AddItem($"ProjectFile={_projectAPath}")
-                .ProjectRoot.Save();
+                .Save(_dirsAPath);
         }
 
         public void Dispose()
