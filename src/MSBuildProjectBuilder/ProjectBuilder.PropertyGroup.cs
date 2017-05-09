@@ -8,11 +8,6 @@ namespace Microsoft.MSBuildProjectBuilder
     {
         public ProjectBuilder AddPropertyGroup(string condition = null, string label = null)
         {
-            // If no project is created then create it automatically.
-            if (ProjectRoot == null)
-            {
-                Create();
-            }
             ProjectPropertyGroupElement newPropertyGroup = ProjectRoot.CreatePropertyGroupElement();
             newPropertyGroup.Label = label;
             newPropertyGroup.Condition = condition;

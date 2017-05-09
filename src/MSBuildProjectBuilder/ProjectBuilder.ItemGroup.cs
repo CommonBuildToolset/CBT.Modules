@@ -9,11 +9,6 @@ namespace Microsoft.MSBuildProjectBuilder
 
         public ProjectBuilder AddItemGroup(string condition = null, string label = null)
         {
-            // If no project is created then create it automatically.
-            if (ProjectRoot == null)
-            {
-                Create();
-            }
             ProjectItemGroupElement newItemGroup = ProjectRoot.CreateItemGroupElement();
             newItemGroup.Label = label;
             newItemGroup.Condition = condition;

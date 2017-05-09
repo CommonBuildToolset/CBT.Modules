@@ -102,7 +102,7 @@ namespace CBT.NuGet.Tasks
             return Execute();
         }
 
-        private void CreatePropsFile(IDictionary<string, string> propertyPairs, string propsFile)
+        internal void CreatePropsFile(IDictionary<string, string> propertyPairs, string propsFile)
         {
             ProjectRootElement project = ProjectRootElement.Create();
 
