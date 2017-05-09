@@ -103,6 +103,8 @@ namespace CBT.NuGet.UnitTests
             aggPkgs.CreateAggregatePackage(myPkg);
             var expectedFileList = new[] { "cammel.txt", "cow.txt", "friend\\bat.txt", "sour\\bat.txt" };
             expectedFileList.ToList().ForEach(f => File.Exists(Path.Combine(myPkg.OutPropertyValue, f)).ShouldBe(true));
+            var notExpectedFileList = new[] { "fool.txt", "sour\\bats.txt" };
+            notExpectedFileList.ToList().ForEach(f => File.Exists(Path.Combine(myPkg.OutPropertyValue, f)).ShouldNotBe(true));
             File.ReadAllText(Path.Combine(myPkg.OutPropertyValue, "cow.txt")).ShouldBe($"Dummy Contents {pkg2}\\cow.txt");
             File.ReadAllText(Path.Combine(myPkg.OutPropertyValue, "friend\\bat.txt")).ShouldBe($"Dummy Contents {pkg}\\friend\\bat.txt");
 
@@ -117,6 +119,8 @@ namespace CBT.NuGet.UnitTests
             aggPkgs.CreateAggregatePackage(myPkg);
             expectedFileList = new[] { "fool.txt", "friend\\bat.txt" };
             expectedFileList.ToList().ForEach(f => File.Exists(Path.Combine(myPkg.OutPropertyValue, f)).ShouldBe(true));
+            notExpectedFileList = new[] { "cammel.txt", "sour\\bat.txt", "cow.txt" };
+            notExpectedFileList.ToList().ForEach(f => File.Exists(Path.Combine(myPkg.OutPropertyValue, f)).ShouldNotBe(true));
 
         }
 
