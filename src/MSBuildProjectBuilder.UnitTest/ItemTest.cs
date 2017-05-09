@@ -6,7 +6,6 @@ namespace MSBuildProjectBuilder.UnitTest
 
     public class ItemTest
     {
-        private ProjectBuilder _project = new ProjectBuilder();
 
         [Fact]
         public void AddItem()
@@ -19,7 +18,7 @@ namespace MSBuildProjectBuilder.UnitTest
     <item2 Include=""value2"" Label=""my item label"" Condition=""my item condition"" />
   </ItemGroup>
 </Project>";
-            _project.Create()
+            ProjectBuilder.Create()
                 .AddItemGroup(label: "groupLabel")
                 .AddItem( 
                     new Item("item1", "value1", "my item condition", "my item label"),
@@ -39,8 +38,8 @@ namespace MSBuildProjectBuilder.UnitTest
     <Name Include=""Value"" />
   </ItemGroup>
 </Project>";
-            _project = new ProjectBuilder();
-            _project.AddItem(
+            ProjectBuilder.Create()
+                .AddItem(
                         new Item("item1", "value1", "my item condition", "my item label"),
                         new Item("item2", "value2", "my item condition", "my item label")
                 )

@@ -27,9 +27,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProjectBuilder.Save.cs" />
+    <Compile Include="ProjectBuilder.Property.cs" />
     <Compile Include="ProjectBuilder.Item.cs" />
     <Compile Include="ProjectBuilder.Create.cs" />
     <Compile Include="ProjectBuilder.cs" />
+    <Compile Include="ProjectBuilder.PropertyGroup.cs" />
     <Compile Include="ProjectBuilder.ItemGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types.cs" />

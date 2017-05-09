@@ -9,9 +9,23 @@ namespace Microsoft.MSBuildProjectBuilder
 
         private ICollection<ProjectItemElement> _lastItemElements = new List<ProjectItemElement>();
 
+        private ICollection<ProjectPropertyElement> _lastPropertyElements = new List<ProjectPropertyElement>();
+
         private ProjectItemGroupElement _lastItemGroupElement = null;
 
+        private ProjectPropertyGroupElement _lastPropertyGroupElement = null;
+
         private ProjectElement _lastGroupContainer = null;
+
+        private ProjectBuilder(string toolsVersion, string defaultTargets, string initialTargets, string label)
+        {
+            ProjectRoot = ProjectRootElement.Create();
+            ProjectRoot.DefaultTargets = defaultTargets ?? ProjectRoot.DefaultTargets;
+            ProjectRoot.InitialTargets = initialTargets ?? ProjectRoot.InitialTargets;
+            ProjectRoot.ToolsVersion = toolsVersion ?? ProjectRoot.ToolsVersion;
+            ProjectRoot.Label = label ?? string.Empty;
+            _lastGroupContainer = ProjectRoot;
+        }
 
     }
 
