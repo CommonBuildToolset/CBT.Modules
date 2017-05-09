@@ -53,7 +53,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildProjectBuilder", "MS
 EndProject
 Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.NuGet.AggregatePackage", "CBT.NuGet.AggregatePackage\CBT.NuGet.AggregatePackage.nuproj", "{C0FEDA7D-30A2-4E62-BB92-98700DE46B79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBT.Nuget.AggregatePackage.UnitTests", "CBT.Nuget.AggregatePackage.UnitTests\CBT.Nuget.AggregatePackage.UnitTests.csproj", "{5869575A-94F7-4880-B6E9-F7F6178D65A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBT.NuGet.AggregatePackage.UnitTests", "CBT.NuGet.AggregatePackage.UnitTests\CBT.NuGet.AggregatePackage.UnitTests.csproj", "{5869575A-94F7-4880-B6E9-F7F6178D65A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildProjectBuilder.UnitTests", "MSBuildProjectBuilder.UnitTests\MSBuildProjectBuilder.UnitTests.csproj", "{693000B3-F0AD-4AC7-A06F-DD99BE50220A}"
 EndProject

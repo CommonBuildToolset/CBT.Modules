@@ -17,10 +17,10 @@
   
   <ItemGroup>
     <CBTParseError Condition=" '$(CBTNuGetTraversalPackagesRestored)' == 'false' " Include="Traversal packages were not restored and the build cannot continue.  Refer to other errors for more information.">
-      <Code>CBT.Nuget.1003</Code>
+      <Code>CBT.NuGet.1003</Code>
     </CBTParseError>
     <CBTParseError Condition=" '$(CBTNuGetTraversalPackagePropertiesCreated)' == 'false' " Include="Traversal package properties were not created and the build cannot continue.  Refer to other errors for more information.">
-      <Code>CBT.Nuget.1004</Code>
+      <Code>CBT.NuGet.1004</Code>
     </CBTParseError>
   </ItemGroup>
 

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Configuration">
-    <Description>Provides Global Package expansion for CBT.Nuget.</Description>
+    <Description>Provides Global Package expansion for CBT.NuGet.</Description>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <ProjectGuid>525e50eb-c6d9-497d-bc54-c625ab62b7d0</ProjectGuid>
     <Tags>CBT Module NuGet Global Restore</Tags>
@@ -10,7 +10,7 @@
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
-    <Dependency Include="CBT.Nuget">
+    <Dependency Include="CBT.NuGet">
       <Version>[1.0,)</Version>
     </Dependency>
     <Content Include="CBT\Module\Before.CBT.NuGet.props" />

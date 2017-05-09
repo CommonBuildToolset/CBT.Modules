@@ -26,10 +26,10 @@
 
   <ItemGroup>
     <CBTParseError Condition=" '$(CBTNuGetGlobalPackagesRestored)' == 'false' " Include="Global packages were not restored and the build cannot continue.  Refer to other errors for more information.">
-      <Code>CBT.Nuget.GlobalRestore.1000</Code>
+      <Code>CBT.NuGet.GlobalRestore.1000</Code>
     </CBTParseError>
     <CBTParseError Condition=" '$(CBTNuGetGlobalPackagePropertiesCreated)' == 'false' " Include="Global packages properites were not created and the build cannot continue.  Refer to other errors for more information.">
-      <Code>CBT.Nuget.GlobalRestore.1001</Code>
+      <Code>CBT.NuGet.GlobalRestore.1001</Code>
     </CBTParseError>
   </ItemGroup>
 
