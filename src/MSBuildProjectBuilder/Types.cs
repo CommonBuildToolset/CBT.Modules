@@ -65,4 +65,23 @@ namespace Microsoft.MSBuildProjectBuilder
         }
     }
 
+    public class Import
+    {
+        public string Project { get; private set; }
+        public string Condition { get; private set; }
+        public string Label { get; private set; }
+
+        public Import(string project, string condition = null, string label = null)
+        {
+            Project = project;
+            Condition = condition ?? string.Empty;
+            Label = label ?? string.Empty;
+        }
+
+        public static implicit operator Import(string value)
+        {
+            return new Import(value);
+        }
+    }
+
 }
