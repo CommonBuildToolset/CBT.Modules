@@ -3,14 +3,14 @@
   <PropertyGroup Label="Configuration">
     <Description>Provides ability to aggregate nuget packages.</Description>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <ProjectGuid>525e50eb-c6d9-497d-bc54-c625ab62b7d0</ProjectGuid>
+    <ProjectGuid>c0feda7d-30a2-4e62-bb92-98700de46b79</ProjectGuid>
     <Tags>CBT Module NuGet Aggregate Packages</Tags>
     <Title>CBT NuGet Aggregate Package Restore</Title>
   </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
-    <Dependency Include="CBT.Nuget">
+    <Dependency Include="CBT.NuGet">
       <Version>[1.0,)</Version>
     </Dependency>
     <Content Include="CBT\*\**" />

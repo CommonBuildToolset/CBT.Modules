@@ -12,19 +12,19 @@
     <CBTEnableAggregatePackageRestore Condition=" '$(CBTEnableAggregatePackageRestore)' == '' ">true</CBTEnableAggregatePackageRestore>
     <CBTAggregatePackageImport Condition=" '$(CBTAggregatePackageImport)'=='' and Exists('$(MSBuildProjectDirectory)\CBT.AggregatePackages.props')">$(MSBuildProjectDirectory)\CBT.AggregatePackages.props</CBTAggregatePackageImport>
     <CBTAggregateDestPackageRoot Condition=" '$(CBTAggregateDestPackageRoot)'=='' ">$(NuGetPackagesPath)\.agg</CBTAggregateDestPackageRoot>
-    <CBTNugetAggregatePackageImmutableRoots Condition=" '$(CBTNugetAggregatePackageImmutableRoots)'=='' ">$(NuGetPackagesPath)</CBTNugetAggregatePackageImmutableRoots>
+    <CBTNuGetAggregatePackageImmutableRoots Condition=" '$(CBTNuGetAggregatePackageImmutableRoots)'=='' ">$(NuGetPackagesPath)</CBTNuGetAggregatePackageImmutableRoots>
   </PropertyGroup>
 
   <Import Project="$(CBTAggregatePackageImport)" Condition=" '$(CBTAggregatePackageImport)'!='' and '$(CBTEnableAggregatePackageRestore)'=='true' "/>
 
   <PropertyGroup Condition=" '$(CBTEnableAggregatePackageRestore)' == 'true' "> 
     <CBTNuGetAggregatePackagePropertyFile Condition=" '$(CBTNuGetAggregatePackagePropertyFile)' == '' ">$(IntermediateOutputPath)\AggregatePackages.props</CBTNuGetAggregatePackagePropertyFile> 
-    <CBTNuGetAggregatePackageGenerated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.AggregatePackages').Execute('$(CBTAggregateDestPackageRoot)', '$(CBTAggregatePackage)', '$(CBTNuGetAggregatePackagePropertyFile)', '$(CBTNugetAggregatePackageImmutableRoots)'))</CBTNuGetAggregatePackageGenerated> 
+    <CBTNuGetAggregatePackageGenerated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.AggregatePackages').Execute('$(CBTAggregateDestPackageRoot)', '$(CBTAggregatePackage)', '$(CBTNuGetAggregatePackagePropertyFile)', '$(CBTNuGetAggregatePackageImmutableRoots)'))</CBTNuGetAggregatePackageGenerated> 
   </PropertyGroup>
 
   <ItemGroup>
     <CBTParseError Condition=" '$(CBTNuGetAggregatePackageGenerated)' == 'false' " Include="Aggregate packages were not generated and the build cannot continue.  Refer to other errors for more information.">
-      <Code>CBT.Nuget.AggregatePackage.1000</Code>
+      <Code>CBT.NuGet.AggregatePackage.1000</Code>
     </CBTParseError>
   </ItemGroup>
 

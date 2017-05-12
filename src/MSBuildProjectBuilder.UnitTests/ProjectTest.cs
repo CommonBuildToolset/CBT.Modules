@@ -3,7 +3,7 @@ using Shouldly;
 using System.IO;
 using Xunit;
 
-namespace MSBuildProjectBuilder.UnitTest
+namespace MSBuildProjectBuilder.UnitTests
 {
     public class ProjectTest
     {

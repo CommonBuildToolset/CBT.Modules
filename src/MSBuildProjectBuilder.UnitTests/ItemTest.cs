@@ -1,7 +1,7 @@
 ﻿using Microsoft.MSBuildProjectBuilder;
 using Xunit;
 
-namespace MSBuildProjectBuilder.UnitTest
+namespace MSBuildProjectBuilder.UnitTests
 {
 
     public class ItemTest

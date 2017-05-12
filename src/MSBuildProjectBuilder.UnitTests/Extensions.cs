@@ -4,7 +4,7 @@ using System;
 
 using System.Text.RegularExpressions;
 
-namespace MSBuildProjectBuilder.UnitTest
+namespace MSBuildProjectBuilder.UnitTests
 {
     public static class Extensions
     {

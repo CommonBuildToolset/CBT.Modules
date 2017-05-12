@@ -25,7 +25,7 @@ namespace CBT.NuGet.Tasks
         /// <!-- MSBuild property to set/override. -->
         /// adds the folder to the aggregate unless folder starts with ! then it removes it.
         /// | separates list of folders used for aggregation.
-        ///   <CBTAggregatePackage>NugetPath_LSBuild_Corext=$(NugetPath_LSBuild_Corext)|$(NugetPath_Microsoft_LSBuild_Extensions_SQLIS)|!$(NugetPath_Microsoft_LSBuild_Excluded_Extensions_SQLIS);MyAggPkg=$(NugetPath_Azure_Corext)|$(NugetPath_Azure_Corext_AGG)</CBTAggregatePackage>
+        ///   <CBTAggregatePackage>NuGetPath_LSBuild_Corext=$(NuGetPath_LSBuild_Corext)|$(NuGetPath_Microsoft_LSBuild_Extensions_SQLIS)|!$(NuGetPath_Microsoft_LSBuild_Excluded_Extensions_SQLIS);MyAggPkg=$(NuGetPath_Azure_Corext)|$(NuGetPath_Azure_Corext_AGG)</CBTAggregatePackage>
         /// </PropertyGroup>
         /// </summary>
         [Required]
