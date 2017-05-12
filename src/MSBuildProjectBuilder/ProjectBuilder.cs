@@ -15,6 +15,8 @@ namespace Microsoft.MSBuildProjectBuilder
 
         private ProjectPropertyGroupElement _lastPropertyGroupElement = null;
 
+        private ProjectTargetElement _lastTargetElement = null;
+
         private ProjectElement _lastGroupContainer = null;
 
         private ProjectBuilder(string toolsVersion, string defaultTargets, string initialTargets, string label)

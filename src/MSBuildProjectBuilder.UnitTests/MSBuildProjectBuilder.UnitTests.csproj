@@ -29,6 +29,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="ImportTest.cs" />
+    <Compile Include="TargetTest.cs" />
     <Compile Include="PropertyTest.cs" />
     <Compile Include="PropertyGroupTest.cs" />
     <Compile Include="ItemGroupTest.cs" />

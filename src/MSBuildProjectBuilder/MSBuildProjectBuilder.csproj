@@ -27,6 +27,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProjectBuilder.Import.cs" />
+    <Compile Include="ProjectBuilder.Target.cs" />
     <Compile Include="ProjectBuilder.Save.cs" />
     <Compile Include="ProjectBuilder.Property.cs" />
     <Compile Include="ProjectBuilder.Item.cs" />
