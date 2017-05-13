@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CBT.NuGet.Internal
 {
-    class FileUtilities
+    internal class FileUtilities
     {
         // Need to find a proper directory copy routine.
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, bool overWriteFiles)

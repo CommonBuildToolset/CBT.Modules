@@ -18,3 +18,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 [assembly: InternalsVisibleTo("CBT.NuGet.UnitTests")]
+[assembly: InternalsVisibleTo("CBT.NuGet.AggregatePackage.UnitTests")]
