@@ -9,8 +9,8 @@
   <Import Project="$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)') " /> 
 
   <PropertyGroup>
-    <CBTEnableAggregatePackageRestore Condition=" '$(CBTEnableAggregatePackageRestore)' == '' ">true</CBTEnableAggregatePackageRestore>
-    <CBTAggregatePackageImport Condition=" '$(CBTAggregatePackageImport)'=='' and Exists('$(MSBuildProjectDirectory)\CBT.AggregatePackages.props')">$(MSBuildProjectDirectory)\CBT.AggregatePackages.props</CBTAggregatePackageImport>
+    <CBTEnableAggregatePackageRestore Condition=" '$(CBTEnableAggregatePackageRestore)' == '' And '$(CBTEnablePackageRestore)'=='true' ">true</CBTEnableAggregatePackageRestore>
+    <CBTAggregatePackageImport Condition=" '$(CBTAggregatePackageImport)'=='' and Exists('$(MSBuildProjectDirectory)\CBT.AggregatePackages.props') ">$(MSBuildProjectDirectory)\CBT.AggregatePackages.props</CBTAggregatePackageImport>
     <CBTAggregateDestPackageRoot Condition=" '$(CBTAggregateDestPackageRoot)'=='' ">$(NuGetPackagesPath)\.agg</CBTAggregateDestPackageRoot>
     <CBTNuGetAggregatePackageImmutableRoots Condition=" '$(CBTNuGetAggregatePackageImmutableRoots)'=='' ">$(NuGetPackagesPath)</CBTNuGetAggregatePackageImmutableRoots>
   </PropertyGroup>
@@ -19,7 +19,7 @@
 
   <PropertyGroup Condition=" '$(CBTEnableAggregatePackageRestore)' == 'true' "> 
     <CBTNuGetAggregatePackagePropertyFile Condition=" '$(CBTNuGetAggregatePackagePropertyFile)' == '' ">$(IntermediateOutputPath)\AggregatePackages.props</CBTNuGetAggregatePackagePropertyFile> 
-    <CBTNuGetAggregatePackageGenerated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.AggregatePackages').Execute('$(CBTAggregateDestPackageRoot)', '$(CBTAggregatePackage)', '$(CBTNuGetAggregatePackagePropertyFile)', '$(CBTNuGetAggregatePackageImmutableRoots)'))</CBTNuGetAggregatePackageGenerated> 
+    <CBTNuGetAggregatePackageGenerated Condition="'$(CBTNuGetAggregatePackageGenerated)'=='' And '$(DesignTimeBuild)'!='true' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.AggregatePackages').Execute('$(CBTAggregateDestPackageRoot)', '$(CBTAggregatePackage)', '$(CBTNuGetAggregatePackagePropertyFile)', '$(CBTNuGetAggregatePackageImmutableRoots)'))</CBTNuGetAggregatePackageGenerated> 
   </PropertyGroup>
 
   <ItemGroup>
