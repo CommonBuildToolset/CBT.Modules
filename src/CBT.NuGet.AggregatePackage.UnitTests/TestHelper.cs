@@ -49,7 +49,7 @@ namespace CBT.NuGet.AggregatePackage.UnitTests
     }
     static class Helper
     {
-        private static readonly Lazy<ProjectCollection> _projectCollectionLazy = new Lazy<ProjectCollection>(() => new ProjectCollection(), isThreadSafe: true);
+        internal static readonly Lazy<ProjectCollection> _projectCollectionLazy = new Lazy<ProjectCollection>(() => new ProjectCollection(), isThreadSafe: true);
 
         public enum TestType
         {
