@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "CBT.NuGet": "1.0.7-beta",
-    "CBT.Traversal": "1.0.1",
+    "CBT.NuGet": "1.0.45",
+    "CBT.Traversal": "1.0.31",
     "Nerdbank.GitVersioning": "1.5.58",
     "NuProj": "0.11.14-beta",
     "NuProj.Common": "0.11.14-beta"

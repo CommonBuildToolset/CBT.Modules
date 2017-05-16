@@ -5,12 +5,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)'=='' ">$(EnlistmentRoot)\obj</BaseIntermediateOutputPath>
-    <CBTIntermediateOutputPath Condition=" '$(CBTIntermediateOutputPath)' == '' ">$(BaseIntermediateOutputPath)\CBT</CBTIntermediateOutputPath>
     <IntermediateOutputPath Condition=" '$(IntermediateOutputPath)'=='' ">$(BaseIntermediateOutputPath)\$(Configuration)\$(Platform)\$(MSBuildProjectFile)</IntermediateOutputPath>
     <OutputPath Condition=" '$(OutputPath)' == '' ">$(EnlistmentRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)</OutputPath>
     <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
-    <!-- Temporarily pin to version 3.4 -->
-    <CBTNuGetDownloaderArguments>https://dist.nuget.org/win-x86-commandline/v3.4.4/NuGet.exe</CBTNuGetDownloaderArguments>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' ">
