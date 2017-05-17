@@ -96,8 +96,14 @@
   <Import Project="$(CBTModuleExtensionsPath)\After.CBT.NuGet.PackageProperties.props" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.CBT.NuGet.PackageProperties.props') " />
   <Import Project="$(CBTLocalBuildExtensionsPath)\After.CBT.NuGet.PackageProperties.props" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.CBT.NuGet.PackageProperties.props') " />
 
+  <!--
+    Import project-level build package props when using project.json
+  -->
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props" Condition=" '$(IncludeNuGetImports)' != 'false' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Imports\Microsoft.Common.Props\ImportBefore\Microsoft.NuGet.ImportBefore.props') "/>
 
+  <!--
+    Import build packages that were specified in the modules package config
+  -->
   <Import Project="$(CBTBuildPackagePropsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
 
   <!--
