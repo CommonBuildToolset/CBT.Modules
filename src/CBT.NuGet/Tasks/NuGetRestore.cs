@@ -45,6 +45,7 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
+            EnvironmentVariables = new[] { $"CBTEnablePackageRestore=false", $"CBTModulesRestored=true" };
             // If packages directory was not specified, just execute the restore
             //
             if (String.IsNullOrEmpty(PackagesDirectory))
