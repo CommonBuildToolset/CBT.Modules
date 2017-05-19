@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Construction;
+﻿using System.IO;
+using Microsoft.Build.Construction;
 using System.Linq;
 
 namespace Microsoft.MSBuildProjectBuilder
@@ -43,6 +44,17 @@ namespace Microsoft.MSBuildProjectBuilder
             {
                 AddMetadataToItem(pI, metadatas);
             }
+            return this;
+        }
+
+        public ProjectBuilder AddProjectReference(params ProjectBuilder[] projects)
+        {
+            foreach (ProjectBuilder project in projects)
+            {
+                AddItem(new Item("ProjectReference", project.FullPath))
+                    .WithItemMetadata($"Name={Path.GetFileNameWithoutExtension(project.FullPath)}");
+            }
+
             return this;
         }
 

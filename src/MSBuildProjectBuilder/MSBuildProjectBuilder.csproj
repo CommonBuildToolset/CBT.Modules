@@ -7,7 +7,7 @@
     <ProjectGuid>{69A17EA2-C5F4-44B4-AE85-95018891CDD5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MSBuildProjectBuilder</RootNamespace>
+    <RootNamespace>Microsoft.MSBuildProjectBuilder</RootNamespace>
     <AssemblyName>MSBuildProjectBuilder</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -38,6 +38,9 @@
     <Compile Include="ProjectBuilder.ItemGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ProjectBuilder.Build.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

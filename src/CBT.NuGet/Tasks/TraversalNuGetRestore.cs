@@ -21,10 +21,15 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
-            MSBuildProjectLoader projectLoader = new MSBuildProjectLoader(GlobalProperties.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => i.Trim().Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(i => i.First(), i => i.Last()), MSBuildToolsVersion, ProjectLoadSettings.IgnoreMissingImports);
+            MSBuildProjectLoader projectLoader = new MSBuildProjectLoader(GlobalProperties.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => i.Trim().Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(i => i.First(), i => i.Last()), MSBuildToolsVersion, Log, ProjectLoadSettings.IgnoreMissingImports);
 
             Log.LogMessage(MessageImportance.Normal, $"Loading project references for '{Project}'...");
             ProjectCollection projectCollection = projectLoader.LoadProjectsAndReferences(new[] { Project });
+
+            if (Log.HasLoggedErrors)
+            {
+                return false;
+            }
 
             Log.LogMessage(MessageImportance.Normal, $"Loaded '{projectCollection.LoadedProjects.Count}' projects");
 
@@ -62,7 +67,7 @@ namespace CBT.NuGet.Tasks
                 }
             }
 
-            return ret;
+            return ret && !Log.HasLoggedErrors;
         }
 
         public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs, string msbuildToolsVersion, string project, string globalProperties)

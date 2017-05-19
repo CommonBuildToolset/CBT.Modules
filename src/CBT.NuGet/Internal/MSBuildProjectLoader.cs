@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Build.Exceptions;
+using Microsoft.Build.Utilities;
 
 namespace CBT.NuGet.Internal
 {
@@ -38,17 +40,21 @@ namespace CBT.NuGet.Internal
         /// </summary>
         private readonly string _toolsVersion;
 
+        private readonly TaskLoggingHelper _log;
+
         /// <summary>
         /// Initializes a new instance of the MSBuildProjectLoader class.
         /// </summary>
         /// <param name="globalProperties">Specifies the global properties to use when loading projects.</param>
         /// <param name="toolsVersion">Specifies the ToolsVersion to use when loading projects.</param>
         /// <param name="projectLoadSettings">Specifies the <see cref="ProjectLoadSettings"/> to use when loading projects.</param>
-        public MSBuildProjectLoader(IDictionary<string, string> globalProperties, string toolsVersion, ProjectLoadSettings projectLoadSettings = ProjectLoadSettings.Default)
+        /// <param name="log"></param>
+        public MSBuildProjectLoader(IDictionary<string, string> globalProperties, string toolsVersion, TaskLoggingHelper log, ProjectLoadSettings projectLoadSettings = ProjectLoadSettings.Default)
         {
             _globalProperties = globalProperties;
             _toolsVersion = toolsVersion;
             _projectLoadSettings = projectLoadSettings;
+            _log = log ?? throw new ArgumentNullException(nameof(log));
         }
 
         /// <summary>
@@ -153,7 +159,17 @@ namespace CBT.NuGet.Internal
 
             long now = DateTime.Now.Ticks;
 
-            project = new Project(path, null, toolsVersion, projectCollection, projectLoadSettings);
+            try
+            {
+                project = new Project(path, null, toolsVersion, projectCollection, projectLoadSettings);
+            }
+            catch (Exception e)
+            {
+                _log.LogErrorFromException(e);
+
+                return false;
+            }
+            
 
             if (CollectStats)
             {
