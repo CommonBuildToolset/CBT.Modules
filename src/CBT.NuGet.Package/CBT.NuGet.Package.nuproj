@@ -25,8 +25,6 @@
     <Content Include="CBT\Module\build.props" />
     <Content Include="CBT\Module\CBT.NuGet.props" />
     <Content Include="CBT\Module\CBT.NuGet.targets" />
-    <Content Include="CBT\Module\Extensions\Before.CBT.NuGet.props" />
-    <Content Include="CBT\Module\Extensions\After.CBT.NuGet.props" />
     <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.Build.Tasks.Core.dll" />
     <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.Build.Utilities.Core.dll" />
     <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />

@@ -1,8 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="$(MSBuildThisFileDirectory)Extensions\Before.CBT.NuGet.props" />
+  <!--
+    Import Before.CBT.NuGet from local extensions and then module extensions
+  -->
+  <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)') " />
+  <Import Project="$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)') " />
 
+  <PropertyGroup>
+    <CBTNuGetTasksAssemblyPath Condition=" '$(CBTNuGetTasksAssemblyPath)' == '' ">$(MSBuildThisFileDirectory)CBT.NuGet.dll</CBTNuGetTasksAssemblyPath>
+    <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildThisFileFullPath);$(MSBuildThisFileDirectory)CBT.NuGet.targets;$(MSBuildThisFileDirectory)After.Microsoft.Common.targets;$(CBTNuGetTasksAssemblyPath)</CBTNuGetAllProjects>
+    <CBTEnablePackageRestore Condition=" '$(CBTEnablePackageRestore)' == '' ">true</CBTEnablePackageRestore>
+    <CBTNuGetPath Condition=" '$(CBTNuGetPath)' == '' And '$(CBTModuleRestoreCommand)' != '' And $([System.IO.Path]::GetFileName($(CBTModuleRestoreCommand))) == 'NuGet.exe' And Exists($(CBTModuleRestoreCommand)) ">$([System.IO.Path]::GetDirectoryName($(CBTModuleRestoreCommand)))</CBTNuGetPath>
+    <CBTEnableImportBuildPackages Condition=" '$(CBTEnableImportBuildPackages)' == '' ">true</CBTEnableImportBuildPackages>
+    <CBTNuGetIntermediateOutputPath Condition=" '$(CBTNuGetIntermediateOutputPath)' == '' And '$(IntermediateOutputPath)' != '' ">$(IntermediateOutputPath)</CBTNuGetIntermediateOutputPath>
+    <CBTNuGetIntermediateOutputPath Condition=" '$(CBTNuGetIntermediateOutputPath)' == '' And '$(IntermediateOutputPath)' == '' ">$(CBTIntermediateOutputPath)\$(MSBuildProjectDirectory.ToLower().GetHashcode().ToString('X'))</CBTNuGetIntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\project.json') ">
+    <!-- For project.json, the file to pass to restore is the project itself -->
+    <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
+    <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\project.json</CBTNuGetAllProjects>
+    <NuGetProps Condition=" '$(NuGetProps)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props</NuGetProps>
+    <NuGetTargets Condition=" '$(NuGetTargets)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == ''  And Exists('$(MSBuildProjectDirectory)\packages.config') ">
+    <CBTNuGetRestoreFile>$(MSBuildProjectDirectory)\packages.config</CBTNuGetRestoreFile>
+    <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\packages.config</CBTNuGetAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CBTNuGetRestorePackagesDirectory Condition=" '$(CBTNuGetRestorePackagesDirectory)' == '' ">$(NuGetPackagesPath)</CBTNuGetRestorePackagesDirectory>
+    <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' ">true</CBTNuGetGeneratePackageProperties>
+    <CBTNuGetPackagesRestoredMarker Condition=" '$(CBTNuGetPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetPackagesRestored</CBTNuGetPackagesRestoredMarker>
+    <CBTNuGetRestoreRequireConsent Condition=" '$(CBTNuGetRestoreRequireConsent)' == '' ">false</CBTNuGetRestoreRequireConsent>
+    <CBTNuGetDisableParallelProcessing Condition=" '$(CBTNuGetDisableParallelProcessing)' == '' ">false</CBTNuGetDisableParallelProcessing>
+    <CBTNuGetNoCache Condition=" '$(CBTNuGetNoCache)' == '' ">false</CBTNuGetNoCache>
+    <CBTNuGetNonInteractive Condition=" '$(CBTNuGetNonInteractive)' == '' ">true</CBTNuGetNonInteractive>
+    <CBTNuGetTimeout Condition=" '$(CBTNuGetTimeout)' == '' ">0</CBTNuGetTimeout>
+    <CBTNuGetPackagePropertyFile Condition=" '$(CBTNuGetPackagePropertyFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(CBTNuGetRestoreFile)')).props</CBTNuGetPackagePropertyFile>
+    <CBTNuGetPackagePropertyVersionNamePrefix Condition=" '$(CBTNuGetPackagePropertyVersionNamePrefix)' == '' ">NuGetVersion_</CBTNuGetPackagePropertyVersionNamePrefix>
+    <CBTNuGetPackagePropertyPathNamePrefix Condition=" '$(CBTNuGetPackagePropertyPathNamePrefix)' == '' ">NuGetPath_</CBTNuGetPackagePropertyPathNamePrefix>
+    <CBTNuGetPackagePropertyPathValuePrefix Condition=" '$(CBTNuGetPackagePropertyPathValuePrefix)' == '' ">%24(NuGetPackagesPath)\</CBTNuGetPackagePropertyPathValuePrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Disable package restoration if there is no packages.config/project.json -->
+    <CBTEnablePackageRestore Condition=" '$(CBTNuGetRestoreFile)' == '' ">false</CBTEnablePackageRestore>
+  </PropertyGroup>
+  
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' And '$(IsRestoreOnly)' != 'true' ">
     <!-- Restore packages if not running under Visual Studio and not running as part of NuGet's restore -->
     <CBTNuGetPackagesRestored Condition=" '$(CBTNuGetPackagesRestored)'=='' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').Execute($(CBTNuGetRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetRestoreRequireConsent), $(NuGetRestoreSolutionDirectory), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';'))))</CBTNuGetPackagesRestored>
@@ -32,11 +79,37 @@
     </CBTParseError>
   </ItemGroup>
 
+  <!--
+    Import Before.CBT.NuGet.PackageProperties from local extensions and then module extensions
+  -->
+  <Import Project="$(CBTLocalBuildExtensionsPath)\Before.CBT.NuGet.PackageProperties.props" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.CBT.NuGet.PackageProperties.props') " />
+  <Import Project="$(CBTModuleExtensionsPath)\Before.CBT.NuGet.PackageProperties.props" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.CBT.NuGet.PackageProperties.props') " />
+
+  <!--
+    Import NuGet package properties
+  -->
   <Import Project="$(CBTNuGetPackagePropertyFile)" Condition=" '$(CBTNuGetPackagePropertiesCreated)' == 'true' And Exists('$(CBTNuGetPackagePropertyFile)') "/>
 
+  <!--
+    Import After.CBT.NuGet.PackageProperties from module extensions and then local extensions
+  -->
+  <Import Project="$(CBTModuleExtensionsPath)\After.CBT.NuGet.PackageProperties.props" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.CBT.NuGet.PackageProperties.props') " />
+  <Import Project="$(CBTLocalBuildExtensionsPath)\After.CBT.NuGet.PackageProperties.props" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.CBT.NuGet.PackageProperties.props') " />
+
+  <!--
+    Import project-level build package props when using project.json
+  -->
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props" Condition=" '$(IncludeNuGetImports)' != 'false' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Imports\Microsoft.Common.Props\ImportBefore\Microsoft.NuGet.ImportBefore.props') "/>
 
+  <!--
+    Import build packages that were specified in the modules package config
+  -->
   <Import Project="$(CBTBuildPackagePropsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
 
-  <Import Project="$(MSBuildThisFileDirectory)Extensions\After.CBT.NuGet.props" />
+  <!--
+    Import After.CBT.NuGet from module extensions and then local extensions
+  -->
+  <Import Project="$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)') " />
+  <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)') " />
+
 </Project>
