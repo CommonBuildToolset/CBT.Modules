@@ -11,9 +11,7 @@
     <CBTSelfContainedBuildOutput Condition="'$(CBTSelfContainedBuildOutput)' != ''">$([System.Convert]::ToBoolean($(CBTSelfContainedBuildOutput)))</CBTSelfContainedBuildOutput>
     <CBTSelfContainedBuildOutput Condition="'$(CBTSelfContainedBuildOutput)' == ''">true</CBTSelfContainedBuildOutput>
 
-    <CBTIntermediateOutputRootDir Condition=" '$(CBTIntermediateOutputRootDir)'=='' ">$(EnlistmentRoot)\obj</CBTIntermediateOutputRootDir>
-
-    <BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' =='' ">$(CBTIntermediateOutputRootDir)</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' =='' ">$(EnlistmentRoot)\obj</BaseIntermediateOutputPath>
     <!-- IntermediateOutputPath requires a trailing slash to prevent MSB8004 warning -->
     <IntermediateOutputPath Condition=" '$(IntermediateOutputPath)' =='' ">$(BaseIntermediateOutputPath)\$(Platform)\$(Configuration)\$(MSBuildProjectFile)\</IntermediateOutputPath>
 
@@ -34,9 +32,12 @@
     <OutDir Condition=" '$(OutDir)' =='' ">$([System.IO.Path]::Combine($(CBTOutputRootDir), $(CBTRelativeOutputPath)))</OutDir>
 
     <!-- OutDir requires a trailing slash to prevent MSB8004 warning -->
-    <OutDir>$(OutDir.TrimEnd("\\"))\</OutDir>
+    <OutDir Condition="!HasTrailingSlash('$(OutDir)')">$(OutDir)\</OutDir>
     <!-- This ensures OutputPath always matches OutDir, especially when TFS overrides OutDir. -->
     <OutputPath>$(OutDir)</OutputPath>
+
+    <!-- must redefine nuget module restore assetsfile location if redefing baseintermediateoutputpath to avoid collision. -->
+    <RestoreOutputPath>$(IntermediateOutputPath)</RestoreOutputPath>
   </PropertyGroup>
 
   <Import Project="$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)') " />
