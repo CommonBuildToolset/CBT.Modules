@@ -45,7 +45,8 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
-            // Nuget now evaluates msbuild projects durring restore, CBTEnablePackageRestore must be set to prevent nuget from infinite looping.  CBTModulesRestored must be set so on it's evaluation it knows to import the generated module imports so it evaluates the proper full closure of the project.
+            // Nuget now evaluates msbuild projects durring restore, CBTEnablePackageRestore must be set to prevent nuget from infinite looping.
+            // CBTModulesRestored must be set so on it's evaluation it knows to import the generated module imports so it evaluates the proper full closure of the project.
             EnvironmentVariables = new[] {
                 $"CBTEnablePackageRestore=false",
                 $"CBTModulesRestored=true"
