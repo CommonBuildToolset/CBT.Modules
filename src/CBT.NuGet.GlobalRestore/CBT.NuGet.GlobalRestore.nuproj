@@ -11,7 +11,7 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
     <Dependency Include="CBT.NuGet">
-      <Version>[1.0,)</Version>
+      <Version>[1.0.97,)</Version>
     </Dependency>
     <Content Include="CBT\Module\Before.CBT.NuGet.PackageProperties.props" />
     <Content Include="CBT\Module\After.Microsoft.Common.targets" />
