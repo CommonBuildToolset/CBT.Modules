@@ -24,6 +24,8 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="MSBuildProjectLoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestBase.cs" />
+    <Compile Include="TestBuildEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

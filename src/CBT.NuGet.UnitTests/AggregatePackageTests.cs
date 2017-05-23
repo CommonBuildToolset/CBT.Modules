@@ -10,24 +10,13 @@ using Xunit;
 
 namespace CBT.NuGet.UnitTests
 {
-    public class AggregatePackageTests : IDisposable
+    public class AggregatePackageTests : TestBase
     {
-        private string _basePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        public AggregatePackageTests()
-        {
-            Directory.CreateDirectory(_basePath);
-        }
-
-        public void Dispose()
-        {
-            Directory.Delete(_basePath, recursive: true);
-        }
-
-        private void CreateDummyPackage(string _basePath, ICollection<string> filePaths)
+        private void CreateDummyPackage(string basePath, ICollection<string> filePaths)
         {
             foreach (var file in filePaths)
             {
-                var fullFilePath = Path.Combine(_basePath, file);
+                var fullFilePath = Path.Combine(basePath, file);
                 var parent = Path.GetDirectoryName(fullFilePath);
                 if (!Directory.Exists(parent))
                 {
@@ -43,9 +32,9 @@ namespace CBT.NuGet.UnitTests
         [Fact]
         public void ParseAggregatePackageTest()
         {
-            string pkg = Path.Combine(_basePath, "pkg");
-            string pkg2 = Path.Combine(_basePath, "pkg2");
-            string pkg3 = Path.Combine(_basePath, "pkg3");
+            string pkg = Path.Combine(TestRootPath, "pkg");
+            string pkg2 = Path.Combine(TestRootPath, "pkg2");
+            string pkg3 = Path.Combine(TestRootPath, "pkg3");
 
             CreateDummyPackage(pkg, new[] { "fool.txt", "friend\\bat.txt", "cow.txt" });
             CreateDummyPackage(pkg2, new[] { "cammel.txt", "sour\\bat.txt", "cow.txt" });
@@ -54,7 +43,7 @@ namespace CBT.NuGet.UnitTests
             var aggPkgs = new AggregatePackages();
             aggPkgs.BuildEngine = new CBTBuildEngine();
             aggPkgs.PackagesToAggregate = $"foo={pkg}|{pkg2}|!{pkg3};foo2= \t {pkg}   |     {pkg2} | !  {pkg3}  \t";
-            aggPkgs.AggregateDestRoot = Path.Combine(_basePath, ".agg");
+            aggPkgs.AggregateDestRoot = Path.Combine(TestRootPath, ".agg");
 
             var parsedPackagesEnumerator = aggPkgs.ParsePackagesToAggregate().GetEnumerator();
             parsedPackagesEnumerator.MoveNext();
@@ -76,9 +65,9 @@ namespace CBT.NuGet.UnitTests
         public void CreateAggregatePackageTest()
         {
 
-            string pkg = Path.Combine(_basePath, "pkg");
-            string pkg2 = Path.Combine(_basePath, "pkg2");
-            string pkg3 = Path.Combine(_basePath, "pkg3");
+            string pkg = Path.Combine(TestRootPath, "pkg");
+            string pkg2 = Path.Combine(TestRootPath, "pkg2");
+            string pkg3 = Path.Combine(TestRootPath, "pkg3");
 
             CreateDummyPackage(pkg, new[] { "fool.txt", "friend\\bat.txt", "cow.txt" });
             CreateDummyPackage(pkg2, new[] { "cammel.txt", "sour\\bat.txt", "cow.txt" });
@@ -87,7 +76,7 @@ namespace CBT.NuGet.UnitTests
             var aggPkgs = new AggregatePackages();
             aggPkgs.BuildEngine = new CBTBuildEngine();
             aggPkgs.PackagesToAggregate = $"foo={pkg}|{pkg2}|!{pkg3};foo2={pkg}|!{pkg2}";
-            aggPkgs.AggregateDestRoot = Path.Combine(_basePath, ".agg");
+            aggPkgs.AggregateDestRoot = Path.Combine(TestRootPath, ".agg");
 
             var parsedPackagesEnumerator = aggPkgs.ParsePackagesToAggregate().GetEnumerator();
             parsedPackagesEnumerator.MoveNext();
@@ -127,8 +116,8 @@ namespace CBT.NuGet.UnitTests
         [Fact]
         public void WritePropsAggregatePackageTest()
         {
-            string propsFile = Path.Combine(_basePath, "props", "foo.props");
-            string propsFileExpect = Path.Combine(_basePath, "props", "fooExpected.props");
+            string propsFile = Path.Combine(TestRootPath, "props", "foo.props");
+            string propsFileExpect = Path.Combine(TestRootPath, "props", "fooExpected.props");
             Dictionary<string, string> props = new Dictionary<string, string>();
             props.Add("foo", "Myvalue");
             props.Add("foo2", "MyValue");
