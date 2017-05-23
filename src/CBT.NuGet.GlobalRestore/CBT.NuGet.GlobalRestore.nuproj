@@ -13,7 +13,7 @@
     <Dependency Include="CBT.NuGet">
       <Version>[1.0,)</Version>
     </Dependency>
-    <Content Include="CBT\Module\Before.CBT.NuGet.props" />
+    <Content Include="CBT\Module\Before.CBT.NuGet.PackageProperties.props" />
     <Content Include="CBT\Module\After.Microsoft.Common.targets" />
     <None Include="version.json" />
   </ItemGroup>
