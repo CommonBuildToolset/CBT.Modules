@@ -1,48 +1,61 @@
 ﻿using CBT.NuGet.Internal;
 using Microsoft.Build.Evaluation;
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using Microsoft.MSBuildProjectBuilder;
 using Shouldly;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Xunit;
 
 namespace CBT.NuGet.UnitTests
 {
-    public class MSBuildProjectLoaderTests : IDisposable
+    public class MSBuildProjectLoaderTests : TestBase
     {
         private const string MSBuildToolsVersion = "4.0";
-        private readonly string _basePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-        private readonly string _dirsAPath;
-        private readonly string _projectAPath;
-        private readonly string _projectBPath;
+        private readonly TestBuildEngine _buildEngine = new TestBuildEngine();
+        private readonly Lazy<TaskLoggingHelper> _logLazy;
 
         public MSBuildProjectLoaderTests()
         {
-            _dirsAPath = Path.Combine(_basePath, "dirsA.proj");
-            _projectAPath = Path.Combine(_basePath, "ProjectA.proj");
-            _projectBPath = Path.Combine(_basePath, "ProjectB.proj");
-            
-            var projB = ProjectBuilder.Create()
-                .Save(_projectBPath);
-
-            ProjectBuilder
-                .Create()
-                .AddItem($"ProjectReference={projB.ProjectRoot.FullPath}")
-                .Save(_projectAPath);
-
-            ProjectBuilder
-                .Create()
-                .AddProperty("IsTraversal=true")
-                .AddItem($"ProjectFile={_projectAPath}")
-                .Save(_dirsAPath);
+            _logLazy = new Lazy<TaskLoggingHelper>(() => new TaskLoggingHelper(_buildEngine, "TaskName"), isThreadSafe: true);
         }
 
-        public void Dispose()
+        public TaskLoggingHelper Log => _logLazy.Value;
+
+        [Fact]
+        public void ArgumentNullException_Log()
         {
-            Directory.Delete(_basePath, recursive: true);
+            ArgumentNullException exception = Should.Throw<ArgumentNullException>(() =>
+            {
+                MSBuildProjectLoader unused = new MSBuildProjectLoader(globalProperties: null, toolsVersion: null, log: null);
+            });
+
+            exception.ParamName.ShouldBe("log");
+        }
+
+        [Fact]
+        public void BuildFailsIfError()
+        {
+            var dirsProj = ProjectBuilder
+                .Create()
+                .AddProperty("IsTraversal=true")
+                .AddItem("ProjectFile=does not exist")
+                .Save(GetTempFileName());
+
+            MSBuildProjectLoader loader = new MSBuildProjectLoader(null, MSBuildToolsVersion, Log);
+            loader.LoadProjectsAndReferences(new[] {dirsProj.FullPath});
+
+            Log.HasLoggedErrors.ShouldBe(true);
+
+            _buildEngine.LoggedEvents.Count.ShouldBe(1);
+            BuildErrorEventArgs errorEvent = _buildEngine.LoggedEvents.FirstOrDefault() as BuildErrorEventArgs;
+
+            errorEvent.ShouldNotBeNull();
+
+            errorEvent?.Message.ShouldStartWith("The project file could not be loaded. Could not find file ");
         }
 
         [Fact]
@@ -54,9 +67,13 @@ namespace CBT.NuGet.UnitTests
                 {"Property2", "CEEC5C9FF0F344DAA32A0F545460EB2C"}
             };
 
-            MSBuildProjectLoader loader = new MSBuildProjectLoader(expectedGlobalProperties, MSBuildToolsVersion, ProjectLoadSettings.Default);
+            var projectA = ProjectBuilder
+                .Create()
+                .Save(GetTempFileName());
 
-            ProjectCollection projectCollection = loader.LoadProjectsAndReferences(new[] {_projectAPath});
+            MSBuildProjectLoader loader = new MSBuildProjectLoader(expectedGlobalProperties, MSBuildToolsVersion, Log);
+
+            ProjectCollection projectCollection = loader.LoadProjectsAndReferences(new[] {projectA.FullPath});
 
             projectCollection.GlobalProperties.ShouldBe(expectedGlobalProperties);
         }
@@ -64,21 +81,43 @@ namespace CBT.NuGet.UnitTests
         [Fact]
         public void ProjectReferencesWork()
         {
-            MSBuildProjectLoader loader = new MSBuildProjectLoader(null, MSBuildToolsVersion);
+            var projectB = ProjectBuilder.Create()
+                .Save(GetTempFileName());
 
-            ProjectCollection projectCollection = loader.LoadProjectsAndReferences(new[] {_projectAPath});
+            var projectA = ProjectBuilder
+                .Create()
+                .AddProjectReference(projectB)
+                .Save(GetTempFileName());
 
-            projectCollection.LoadedProjects.Select(i => i.FullPath).ShouldBe(new[] {_projectAPath, _projectBPath});
+            MSBuildProjectLoader loader = new MSBuildProjectLoader(null, MSBuildToolsVersion, Log);
+
+            ProjectCollection projectCollection = loader.LoadProjectsAndReferences(new[] {projectA.FullPath});
+
+            projectCollection.LoadedProjects.Select(i => i.FullPath).ShouldBe(new[] {projectA.FullPath, projectB.FullPath});
         }
 
         [Fact]
         public void TraversalReferencesWork()
         {
-            MSBuildProjectLoader loader = new MSBuildProjectLoader(null, MSBuildToolsVersion);
+            var projectB = ProjectBuilder.Create()
+                .Save(GetTempFileName());
 
-            ProjectCollection projectCollection = loader.LoadProjectsAndReferences(new[] {_dirsAPath});
+            var projectA = ProjectBuilder
+                .Create()
+                .AddProjectReference(projectB)
+                .Save(GetTempFileName());
 
-            projectCollection.LoadedProjects.Select(i => i.FullPath).ShouldBe(new[] {_dirsAPath, _projectAPath, _projectBPath});
+            var dirsProj = ProjectBuilder
+                .Create()
+                .AddProperty("IsTraversal=true")
+                .AddItem($"ProjectFile={projectA.FullPath}")
+                .Save(GetTempFileName());
+
+            MSBuildProjectLoader loader = new MSBuildProjectLoader(null, MSBuildToolsVersion, Log);
+
+            ProjectCollection projectCollection = loader.LoadProjectsAndReferences(new[] {dirsProj.FullPath});
+
+            projectCollection.LoadedProjects.Select(i => i.FullPath).ShouldBe(new[] {dirsProj.FullPath, projectA.FullPath, projectB.FullPath});
         }
     }
 }
