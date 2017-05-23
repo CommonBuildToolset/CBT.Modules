@@ -31,6 +31,7 @@
     <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.NuGet.props" />
     <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.NuGet.targets" />
     <Content Include="CBT\Module\Microsoft.NuGet\Newtonsoft.Json.dll" />
+    <Content Include="CBT\Module\VS\NuGet\**\*" />
     <None Include="version.json" />
   </ItemGroup>
   

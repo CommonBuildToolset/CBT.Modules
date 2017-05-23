@@ -6,6 +6,6 @@
     <BuildDependsOn>Restore;$(BuildDependsOn)</BuildDependsOn>
   </PropertyGroup>
 
-  <Target Name="Restore" DependsOnTargets="$(RestoreDependsOn)" />
+  <Target Name="CBTNuGetRestore" BeforeTargets="Restore" DependsOnTargets="$(RestoreDependsOn)" />
 
 </Project>

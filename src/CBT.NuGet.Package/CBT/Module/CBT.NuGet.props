@@ -21,8 +21,12 @@
     <!-- For project.json, the file to pass to restore is the project itself -->
     <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\project.json</CBTNuGetAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <NuGetProps Condition=" '$(NuGetProps)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props</NuGetProps>
     <NuGetTargets Condition=" '$(NuGetTargets)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
+    <NuGetRestoreTargets Condition=" '$(NuGetRestoreTargets)' == '' ">$(MSBuildThisFileDirectory)VS\NuGet\NuGet.targets</NuGetRestoreTargets>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == ''  And Exists('$(MSBuildProjectDirectory)\packages.config') ">
