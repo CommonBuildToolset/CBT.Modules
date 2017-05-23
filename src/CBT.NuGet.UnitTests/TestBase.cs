@@ -22,7 +22,10 @@ namespace CBT.NuGet.UnitTests
         {
             if (disposing)
             {
-                Directory.Delete(TestRootPath, recursive: true);
+                if (Directory.Exists(TestRootPath))
+                {
+                    Directory.Delete(TestRootPath, recursive: true);
+                }
             }
         }
 
