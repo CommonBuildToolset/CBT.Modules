@@ -106,6 +106,10 @@
   -->
   <Import Project="$(CBTBuildPackagePropsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
 
+
+  <!-- If the nuget restore targets are not in the import graph then rely on CBT already having restored the nuget packages. If the restore targets are imported then this target will be overridden. -->
+  <Target Name="Restore"/>
+
   <!--
     Import After.CBT.NuGet from module extensions and then local extensions
   -->
