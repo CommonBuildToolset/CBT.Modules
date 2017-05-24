@@ -21,12 +21,8 @@
     <!-- For project.json, the file to pass to restore is the project itself -->
     <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\project.json</CBTNuGetAllProjects>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <NuGetProps Condition=" '$(NuGetProps)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props</NuGetProps>
     <NuGetTargets Condition=" '$(NuGetTargets)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
-    <NuGetRestoreTargets Condition=" '$(NuGetRestoreTargets)' == '' ">$(MSBuildThisFileDirectory)VS\NuGet\NuGet.targets</NuGetRestoreTargets>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == ''  And Exists('$(MSBuildProjectDirectory)\packages.config') ">
@@ -109,6 +105,10 @@
     Import build packages that were specified in the modules package config
   -->
   <Import Project="$(CBTBuildPackagePropsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
+
+
+  <!-- If the nuget restore targets are not in the import graph then rely on CBT already having restored the nuget packages. If the restore targets are imported then this target will be overridden. -->
+  <Target Name="Restore"/>
 
   <!--
     Import After.CBT.NuGet from module extensions and then local extensions
