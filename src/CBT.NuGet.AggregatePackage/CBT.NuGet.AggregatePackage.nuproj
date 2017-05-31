@@ -13,7 +13,7 @@
     <Dependency Include="CBT.NuGet">
       <Version>[1.0,)</Version>
     </Dependency>
-    <Content Include="CBT\*\**" />
+    <Content Include="build\**\*" />
     <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />

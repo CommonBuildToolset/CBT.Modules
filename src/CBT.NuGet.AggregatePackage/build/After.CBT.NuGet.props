@@ -2,11 +2,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup> 
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects> 
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <CBTInjectionName>CBT.Nuget.AggregatePackage.props</CBTInjectionName>
   </PropertyGroup> 
  
-  <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)') " /> 
-  <Import Project="$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)') " /> 
+  <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(CBTInjectionName)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(CBTInjectionName)') " /> 
+  <Import Project="$(CBTModuleExtensionsPath)\Before.$(CBTInjectionName)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(CBTInjectionName)') " /> 
 
   <PropertyGroup>
     <CBTEnableAggregatePackageRestore Condition=" '$(CBTEnableAggregatePackageRestore)' == '' And '$(CBTEnablePackageRestore)'=='true' ">true</CBTEnableAggregatePackageRestore>
@@ -30,7 +31,7 @@
 
   <Import Project="$(CBTNuGetAggregatePackagePropertyFile)" Condition=" '$(CBTNuGetAggregatePackageGenerated)' == 'true' And Exists('$(CBTNuGetAggregatePackagePropertyFile)') "/>
 
-  <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)') " /> 
-  <Import Project="$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)') " /> 
+  <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(CBTInjectionName)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(CBTInjectionName)') " /> 
+  <Import Project="$(CBTModuleExtensionsPath)\After.$(CBTInjectionName)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(CBTInjectionName)') " /> 
 
 </Project>
