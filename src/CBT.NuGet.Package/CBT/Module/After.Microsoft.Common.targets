@@ -8,6 +8,6 @@
 
   <Import Project="$(NuGetTargets)" Condition=" '$(NuGetTargets)' != '' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.targets\ImportAfter\Microsoft.NuGet.ImportAfter.targets') " />
 
-  <Import Project="$(CBTBuildPackageTargetsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
+  <Import Project="$(CBTBuildPackageTargetsFile)" />
   
 </Project>
