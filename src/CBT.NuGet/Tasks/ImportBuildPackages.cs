@@ -14,7 +14,6 @@ namespace CBT.NuGet.Tasks
     /// </summary>
     public sealed class ImportBuildPackages : Task
     {
-        private static readonly string _moduleConfig = "module.config";
         /// <summary>
         /// The path to the modules packages.config.
         /// </summary>
@@ -121,12 +120,7 @@ namespace CBT.NuGet.Tasks
 
             foreach (BuildPackageInfo buildPackageInfo in ModulePaths.Select(BuildPackageInfo.FromModulePath).Where(i => i != null))
             {
-                bool defaultEnableValue = false;
-                if (!string.IsNullOrWhiteSpace(Path.GetDirectoryName(buildPackageInfo.PropsPath)))
-                {
-                    defaultEnableValue = File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath), _moduleConfig));
-                }
-                ProjectPropertyElement enableProperty = propertyGroup.AddProperty(buildPackageInfo.EnablePropertyName, defaultEnableValue.ToString().ToLower());
+                ProjectPropertyElement enableProperty = propertyGroup.AddProperty(buildPackageInfo.EnablePropertyName, "false");
                 enableProperty.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == '' ";
 
                 ProjectPropertyElement runProperty = propertyGroup.AddProperty(buildPackageInfo.RunPropertyName, "true");
