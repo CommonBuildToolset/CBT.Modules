@@ -31,7 +31,7 @@
 
   <Import Project="$(CBTNuGetAggregatePackagePropertyFile)" Condition=" '$(CBTNuGetAggregatePackageGenerated)' == 'true' And Exists('$(CBTNuGetAggregatePackagePropertyFile)') "/>
 
-  <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(CBTInjectionName)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(CBTInjectionName)') " /> 
   <Import Project="$(CBTModuleExtensionsPath)\After.$(CBTInjectionName)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(CBTInjectionName)') " /> 
+  <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(CBTInjectionName)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(CBTInjectionName)') " /> 
 
 </Project>
