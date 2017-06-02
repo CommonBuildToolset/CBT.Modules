@@ -14,6 +14,7 @@ namespace CBT.NuGet.Tasks
     /// </summary>
     public sealed class ImportBuildPackages : Task
     {
+        private static readonly string _moduleConfig = "module.config";
         /// <summary>
         /// The path to the modules packages.config.
         /// </summary>
@@ -25,18 +26,23 @@ namespace CBT.NuGet.Tasks
         public string[] ModulePaths { get; set; }
 
         /// <summary>
+        /// The path to the .props file to create.
+        /// </summary>
+        public string PropsFile { get; set; }
+
+        /// <summary>
         /// The path to the .targets file to create.
         /// </summary>
         public string TargetsFile { get; set; }
 
         public override bool Execute()
         {
-            if (File.Exists(TargetsFile))
+            if (File.Exists(PropsFile) && File.Exists(TargetsFile))
             {
                 return true;
             }
 
-            string semaphoreName = TargetsFile.ToUpper().GetHashCode().ToString("X");
+            string semaphoreName = PropsFile.ToUpper().GetHashCode().ToString("X");
 
             bool releaseSemaphore;
 
@@ -63,9 +69,9 @@ namespace CBT.NuGet.Tasks
             }
         }
 
-        public bool Execute(string modulePackagesConfig, string targetsFile, string[] inputs, string[] modulePaths)
+        public bool Execute(string modulePackagesConfig, string propsFile, string targetsFile, string[] inputs, string[] modulePaths)
         {
-            if (File.Exists(TargetsFile) && IsFileUpToDate(targetsFile, inputs))
+            if (File.Exists(PropsFile) && File.Exists(TargetsFile) && IsFileUpToDate(propsFile, inputs) && IsFileUpToDate(targetsFile, inputs))
             {
                 return true;
             }
@@ -73,6 +79,7 @@ namespace CBT.NuGet.Tasks
             BuildEngine = new CBTBuildEngine();
 
             ModulePackagesConfig = modulePackagesConfig;
+            PropsFile = propsFile;
             TargetsFile = targetsFile;
             ModulePaths = modulePaths;
 
@@ -107,18 +114,42 @@ namespace CBT.NuGet.Tasks
         {
             Log.LogMessage("Creating NuGet build package imports");
 
+            ProjectRootElement propsProject = ProjectRootElement.Create(PropsFile);
             ProjectRootElement targetsProject = ProjectRootElement.Create(TargetsFile);
+
+            ProjectPropertyGroupElement propertyGroup = propsProject.AddPropertyGroup();
 
             foreach (BuildPackageInfo buildPackageInfo in ModulePaths.Select(BuildPackageInfo.FromModulePath).Where(i => i != null))
             {
+                bool defaultEnableValue = false;
+                if (!string.IsNullOrWhiteSpace(Path.GetDirectoryName(buildPackageInfo.PropsPath)))
+                {
+                    defaultEnableValue = File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath), _moduleConfig));
+                }
+                ProjectPropertyElement enableProperty = propertyGroup.AddProperty(buildPackageInfo.EnablePropertyName, defaultEnableValue.ToString().ToLower());
+                enableProperty.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == '' ";
+
+                ProjectPropertyElement runProperty = propertyGroup.AddProperty(buildPackageInfo.RunPropertyName, "true");
+                runProperty.Condition = $" '$({buildPackageInfo.RunPropertyName})' == '' ";
+
+                if (File.Exists(buildPackageInfo.PropsPath))
+                {
+                    ProjectImportElement import = propsProject.AddImport(buildPackageInfo.PropsPath);
+
+                    import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
+                }
 
                 if (File.Exists(buildPackageInfo.TargetsPath))
                 {
-                    // Because PackageId.props is auto imported as a CBT module by cbt.core.dll we need to autoimport PackageId.targets.
                     ProjectImportElement import = targetsProject.AddImport(buildPackageInfo.TargetsPath);
+
+                    import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
                 }
+
+                Log.LogMessage(MessageImportance.High, "[{0}] {1} {2}", Thread.CurrentThread.ManagedThreadId, buildPackageInfo.Id, buildPackageInfo.RunPropertyName);
             }
 
+            propsProject.Save();
             targetsProject.Save();
 
             return true;
@@ -130,13 +161,19 @@ namespace CBT.NuGet.Tasks
             {
             }
 
+            public string EnablePropertyName { get; private set; }
+
             public string Id { get; private set; }
+
+            public string PropsPath { get; private set; }
+
+            public string RunPropertyName { get; private set; }
 
             public string TargetsPath { get; private set; }
 
             public static BuildPackageInfo FromModulePath(string modulePath)
             {
-                string[] parts = modulePath.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                string[] parts = modulePath.Split(new[] {'='}, 2, StringSplitOptions.RemoveEmptyEntries);
 
                 if (parts.Length != 2 || String.IsNullOrWhiteSpace(parts[0]) || String.IsNullOrWhiteSpace(parts[1]))
                 {
@@ -145,9 +182,10 @@ namespace CBT.NuGet.Tasks
                 string id = parts[0];
                 string path = parts[1];
 
+                string propsPath = Path.Combine(path, "build", $"{id}.props");
                 string targetsPath = Path.Combine(path, "build", $"{id}.targets");
 
-                if (!File.Exists(targetsPath))
+                if (!File.Exists(propsPath) && !File.Exists(targetsPath))
                 {
                     return null;
                 }
@@ -155,7 +193,10 @@ namespace CBT.NuGet.Tasks
                 BuildPackageInfo buildPackageInfo = new BuildPackageInfo
                 {
                     Id = parts[0],
+                    PropsPath = propsPath,
                     TargetsPath = targetsPath,
+                    EnablePropertyName = $"Enable{id.Replace(".", "_")}",
+                    RunPropertyName = $"Run{id.Replace(".", "_")}",
                 };
 
                 return buildPackageInfo;
