@@ -120,6 +120,12 @@ namespace CBT.NuGet.Tasks
 
             foreach (BuildPackageInfo buildPackageInfo in ModulePaths.Select(BuildPackageInfo.FromModulePath).Where(i => i != null))
             {
+                // If this is a cbt module do not auto import props or targets.
+                if (File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath), "module.config")))
+                {
+                    Log.LogMessage(MessageImportance.Low, $"Not auto importing {buildPackageInfo.Id} package because it is a CBT Module.");
+                    continue;
+                }
                 ProjectPropertyElement enableProperty = propertyGroup.AddProperty(buildPackageInfo.EnablePropertyName, "false");
                 enableProperty.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == '' ";
 
