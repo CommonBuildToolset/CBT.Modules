@@ -61,8 +61,8 @@ namespace CBT.NuGet.AggregatePackage.UnitTests
                     .AddProperty("CBTAggregatePackage=NuGetPath_Microsoft_Build=src1|scr2")
                     .AddProperty($"NuGetPackagesPath={_destPackagesPath}")
                     .AddProperty($@"IntermediateOutputPath={_enlistmentRoot}\obj\$(Configuration)\$(Platform)\AggregatePackage.proj")
-                    .AddImport($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\cbt\module\After.CBT.NuGet.props")
-                    .AddImport($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\cbt\module\After.Microsoft.Common.targets")
+                    .AddImport($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\After.CBT.NuGet.props")
+                    .AddImport($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\After.Microsoft.Common.targets")
                     .AddTarget("Build")
                     .Save(testProject);
         }
@@ -89,10 +89,10 @@ namespace CBT.NuGet.AggregatePackage.UnitTests
             string aggregateImport = Path.Combine(_enlistmentRoot, "src", "CBT.AggregatePackages.props");
             CreateAggregateImportProject(aggregateImport);
 
-            _aggregatePropsInNupkg = Path.Combine(installedNupkgs["CBT.NuGet.AggregatePackage"], "CBT", "Module", "CBT.NuGet.AggregatePackage.props");
+            _aggregatePropsInNupkg = Path.Combine(installedNupkgs["CBT.NuGet.AggregatePackage"], "build", "After.CBT.NuGet.props");
             File.WriteAllText(_aggregatePropsInNupkg, File.ReadAllText(_aggregatePropsInNupkg).Replace("CBT.NuGet.Tasks.AggregatePackages", "CBT.NuGet.AggregatePackage.UnitTests.FakeAggregateTrue"));
 
-            var aMC_AP = Path.Combine(installedNupkgs["CBT.NuGet.AggregatePackage"], "CBT", "Module", "After.Microsoft.Common.targets");
+            var aMC_AP = Path.Combine(installedNupkgs["CBT.NuGet.AggregatePackage"], "build", "After.Microsoft.Common.targets");
             File.WriteAllText(aMC_AP, File.ReadAllText(aMC_AP).Replace("CBT.NuGet.Tasks.AggregatePackages", "CBT.NuGet.AggregatePackage.UnitTests.FakeAggregateFalse"));
             File.WriteAllText(aMC_AP, File.ReadAllText(aMC_AP).Replace("<AggregatePackages", "<FakeAggregateFalse"));
         }
@@ -150,10 +150,9 @@ namespace CBT.NuGet.AggregatePackage.UnitTests
             SetupTestEnlistment(_enlistmentRoot, _installedNupkgs);
 
             var expectedImports = new List<Import>();
-            expectedImports.Add(new Import($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\cbt\module\After.CBT.NuGet.props"));
-            expectedImports.Add(new Import(@"$(MSBuildThisFileDirectory)\CBT.NuGet.AggregatePackage.props"));
+            expectedImports.Add(new Import($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\After.CBT.NuGet.props"));
             expectedImports.Add(new Import("$(CBTAggregatePackageImport)"));
-            expectedImports.Add(new Import($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\cbt\module\After.Microsoft.Common.targets"));
+            expectedImports.Add(new Import($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\After.Microsoft.Common.targets"));
 
             Helper.RunTest(Helper.TestType.Simple, _testProject, null, null, expectedImports);
         }
@@ -165,10 +164,9 @@ namespace CBT.NuGet.AggregatePackage.UnitTests
 
             List<string> expectedPayload = new List<string>();
             expectedPayload.Add($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\CBT.NuGet.AggregatePackage.nuspec");
-            expectedPayload.Add($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\cbt\Module\After.CBT.NuGet.props");
-            expectedPayload.Add($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\cbt\Module\After.Microsoft.Common.targets");
-            expectedPayload.Add($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\cbt\Module\CBT.NuGet.AggregatePackage.props");
-            expectedPayload.Add($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\cbt\Module\module.config");
+            expectedPayload.Add($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\After.CBT.NuGet.props");
+            expectedPayload.Add($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\After.Microsoft.Common.targets");
+            expectedPayload.Add($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\module.config");
 
             List<string> nugetPkgPayload = Directory.GetFiles(_installedNupkgs["CBT.NuGet.AggregatePackage"], "*.*", SearchOption.AllDirectories).ToList();
             List<string> excludeFromPayload = Directory.GetFiles(_installedNupkgs["CBT.NuGet.AggregatePackage"], @"package\*.*", SearchOption.AllDirectories).ToList();
