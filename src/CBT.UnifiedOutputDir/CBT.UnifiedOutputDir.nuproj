@@ -10,9 +10,7 @@
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
-    <Content Include="CBT\Module\Build.props" />
-    <Content Include="CBT\Module\CBT.UnifiedOutputDir.props" />
-    <Content Include="CBT\Module\module.config" />
+    <Content Include="build\**\*" />
     <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
