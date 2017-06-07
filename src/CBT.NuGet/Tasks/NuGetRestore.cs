@@ -49,8 +49,7 @@ namespace CBT.NuGet.Tasks
             // CBTModulesRestored must be set so on it's evaluation it knows to import the generated module imports so it evaluates the proper full closure of the project.
             EnvironmentVariables = new[] {
                 $"CBTEnablePackageRestore=false",
-                $"CBTModulesRestored=true",
-                $"CBTEnableGlobalPackageRestore=false"
+                $"CBTModulesRestored=true"
             };
             // If packages directory was not specified, just execute the restore
             //
