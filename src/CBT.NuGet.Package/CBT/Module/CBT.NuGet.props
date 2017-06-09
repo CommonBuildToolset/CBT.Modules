@@ -10,6 +10,7 @@
   <PropertyGroup>
     <CBTNuGetTasksAssemblyPath Condition=" '$(CBTNuGetTasksAssemblyPath)' == '' ">$(MSBuildThisFileDirectory)CBT.NuGet.dll</CBTNuGetTasksAssemblyPath>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildThisFileFullPath);$(MSBuildThisFileDirectory)CBT.NuGet.targets;$(MSBuildThisFileDirectory)After.Microsoft.Common.targets;$(CBTNuGetTasksAssemblyPath)</CBTNuGetAllProjects>
+    <CBTEnablePackageRestore Condition=" '$(ExcludeRestorePackageImports)' == 'true' ">false</CBTEnablePackageRestore>
     <CBTEnablePackageRestore Condition=" '$(CBTEnablePackageRestore)' == '' ">true</CBTEnablePackageRestore>
     <CBTNuGetPath Condition=" '$(CBTNuGetPath)' == '' And '$(CBTModuleRestoreCommand)' != '' And $([System.IO.Path]::GetFileName($(CBTModuleRestoreCommand))) == 'NuGet.exe' And Exists($(CBTModuleRestoreCommand)) ">$([System.IO.Path]::GetDirectoryName($(CBTModuleRestoreCommand)))</CBTNuGetPath>
     <CBTEnableImportBuildPackages Condition=" '$(CBTEnableImportBuildPackages)' == '' ">true</CBTEnableImportBuildPackages>
