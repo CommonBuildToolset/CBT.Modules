@@ -11,7 +11,7 @@
     <None Include="version.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="build\**\*" />
+    <Content Include="CBT\**\*" />
   </ItemGroup>
   <ItemGroup>
    <Dependency Include="CBT.Microsoft.Common.targets">
