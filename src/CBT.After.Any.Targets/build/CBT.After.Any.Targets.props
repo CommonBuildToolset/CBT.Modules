@@ -5,6 +5,6 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
   <PropertyGroup>
-    <AfterAnyTargets>$(MSBuildThisFileDirectory)\After.Any.targets</AfterAnyTargets>
+    <AfterAnyTargets>$(MSBuildThisFileDirectory)\CBT.After.Any.targets</AfterAnyTargets>
   </PropertyGroup>
 </Project>
