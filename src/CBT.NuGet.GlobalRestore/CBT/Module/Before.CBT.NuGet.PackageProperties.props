@@ -2,8 +2,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <CBTEnableGlobalPackageRestore Condition=" '$(CBTEnableGlobalPackageRestore)' == '' ">true</CBTEnableGlobalPackageRestore>
     <CBTEnableGlobalPackageRestore Condition=" '$(CBTEnablePackageRestore)' == 'false' ">false</CBTEnableGlobalPackageRestore>
+    <CBTEnableGlobalPackageRestore Condition=" '$(ExcludeRestorePackageImports)' == 'true' ">false</CBTEnableGlobalPackageRestore>
+    <CBTEnableGlobalPackageRestore Condition=" '$(CBTEnableGlobalPackageRestore)' == '' ">true</CBTEnableGlobalPackageRestore>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(CBTEnableGlobalPackageRestore)' == 'true' And '$(CBTNuGetGlobalPackagesRestoreFile)' == ''  And Exists('$(CBTLocalPath)\GlobalPackages\packages.config') "> 
     <CBTNuGetGlobalPackagesRestoreFile>$(CBTLocalPath)\GlobalPackages\packages.config</CBTNuGetGlobalPackagesRestoreFile> 
