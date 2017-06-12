@@ -4,7 +4,7 @@
     <CBTSavedCustomBeforeMicrosoftCommonProps>$(CustomBeforeMicrosoftCommonProps)</CBTSavedCustomBeforeMicrosoftCommonProps>
     <CBTSavedCustomAfterMicrosoftCommonProps>$(CustomAfterMicrosoftCommonProps)</CBTSavedCustomAfterMicrosoftCommonProps>
 
-    <CustomBeforeMicrosoftCommonProps>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.Common.props</CustomBeforeMicrosoftCommonProps>
-    <CustomAfterMicrosoftCommonProps>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.Common.props</CustomAfterMicrosoftCommonProps>
+    <CustomBeforeMicrosoftCommonProps>$(MSBuildThisFileDirectory)\CBT.Before.Microsoft.Common.props</CustomBeforeMicrosoftCommonProps>
+    <CustomAfterMicrosoftCommonProps>$(MSBuildThisFileDirectory)\CBT.After.Microsoft.Common.props</CustomAfterMicrosoftCommonProps>
   </PropertyGroup>
 </Project>

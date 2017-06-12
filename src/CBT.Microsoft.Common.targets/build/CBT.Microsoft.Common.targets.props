@@ -4,7 +4,7 @@
     <CBTSavedCustomBeforeMicrosoftCommonTargets>$(CustomBeforeMicrosoftCommonTargets)</CBTSavedCustomBeforeMicrosoftCommonTargets>
     <CBTSavedCustomAfterMicrosoftCommonTargets>$(CustomAfterMicrosoftCommonTargets)</CBTSavedCustomAfterMicrosoftCommonTargets>
 
-    <CustomBeforeMicrosoftCommonTargets>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.Common.targets</CustomBeforeMicrosoftCommonTargets>
-    <CustomAfterMicrosoftCommonTargets>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.Common.targets</CustomAfterMicrosoftCommonTargets>
+    <CustomBeforeMicrosoftCommonTargets>$(MSBuildThisFileDirectory)\CBT.Before.Microsoft.Common.targets</CustomBeforeMicrosoftCommonTargets>
+    <CustomAfterMicrosoftCommonTargets>$(MSBuildThisFileDirectory)\CBT.After.Microsoft.Common.targets</CustomAfterMicrosoftCommonTargets>
   </PropertyGroup>
 </Project>

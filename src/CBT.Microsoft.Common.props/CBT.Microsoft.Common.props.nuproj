@@ -8,10 +8,10 @@
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
-    <Content Include="CBT\Module\Build.props" />
-    <Content Include="CBT\Module\Extensions\After.Microsoft.Common.props" />
-    <Content Include="CBT\Module\Extensions\Before.Microsoft.Common.props" />
-    <Content Include="CBT\Module\module.config" />
+    <Content Include="build\CBT.Microsoft.Common.props.props" />
+    <Content Include="build\CBT.After.Microsoft.Common.props" />
+    <Content Include="build\CBT.Before.Microsoft.Common.props" />
+    <Content Include="build\module.config" />
     <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
