@@ -3,7 +3,7 @@
 
   <PropertyGroup> 
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <CBTInjectionName>CBT.Nuget.AggregatePackage.props</CBTInjectionName>
+    <CBTInjectionName>CBT.NuGet.AggregatePackage.props</CBTInjectionName>
   </PropertyGroup> 
  
   <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(CBTInjectionName)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(CBTInjectionName)') " /> 
