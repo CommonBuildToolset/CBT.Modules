@@ -23,8 +23,6 @@
     <Content Include="build\After.Traversal.targets" />
     <Content Include="build\module.config" />
     <Content Include="build\CBT.NuGet.props" />
-    <Content Include="build\CBT.NuGet.props" />
-    <Content Include="build\CBT.NuGet.targets" />
     <Content Include="build\Microsoft.NuGet\Microsoft.Build.Tasks.Core.dll" />
     <Content Include="build\Microsoft.NuGet\Microsoft.Build.Utilities.Core.dll" />
     <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />
