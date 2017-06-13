@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
 
-SET "NETFXTAG=-beta04"
+SET "NETFXTAG=-beta05"
 IF "%ProgramFiles(x86)%" NEQ "" (
 	SET "REFERENCEASSEMBLYROOT=%ProgramFiles(x86)%\Reference Assemblies"
 ) ELSE (

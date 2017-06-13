@@ -31,6 +31,7 @@
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\packages.config</CBTNuGetAllProjects>
   </PropertyGroup>
 
+  <!-- Assume project might contain a <PackageReference element and set CBTNugetRestoreFile to it if not already defined. -->
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetRestoreFile)' == '' ">
     <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectFullPath)</CBTNuGetAllProjects>
@@ -122,4 +123,57 @@
   <Import Project="$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\After.$(MSBuildThisFile)') " />
   <Import Project="$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\After.$(MSBuildThisFile)') " />
 
+
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetAdd" />
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetConfig" />
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetList" />
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetPack" />
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetPush" />
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetRestore" />
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetSetApiKey" />
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.TraversalNuGetRestore" />
+
+  <Target Name="RestoreNuGetPackages"
+    Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' "
+    DependsOnTargets="_CheckForCBTNuGetPackagesRestoredMarker;$(RestoreNuGetPackagesDependsOn)"
+    Inputs="$(CBTNuGetAllProjects);$(CBTNuGetRestoreFile)"
+    Outputs="$(CBTNuGetPackagesRestoredMarker)">
+
+    <NuGetRestore
+      File="$(CBTNuGetRestoreFile)"
+      RequireConsent="$(CBTNuGetRestoreRequireConsent)"
+      PackagesDirectory="$(CBTNuGetRestorePackagesDirectory)"
+      SolutionDirectory="$(NuGetRestoreSolutionDirectory)"
+      MsBuildVersion="$(NuGetMsBuildVersion)"
+      DisableParallelProcessing="$(CBTNuGetDisableParallelProcessing)"
+      FallbackSource="$(NuGetFallbackSource)"
+      NoCache="$(CBTNuGetNoCache)"
+      PackageSaveMode="$(NuGetPackageSaveMode)"
+      Source="$(NuGetSource)"
+      ConfigFile="$(NuGetConfigFile)"
+      NonInteractive="$(CBTNuGetNonInteractive)"
+      Verbosity="$(NuGetVerbosity)"
+      Timeout="$(CBTNuGetTimeout)"
+      ToolPath="$(CBTNuGetPath)"
+      />
+
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(CBTNuGetPackagesRestoredMarker)))" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' " />
+
+    <Touch AlwaysCreate="true" ForceTouch="true" Files="$(CBTNuGetPackagesRestoredMarker)" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' " />
+
+    <CallTarget Targets="_CheckForCBTNuGetPackagesRestoredMarker" />
+
+    <PropertyGroup Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' And '$(IsRestoreOnly)' == 'true' ">
+      <CBTNuGetPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))"</CBTNuGetPackagePropertiesCreated>
+    </PropertyGroup>
+
+  </Target>
+
+  <Target Name="_CheckForCBTNuGetPackagesRestoredMarker">
+
+    <ItemGroup>
+      <FileWrites Include="$(CBTNuGetPackagesRestoredMarker)" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' And Exists('$(CBTNuGetPackagesRestoredMarker)') " />
+    </ItemGroup>
+
+  </Target>
 </Project>

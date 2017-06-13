@@ -11,10 +11,10 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
     <Dependency Include="CBT.NuGet">
-      <Version>[1.0.97,)</Version>
+      <Version>[2.0.0,)</Version>
     </Dependency>
-    <Content Include="CBT\Module\Before.CBT.NuGet.PackageProperties.props" />
-    <Content Include="CBT\Module\After.Microsoft.Common.targets" />
+    <Content Include="build\Before.CBT.NuGet.PackageProperties.props" />
+    <Content Include="build\After.Microsoft.Common.targets" />
     <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />

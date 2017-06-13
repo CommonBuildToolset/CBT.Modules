@@ -14,23 +14,21 @@
   
   <ItemGroup>
     <ProjectReference Include="..\CBT.NuGet\CBT.NuGet.csproj">
-      <TargetDir>CBT\Module\</TargetDir>
+      <TargetDir>build\</TargetDir>
     </ProjectReference>
     <Dependency Include="CBT.Microsoft.Common.targets">
-      <Version>[1.0,)</Version>
+      <Version>[2.0,)</Version>
     </Dependency>
-    <Content Include="CBT\Module\After.Microsoft.Common.targets" />
-    <Content Include="CBT\Module\After.Traversal.targets" />
-    <Content Include="CBT\Module\module.config" />
-    <Content Include="CBT\Module\build.props" />
-    <Content Include="CBT\Module\CBT.NuGet.props" />
-    <Content Include="CBT\Module\CBT.NuGet.targets" />
-    <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.Build.Tasks.Core.dll" />
-    <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.Build.Utilities.Core.dll" />
-    <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />
-    <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.NuGet.props" />
-    <Content Include="CBT\Module\Microsoft.NuGet\Microsoft.NuGet.targets" />
-    <Content Include="CBT\Module\Microsoft.NuGet\Newtonsoft.Json.dll" />
+    <Content Include="build\After.Microsoft.Common.targets" />
+    <Content Include="build\After.Traversal.targets" />
+    <Content Include="build\module.config" />
+    <Content Include="build\CBT.NuGet.props" />
+    <Content Include="build\Microsoft.NuGet\Microsoft.Build.Tasks.Core.dll" />
+    <Content Include="build\Microsoft.NuGet\Microsoft.Build.Utilities.Core.dll" />
+    <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />
+    <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.props" />
+    <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.targets" />
+    <Content Include="build\Microsoft.NuGet\Newtonsoft.Json.dll" />
     <None Include="version.json" />
   </ItemGroup>
   

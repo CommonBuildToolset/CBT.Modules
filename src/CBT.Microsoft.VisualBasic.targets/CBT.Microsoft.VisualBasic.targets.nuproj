@@ -11,10 +11,10 @@
     <None Include="version.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CBT\Module\Build.props" />
-    <Content Include="CBT\Module\Extensions\After.Microsoft.VisualBasic.targets" />
-    <Content Include="CBT\Module\Extensions\Before.Microsoft.VisualBasic.targets" />
-    <Content Include="CBT\Module\module.config" />
+    <Content Include="build\CBT.Microsoft.VisualBasic.targets.props" />
+    <Content Include="build\CBT.After.Microsoft.VisualBasic.targets" />
+    <Content Include="build\CBT.Before.Microsoft.VisualBasic.targets" />
+    <Content Include="build\module.config" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
 </Project>
