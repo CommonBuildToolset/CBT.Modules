@@ -7,13 +7,13 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains the reference assemblies for the .NET Framework $DisplayVersion$</description>
     <dependencies>
-      <dependency id="CBT.Microsoft.Common.targets" version="[1.0,)"/>
+      <dependency id="CBT.Microsoft.Common.targets" version="[2.0,)"/>
     </dependencies>
   </metadata>
 
   <files>
-    <file src="Before.Microsoft.Common-$DisplayName$.targets" target="CBT\Module\Before.Microsoft.Common.targets" />
-    <file src="$Root$\v3.5\**\*" target="CBT\Module\$DisplayName$\" />
-    <file src="$Root$\.NETFramework\v3.5\**\*" target="CBT\Module\$DisplayName$\" />
+    <file src="Before.Microsoft.Common-$DisplayName$.targets" target="build\Before.Microsoft.Common.targets" />
+    <file src="$Root$\v3.5\**\*" target="build\$DisplayName$\" />
+    <file src="$Root$\.NETFramework\v3.5\**\*" target="build\$DisplayName$\" />
   </files>
 </package>
