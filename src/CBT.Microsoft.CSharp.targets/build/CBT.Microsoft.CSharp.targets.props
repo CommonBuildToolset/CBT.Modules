@@ -4,7 +4,7 @@
     <CBTSavedCustomBeforeMicrosoftCSharpTargets>$(CustomBeforeMicrosoftCSharpTargets)</CBTSavedCustomBeforeMicrosoftCSharpTargets>
     <CBTSavedCustomAfterMicrosoftCSharpTargets>$(CustomAfterMicrosoftCSharpTargets)</CBTSavedCustomAfterMicrosoftCSharpTargets>
 
-    <CustomBeforeMicrosoftCSharpTargets>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.CSharp.targets</CustomBeforeMicrosoftCSharpTargets>
-    <CustomAfterMicrosoftCSharpTargets>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.CSharp.targets</CustomAfterMicrosoftCSharpTargets>
+    <CustomBeforeMicrosoftCSharpTargets>$(MSBuildThisFileDirectory)\CBT.Before.Microsoft.CSharp.targets</CustomBeforeMicrosoftCSharpTargets>
+    <CustomAfterMicrosoftCSharpTargets>$(MSBuildThisFileDirectory)\CBT.After.Microsoft.CSharp.targets</CustomAfterMicrosoftCSharpTargets>
   </PropertyGroup>
 </Project>

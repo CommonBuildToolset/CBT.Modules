@@ -4,7 +4,7 @@
     <CBTSavedForceImportBeforeCppTargets>$(ForceImportBeforeCppTargets)</CBTSavedForceImportBeforeCppTargets>
     <CBTSavedForceImportAfterCppTargets>$(ForceImportAfterCppTargets)</CBTSavedForceImportAfterCppTargets>
 
-    <ForceImportBeforeCppTargets>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.Cpp.targets</ForceImportBeforeCppTargets>
-    <ForceImportAfterCppTargets>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.Cpp.targets</ForceImportAfterCppTargets>
+    <ForceImportBeforeCppTargets>$(MSBuildThisFileDirectory)\CBT.Before.Microsoft.Cpp.targets</ForceImportBeforeCppTargets>
+    <ForceImportAfterCppTargets>$(MSBuildThisFileDirectory)\CBT.After.Microsoft.Cpp.targets</ForceImportAfterCppTargets>
   </PropertyGroup>
 </Project>

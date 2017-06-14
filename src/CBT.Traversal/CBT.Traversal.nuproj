@@ -9,12 +9,12 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
     <Dependency Include="CBT.Microsoft.Common.targets">
-      <Version>[1.0,)</Version>
+      <Version>[2.0,)</Version>
     </Dependency>
-    <Content Include="CBT\Module\After.Microsoft.Common.targets" />
-    <Content Include="CBT\Module\Build.props" />
-    <Content Include="CBT\Module\module.config" />
-    <Content Include="CBT\Module\Traversal.targets" />
+    <Content Include="build\After.Microsoft.Common.targets" />
+    <Content Include="build\CBT.Traversal.props" />
+    <Content Include="build\module.config" />
+    <Content Include="build\Traversal.targets" />
     <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />

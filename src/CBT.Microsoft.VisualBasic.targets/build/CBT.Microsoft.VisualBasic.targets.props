@@ -4,7 +4,7 @@
     <CBTSavedCustomBeforeMicrosoftVisualBasicTargets>$(CustomBeforeMicrosoftVisualBasicTargets)</CBTSavedCustomBeforeMicrosoftVisualBasicTargets>
     <CBTSavedCustomAfterMicrosoftVisualBasicTargets>$(CustomAfterMicrosoftVisualBasicTargets)</CBTSavedCustomAfterMicrosoftVisualBasicTargets>
 
-    <CustomBeforeMicrosoftVisualBasicTargets>$(MSBuildThisFileDirectory)\Extensions\Before.Microsoft.VisualBasic.targets</CustomBeforeMicrosoftVisualBasicTargets>
-    <CustomAfterMicrosoftVisualBasicTargets>$(MSBuildThisFileDirectory)\Extensions\After.Microsoft.VisualBasic.targets</CustomAfterMicrosoftVisualBasicTargets>
+    <CustomBeforeMicrosoftVisualBasicTargets>$(MSBuildThisFileDirectory)\CBT.Before.Microsoft.VisualBasic.targets</CustomBeforeMicrosoftVisualBasicTargets>
+    <CustomAfterMicrosoftVisualBasicTargets>$(MSBuildThisFileDirectory)\CBT.After.Microsoft.VisualBasic.targets</CustomAfterMicrosoftVisualBasicTargets>
   </PropertyGroup>
 </Project>
