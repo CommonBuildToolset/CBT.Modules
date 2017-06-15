@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <BuildDependsOn>Restore;$(BuildDependsOn)</BuildDependsOn>
+    <BuildDependsOn Condition=" '$(IsRestoreOnly)' == 'true' " >Restore;$(BuildDependsOn)</BuildDependsOn>
   </PropertyGroup>
 
   <Target Name="CBTNuGetRestore" BeforeTargets="Restore" DependsOnTargets="$(RestoreDependsOn)" />
