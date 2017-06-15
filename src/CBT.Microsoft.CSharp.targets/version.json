@@ -3,7 +3,7 @@
   "version": "2.0-dev",
   "buildNumberOffset": 0,
   "publicReleaseRefSpec": [
-    "^refs/tags/CBT\\.Microsoft\\.Cpp\\.targets.*"
+    "^refs/tags/CBT\\.Microsoft\\.CSharp\\.targets.*"
   ],
   "cloudBuild": {
     "setVersionVariables": false
