@@ -6,7 +6,7 @@
 2. Add list of changes that are customer facing that have been fixed for the module to the release description.
 3. Publish release and wait for the AppVeyor build to complete
    * navigate to https://www.appveyor.com/ and login to CBT.  Select from artifacts the nupkg and it's symbol nupkg if any.
-4. Push the nupkg from the build
+4. Push the nupkg from the build to https://www.myget.org/F/cbt/api/v3/index.json
 5. Attach the nupkg to the GitHub release
 6. Update CBT.Examples repo to include any new functionality
 
