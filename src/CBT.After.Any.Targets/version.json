@@ -3,7 +3,7 @@
   "version": "2.0-dev",
   "buildNumberOffset": 0,
   "publicReleaseRefSpec": [
-    "^refs/tags/CBT\\.After\\.Any\\.targets.*"
+    "^refs/tags/CBT\\.After\\.Any\\.Targets.*"
   ],
   "cloudBuild": {
     "setVersionVariables": false
