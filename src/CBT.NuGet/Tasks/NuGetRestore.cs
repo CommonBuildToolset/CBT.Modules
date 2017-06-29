@@ -24,6 +24,11 @@ namespace CBT.NuGet.Tasks
         public string MsBuildVersion { get; set; }
 
         /// <summary>
+        /// Gets or sets the path of MSBuild to be used with this command. Supported value is a path to msbuild.exe
+        /// </summary>
+        public string MsBuildPath { get; set; }
+
+        /// <summary>
         /// Gets or sets the packages folder.
         /// </summary>
         public string PackagesDirectory { get; set; }
@@ -42,6 +47,11 @@ namespace CBT.NuGet.Tasks
         /// Gets or sets the solution directory. Not valid when restoring packages for a solution.
         /// </summary>
         public string SolutionDirectory { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional NuGet restore arguments.
+        /// </summary>
+        public string AdditionalArguments { get; set; }
 
         public override bool Execute()
         {
@@ -87,7 +97,7 @@ namespace CBT.NuGet.Tasks
             }
         }
 
-        public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs)
+        public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs, string msBuildPath, string additionalArguments)
         {
             if (BuildEngine == null)
             {
@@ -97,6 +107,7 @@ namespace CBT.NuGet.Tasks
             Log.LogMessage(MessageImportance.Low, "Restore NuGet Packages:");
             Log.LogMessage(MessageImportance.Low, $"  File = {file}");
             Log.LogMessage(MessageImportance.Low, $"  MSBuildVersion = {msBuildVersion}");
+            Log.LogMessage(MessageImportance.Low, $"  MSBuildPath = {msBuildPath}");
             Log.LogMessage(MessageImportance.Low, $"  PackagesDirectory = {packagesDirectory}");
             Log.LogMessage(MessageImportance.Low, $"  RequireConsent = {requireConsent}");
             Log.LogMessage(MessageImportance.Low, $"  SolutionDirectory = {solutionDirectory}");
@@ -113,6 +124,7 @@ namespace CBT.NuGet.Tasks
             Log.LogMessage(MessageImportance.Low, $"  EnableOptimization = {enableOptimization}");
             Log.LogMessage(MessageImportance.Low, $"  MarkerPath = {markerPath}");
             Log.LogMessage(MessageImportance.Low, $"  Inputs = {String.Join(";", inputs)}");
+            Log.LogMessage(MessageImportance.Low, $"  AdditionalArguments = {additionalArguments}");
 
             if (enableOptimization && IsFileUpToDate(Log, markerPath, inputs))
             {
@@ -123,6 +135,7 @@ namespace CBT.NuGet.Tasks
 
             File = file;
             MsBuildVersion = msBuildVersion;
+            MsBuildPath = msBuildPath;
             PackagesDirectory = packagesDirectory;
             RequireConsent = RequireConsent;
             SolutionDirectory = !String.IsNullOrWhiteSpace(solutionDirectory) ? solutionDirectory : null;
@@ -134,6 +147,7 @@ namespace CBT.NuGet.Tasks
             ConfigFile = !String.IsNullOrWhiteSpace(configFile) ? configFile : null;
             NonInteractive = nonInteractive;
             Verbosity = verbosity;
+            AdditionalArguments = additionalArguments;
 
             if (timeout > 0)
             {
@@ -194,7 +208,11 @@ namespace CBT.NuGet.Tasks
 
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildVersion ", MsBuildVersion);
 
+            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildPath ", MsBuildPath);
+
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Project2ProjectTimeOut ", Project2ProjectTimeOut);
+
+            commandLineBuilder.AppendTextUnquoted(AdditionalArguments);
 
             base.GenerateCommandLineCommands(commandLineBuilder);
         }

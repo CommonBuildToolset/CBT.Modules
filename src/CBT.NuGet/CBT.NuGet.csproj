@@ -22,12 +22,20 @@
     <Compile Include="CommandVerbosity.cs" />
     <Compile Include="DownloadCommandBase.cs" />
     <Compile Include="Internal\CBTBuildEngine.cs" />
+    <Compile Include="Internal\CBTTaskLogHelper.cs" />
     <Compile Include="Internal\ExtensionMethods.cs" />
     <Compile Include="Internal\FileUtilities.cs" />
+    <Compile Include="Internal\INuGetPackageConfigParser.cs" />
+    <Compile Include="Internal\ModulePropertyGenerator.cs" />
     <Compile Include="Internal\MSBuildProjectLoader.cs" />
+    <Compile Include="Internal\NuGetPackageReferenceProjectParser.cs" />
+    <Compile Include="Internal\NuGetPackagesConfigParser.cs" />
+    <Compile Include="Internal\NuGetProjectJsonParser.cs" />
     <Compile Include="Internal\NuGetPropertyGenerator.cs" />
     <Compile Include="Internal\AggregatePackage.cs" />
+    <Compile Include="Internal\PackageIdentityWithPath.cs" />
     <Compile Include="Internal\PackageInfo.cs" />
+    <Compile Include="Internal\PackageRestoreData.cs" />
     <Compile Include="Tasks\AggregatePackages.cs" />
     <Compile Include="Tasks\GenerateNuGetProperties.cs" />
     <Compile Include="Tasks\ImportBuildPackages.cs" />
@@ -44,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="version.json" />
+    <None Include="project.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

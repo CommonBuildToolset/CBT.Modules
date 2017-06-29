@@ -18,7 +18,8 @@
     <!-- Ensure IntermediateOutputPath is unique in situations where project files have identical names such as traversal projects a.k.a. dirs.proj. -->
     <CBTEnableHashedIntermediateOutputPath Condition="'$(CBTEnableHashedIntermediateOutputPath)'!=''">$([System.Convert]::ToBoolean($(CBTEnableHashedIntermediateOutputPath)))</CBTEnableHashedIntermediateOutputPath>
     <CBTEnableHashedIntermediateOutputPath Condition="'$(CBTEnableHashedIntermediateOutputPath)'==''">true</CBTEnableHashedIntermediateOutputPath>
-    <IntermediateOutputPath Condition="'$(CBTEnableHashedIntermediateOutputPath)' == 'true'">$([System.IO.Path]::Combine($(IntermediateOutputPath),$(MSBuildProjectFullPath.SubString($(EnlistmentRoot.Length)).GetHashCode().ToString("X"))))\</IntermediateOutputPath>
+    <CBTIntermediateOutputPathPartial>$(MSBuildProjectFullPath.SubString($(EnlistmentRoot.Length)))</CBTIntermediateOutputPathPartial>
+    <IntermediateOutputPath Condition="'$(CBTEnableHashedIntermediateOutputPath)' == 'true'">$([System.IO.Path]::Combine($(IntermediateOutputPath),$(CBTIntermediateOutputPathPartial.Length.ToString())))\</IntermediateOutputPath>
 
     <CBTOutputRootDir Condition=" '$(CBTOverrideBaseOutputPath)' != '' ">$(CBTOverrideBaseOutputPath)</CBTOutputRootDir>
     <CBTOutputPathPlatformPart Condition="'$(CBTOutputPathPlatformPart)' == ''">$(Platform)</CBTOutputPathPlatformPart>

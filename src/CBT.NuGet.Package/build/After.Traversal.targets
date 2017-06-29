@@ -43,6 +43,7 @@
     <TraversalNuGetRestore
       GlobalProperties="$(CBTNuGetTraversalRestoreGlobalProperties)"
       MSBuildToolsVersion="$(MSBuildToolsVersion)"
+      MSBuildPath="$(MSBuildPath)"
       Project="$(MSBuildProjectFullPath)"
       File="$(CBTNuGetTraversalRestoreFile)"
       ConfigFile="$(NuGetConfigFile)"
@@ -59,11 +60,12 @@
       Timeout="$(CBTNuGetTimeout)"
       ToolPath="$(CBTNuGetPath)"
       Verbosity="$(NuGetVerbosity)"
+      AdditionalArguments="$(CBTNuGetRestoreAdditionalArguments)"
     />
 
     <PropertyGroup>
       <TraversalRestoreGlobalProperties>$(TraversalRestoreGlobalProperties);CBTNuGetTraversalPackagesRestored=true</TraversalRestoreGlobalProperties>
-      <CBTNuGetTraversalPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetTraversalRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetTraversalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix)))</CBTNuGetTraversalPackagePropertiesCreated>
+      <CBTNuGetTraversalPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetTraversalRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetTraversalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix), $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetAssetsFlagFile)))</CBTNuGetTraversalPackagePropertiesCreated>
     </PropertyGroup>
     
     <CallTarget Targets="_CheckForCBTNuGetPackagesRestoredMarker" />

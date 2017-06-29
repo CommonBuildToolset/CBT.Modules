@@ -70,13 +70,13 @@ namespace CBT.NuGet.Tasks
             return ret && !Log.HasLoggedErrors;
         }
 
-        public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs, string msbuildToolsVersion, string project, string globalProperties)
+        public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs, string msbuildToolsVersion, string project, string globalProperties, string msbuildPath, string additionalArguments)
         {
             MSBuildToolsVersion = msbuildToolsVersion;
             Project = project;
             GlobalProperties = globalProperties;
 
-            return base.Execute(file, msBuildVersion, packagesDirectory, requireConsent, solutionDirectory, disableParallelProcessing, fallbackSources, noCache, packageSaveMode, sources, configFile, nonInteractive, verbosity, timeout, toolPath, enableOptimization, markerPath, inputs);
+            return base.Execute(file, msBuildVersion, packagesDirectory, requireConsent, solutionDirectory, disableParallelProcessing, fallbackSources, noCache, packageSaveMode, sources, configFile, nonInteractive, verbosity, timeout, toolPath, enableOptimization, markerPath, inputs, msbuildPath, additionalArguments);
         }
 
         private static IEnumerable<Tuple<string, string>> GetPackages(string packagesConfigPath)
