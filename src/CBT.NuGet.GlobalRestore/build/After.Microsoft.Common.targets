@@ -25,6 +25,7 @@
       PackagesDirectory="$(CBTNuGetRestorePackagesDirectory)"
       SolutionDirectory="$(NuGetRestoreSolutionDirectory)"
       MsBuildVersion="$(NuGetMsBuildVersion)"
+      MsBuildPath="$(NuGetMsBuildPath)"
       DisableParallelProcessing="$(CBTNuGetDisableParallelProcessing)"
       FallbackSource="$(NuGetFallbackSource)"
       NoCache="$(CBTNuGetNoCache)"
@@ -35,6 +36,7 @@
       Verbosity="$(NuGetVerbosity)"
       Timeout="$(CBTNuGetTimeout)"
       ToolPath="$(CBTNuGetPath)"
+      AdditionalArguments="$(CBTNuGetRestoreAdditionalArguments)"
       />
 
     <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(CBTNuGetGlobalPackagesRestoredMarker)))" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' " />

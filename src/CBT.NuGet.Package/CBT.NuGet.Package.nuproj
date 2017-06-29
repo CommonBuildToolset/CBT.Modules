@@ -30,7 +30,67 @@
     <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.targets" />
     <Content Include="build\Microsoft.NuGet\Newtonsoft.Json.dll" />
     <None Include="version.json" />
+    <File Include="$(OutputPath)..\CBT.NuGet\Microsoft.Web.XmlTransform.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\Newtonsoft.Json.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Client.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Commands.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Common.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Configuration.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.ContentModel.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.DependencyResolver.Core.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Frameworks.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.LibraryModel.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Packaging.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Packaging.Core.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Packaging.Core.Types.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.ProjectManagement.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.ProjectModel.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Protocol.Core.Types.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Protocol.Core.v3.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Repositories.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.RuntimeModel.dll">
+      <TargetPath>build</TargetPath>
+    </File>
+    <File Include="$(OutputPath)..\CBT.NuGet\NuGet.Versioning.dll">
+      <TargetPath>build</TargetPath>
+    </File>
   </ItemGroup>
-  
+
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
 </Project>
