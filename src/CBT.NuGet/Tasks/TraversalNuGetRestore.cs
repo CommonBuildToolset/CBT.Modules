@@ -33,9 +33,15 @@ namespace CBT.NuGet.Tasks
 
             Log.LogMessage(MessageImportance.Normal, $"Loaded '{projectCollection.LoadedProjects.Count}' projects");
 
+            var projectsWithPackagesConfig = projectCollection.LoadedProjects.Select(i => new
+            {
+                Project = i,
+                PackageConfig = Path.Combine(i.DirectoryPath, "packages.config"),
+            }).Where(i => System.IO.File.Exists(i.PackageConfig)).ToList();
+
             Log.LogMessage(MessageImportance.Low, "Aggregating packages...");
 
-            List<Tuple<string, string>> aggregatedPackages = projectCollection.LoadedProjects.Select(i => Path.Combine(i.DirectoryPath, "packages.config")).Where(System.IO.File.Exists).AsParallel().SelectMany(GetPackages).Distinct().OrderBy(i => i.Item1).ToList();
+            List<Tuple<string, string>> aggregatedPackages = projectsWithPackagesConfig.AsParallel().SelectMany(i => GetPackages(i.PackageConfig)).Distinct().OrderBy(i => i.Item1).ToList();
 
             if (aggregatedPackages.Count == 0)
             {
@@ -52,7 +58,7 @@ namespace CBT.NuGet.Tasks
 
             if (ret)
             {
-                foreach (Project project in projectCollection.LoadedProjects)
+                foreach (Project project in projectsWithPackagesConfig.Select(i => i.Project))
                 {
                     string restoreMarkerPath = project.GetPropertyValue("CBTNuGetPackagesRestoredMarker");
 
