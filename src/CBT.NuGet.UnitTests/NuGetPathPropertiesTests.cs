@@ -126,7 +126,7 @@ namespace CBT.NuGet.UnitTests
             (new NuGetPropertyGenerator(null, packageConfigFile)).Generate(outputFile, "NuGetVersion_", "NuGetPath_", "c:\\foo", packagePath,
                 packageRestoreData).ShouldBe(true);
             File.Exists(outputFile).ShouldBe(true);
-            File.ReadAllText(outputFile).ShouldBe(expectedOutputContent);
+            File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
 
         }
 
@@ -158,7 +158,7 @@ namespace CBT.NuGet.UnitTests
             (new NuGetPropertyGenerator(null, projectPackageReferenceFile)).Generate(outputFile, "NuGetVersion_", "NuGetPath_", "c:\\foo", packagePath,
                 packageRestoreData).ShouldBe(true);
             File.Exists(outputFile).ShouldBe(true);
-            File.ReadAllText(outputFile).ShouldBe(expectedOutputContent);
+            File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
         }
 
         [Fact]
@@ -193,7 +193,7 @@ namespace CBT.NuGet.UnitTests
             (new NuGetPropertyGenerator(null, projectJsonFile)).Generate(outputFile, "NuGetVersion_", "NuGetPath_", "c:\\foo", packagePath,
                 packageRestoreData).ShouldBe(true);
             File.Exists(outputFile).ShouldBe(true);
-            File.ReadAllText(outputFile).ShouldBe(expectedOutputContent);
+            File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
         }
 
 
