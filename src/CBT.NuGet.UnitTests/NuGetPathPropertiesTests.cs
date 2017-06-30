@@ -1,14 +1,11 @@
 ﻿using CBT.NuGet.Internal;
 using CBT.NuGet.Tasks;
-using Microsoft.MSBuildProjectBuilder;
 using Shouldly;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NuGet.Frameworks;
-using NuGet.Packaging.Core;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
 using Xunit;
