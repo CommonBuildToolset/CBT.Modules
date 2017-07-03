@@ -1,7 +1,9 @@
-﻿using CBT.NuGet.Internal;
+﻿using System;
+using CBT.NuGet.Internal;
 using Shouldly;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace CBT.NuGet.UnitTests
 {
@@ -33,6 +35,10 @@ namespace CBT.NuGet.UnitTests
         {
             aP.OutPropertyId.ShouldBe(outPropertyID);
             aP.PackagesToAggregate.PackagesToAggregateShouldBe(packageOperations);
+        }
+        internal static string NormalizeNewLine(this String str)
+        {
+            return Regex.Replace(str, @"\r\n?|\n", Environment.NewLine);
         }
     }
 }
