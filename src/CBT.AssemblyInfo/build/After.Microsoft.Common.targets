@@ -3,4 +3,14 @@
 
   <Import Project="$(MSBuildThisFileDirectory)AssemblyInfo.targets" Condition=" '$(EnableCBTAssemblyInfoGeneration)' == 'true' " />
 
+  <!-- Provide a deprication message to user with SDK projects. -->
+  <Target Name="DisableStockAssemblyInfoGeneration" BeforeTargets="GenerateAssemblyInfo" Condition=" '$(GeneratedAssemblyInfoFile)' != '' And '$(EnableCBTAssemblyInfoGeneration)' == 'true' And '$(EnableCBTAssemblyInfoDepricationCheck)' == 'true' ">
+    <Warning  Condition=" '$(EnableCBTAssemblyInfoDepricationCheck)' == 'true' " 
+          Text="CBT.AssemblyInfo module is disabling stock assembly info generation for SDK project.
+The CBT.AssemblyInfo module is depricated for MSBuild SDK projects.
+If your codebase is a mix of MSBuild classic and SDK projects then for version consistancy you can set $(EnableCBTAssemblyInfoDepricationCheck) to false.
+If you want to use the new assembly info generation for SDK projects you can set $(EnableCBTAssemblyInfoGeneration) to false for your sdk projects. (note your SDK and Classic projects would then be potenitally versioned inconsistantly)
+If your codebase is pure MSBuild SDK projects then it is advised you remove CBT.AssemblyInfo module all together as it is depricated for this scenario."
+/>
+  </Target>
 </Project>

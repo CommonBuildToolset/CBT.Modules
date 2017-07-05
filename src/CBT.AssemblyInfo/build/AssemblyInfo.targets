@@ -20,20 +20,23 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Language)' == 'C#' Or '$(Language)' == 'VB' ">
-    <CoreCompileDependsOn>GenerateAssemblyInfo;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+    <CoreCompileDependsOn>CBTGenerateAssemblyInfo;$(CoreCompileDependsOn)</CoreCompileDependsOn>
 
-    <GenerateAssemblyInfoDependsOn>
+    <CBTGenerateAssemblyInfoDependsOn>
       DetermineAssemblyVersionInfo;
       DetermineAssemblyFrameworkInfo;
       _AssignAssemblyInfoOutputPaths;
-      _GenerateAssemblyInfoFile;
-      $(GenerateAssemblyInfoDependsOn)
-    </GenerateAssemblyInfoDependsOn>
+      _CBTGenerateAssemblyInfoFile;
+      $(CBTGenerateAssemblyInfoDependsOn)
+    </CBTGenerateAssemblyInfoDependsOn>
 
     <!-- Default path to the AssemblyInfo template.  Override this property to use your own template. -->
     <AssemblyInfoTemplatePath Condition=" '$(AssemblyInfoTemplatePath)' == '' ">$(MSBuildThisFileDirectory)Templates\AssemblyInfo$(DefaultLanguageSourceExtension)</AssemblyInfoTemplatePath>
 
     <!-- Default values to use for managed projects. -->
+    <AssemblyInfoProduct Condition=" '$(AssemblyInfoProduct)' == '' ">$(Product)</AssemblyInfoProduct>
+    <AssemblyInfoCopyright Condition=" '$(AssemblyInfoCopyright)' == '' ">$(Copyright)</AssemblyInfoCopyright>
+    <AssemblyInfoCompany Condition=" '$(AssemblyInfoCompany)' == '' ">$(Company)</AssemblyInfoCompany>
     <AssemblyInfoConfiguration Condition=" '$(AssemblyInfoConfiguration)' == '' ">$(Configuration)</AssemblyInfoConfiguration>
     <AssemblyInfoCLSCompliant Condition=" '$(AssemblyInfoCLSCompliant)' == '' ">true</AssemblyInfoCLSCompliant>
     <AssemblyInfoComVisible Condition=" '$(AssemblyInfoComVisible)' == '' ">false</AssemblyInfoComVisible>
@@ -86,9 +89,9 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="GenerateAssemblyInfo"
+  <Target Name="CBTGenerateAssemblyInfo"
     Condition=" '@(AssemblyInfoTemplateFile)' != '' "
-    DependsOnTargets="$(GenerateAssemblyInfoDependsOn)" />
+    DependsOnTargets="$(CBTGenerateAssemblyInfoDependsOn)" />
 
   <Target Name="_AssignAssemblyInfoOutputPaths">
 
@@ -108,7 +111,7 @@
 
   </Target>
 
-  <Target Name="_GenerateAssemblyInfoFile"
+  <Target Name="_CBTGenerateAssemblyInfoFile"
     Condition=" '@(AssemblyInfoTemplateFile)' != '' "
     DependsOnTargets="_AssignAssemblyInfoOutputPaths"
     Inputs="$(AssemblyInfoAllProjects);%(AssemblyInfoTemplateFile.Identity)"
@@ -120,16 +123,16 @@
 
     <Message Text="Generating assembly information file &quot;%(AssemblyInfoTemplateFile.OutputFile)&quot; from template &quot;%(AssemblyInfoTemplateFile.Identity)&quot;." />
 
-    <GenerateAssemblyInfoFile InputFile="@(AssemblyInfoTemplateFile)" OutputFile="%(AssemblyInfoTemplateFile.OutputFile)">
+    <CBTGenerateAssemblyInfoFile InputFile="@(AssemblyInfoTemplateFile)" OutputFile="%(AssemblyInfoTemplateFile.OutputFile)">
 
       <Output TaskParameter="OutputFile" ItemName="Compile"/>
       <Output TaskParameter="OutputFile" ItemName="FileWrites"/>
 
-    </GenerateAssemblyInfoFile>
+    </CBTGenerateAssemblyInfoFile>
 
   </Target>
 
-  <UsingTask TaskName="GenerateAssemblyInfoFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildTasksPath)">
+  <UsingTask TaskName="CBTGenerateAssemblyInfoFile" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildTasksPath)">
     <ParameterGroup>
       <InputFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" />
       <OutputFile ParameterType="Microsoft.Build.Framework.ITaskItem" Required="true" Output="true" />
