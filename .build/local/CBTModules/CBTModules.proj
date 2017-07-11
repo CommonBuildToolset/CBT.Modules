@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CBT.NuGet" Version="2.0.6" />
+    <PackageReference Include="CBT.Traversal" Version="2.0.4" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="1.5.58" />
+    <PackageReference Include="NuProj" Version="0.11.14-beta" />
+    <PackageReference Include="NuProj.Common" Version="0.11.14-beta" />
+  </ItemGroup>
+</Project>
