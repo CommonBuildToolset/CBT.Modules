@@ -22,8 +22,8 @@ namespace CBT.NuGet.Internal
         }
         public IEnumerable<PackageIdentityWithPath> GetPackages(string packagesPath, string packageConfigPath, PackageRestoreData packageRestoreData)
         {
-            if (packageRestoreData != null &&
-                !packageRestoreData.RestoreProjectStyle.Equals("PackageReference",
+            // packageRestoreData should always be non-null in the PackageReference Scenario
+            if (packageRestoreData == null || !packageRestoreData.RestoreProjectStyle.Equals("PackageReference",
                     StringComparison.InvariantCultureIgnoreCase))
             {
                 yield break;
