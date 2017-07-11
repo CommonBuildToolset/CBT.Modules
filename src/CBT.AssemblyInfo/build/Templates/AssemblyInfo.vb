@@ -7,6 +7,7 @@
 ' </auto-generated>
 '------------------------------------------------------------------------------
 
+Imports System
 Imports System.Reflection
 Imports System.Runtime.CompilerServices
 Imports System.Runtime.InteropServices

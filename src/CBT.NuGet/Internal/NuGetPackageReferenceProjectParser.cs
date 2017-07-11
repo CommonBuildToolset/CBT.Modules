@@ -53,6 +53,10 @@ namespace CBT.NuGet.Internal
 
             foreach (var pkg in packageRestoreData.PackageImportOrder)
             {
+                if (string.IsNullOrWhiteSpace(pkg.Id))
+                {
+                    continue;
+                }
                 var dependencies = lockFile.Targets.First().Libraries
                     .Where(lib => lib.Name.Equals(pkg.Id, StringComparison.OrdinalIgnoreCase) &&
                                   lib.Version.ToString().Equals(pkg.Version, StringComparison.OrdinalIgnoreCase)).Select(lib => lib.Dependencies).SelectMany(p => p.Select(i => i));

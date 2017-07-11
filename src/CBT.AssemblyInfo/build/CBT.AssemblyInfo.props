@@ -3,6 +3,10 @@
   <PropertyGroup>
     <EnableCBTAssemblyInfoGeneration Condition=" '$(EnableCBTAssemblyInfoGeneration)' != '' ">$([System.Convert]::ToBoolean($(EnableCBTAssemblyInfoGeneration)))</EnableCBTAssemblyInfoGeneration>
     <EnableCBTAssemblyInfoGeneration Condition=" '$(EnableCBTAssemblyInfoGeneration)' == '' ">true</EnableCBTAssemblyInfoGeneration>
+    <EnableCBTAssemblyInfoDepricationCheck Condition=" '$(EnableCBTAssemblyInfoDepricationCheck)' != '' ">$([System.Convert]::ToBoolean($(EnableCBTAssemblyInfoDepricationCheck)))</EnableCBTAssemblyInfoDepricationCheck>
+    <EnableCBTAssemblyInfoDepricationCheck Condition=" '$(EnableCBTAssemblyInfoDepricationCheck)' == '' ">true</EnableCBTAssemblyInfoDepricationCheck>
+    <!-- Disable stock assembly generation if CBT assembly info generation is enabled. -->
+    <GenerateAssemblyInfo Condition=" '$(EnableCBTAssemblyInfoGeneration)' == 'true' ">false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(EnableCBTAssemblyInfoGeneration)' == 'true' ">
@@ -28,4 +32,8 @@
     <AssemblyInfoFileVersion Condition=" '$(AssemblyInfoFileVersion)' == '' ">$(Version4PartVersion)</AssemblyInfoFileVersion>
 
   </PropertyGroup>
+
+  <!-- create dummy target that will be overridden by the stock target if it exist. -->
+  <Target Name="GenerateAssemblyInfo" />
+
 </Project>
