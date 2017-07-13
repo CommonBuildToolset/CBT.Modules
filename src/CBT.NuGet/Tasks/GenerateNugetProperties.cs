@@ -76,7 +76,6 @@ namespace CBT.NuGet.Tasks
             UpdateAssemblySearchPaths();
             Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", PropsFile);
             NuGetPropertyGenerator nuGetPropertyGenerator = new NuGetPropertyGenerator(_log, PackageRestoreFile);
-            GetPackageRestoreData();
             nuGetPropertyGenerator.Generate(PropsFile, PropertyVersionNamePrefix, PropertyPathNamePrefix, PropertyPathValuePrefix, NuGetPackagesPath, GetPackageRestoreData());
             return true;
         }
@@ -115,6 +114,7 @@ namespace CBT.NuGet.Tasks
             }
             catch (Exception e)
             {
+                Log.LogError(e.ToString());
                 Trace.TraceError(e.ToString());
                 return false;
             }
@@ -142,7 +142,11 @@ namespace CBT.NuGet.Tasks
         {
             string folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string assemblyPath = Path.Combine(folderPath, new AssemblyName(args.Name).Name + ".dll");
-            if (!File.Exists(assemblyPath)) return null;
+            if (!File.Exists(assemblyPath))
+            {
+                return null;
+            }
+
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
             return assembly;
         }
