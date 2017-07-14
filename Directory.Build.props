@@ -11,9 +11,8 @@
     <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
     <!-- must redefine nuget module restore assetsfile location if redefing baseintermediateoutputpath to avoid collision. -->
     <RestoreOutputPath>$(IntermediateOutputPath)</RestoreOutputPath>
-    <!-- Temporarily pin to version 3.4 
+    <!-- Temporarily pin to version 3.4 -->
     <CBTNuGetDownloaderArguments>https://dist.nuget.org/win-x86-commandline/v3.4.4/NuGet.exe</CBTNuGetDownloaderArguments>
--->
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' ">
@@ -43,7 +42,6 @@
   <PropertyGroup Condition=" Exists('$(MSBuildProjectDirectory)\version.json') ">
     <EnableNerdbank_GitVersioning Condition=" '$(EnableNerdbank_GitVersioning)' == '' ">true</EnableNerdbank_GitVersioning>
   </PropertyGroup>
-<UsingTask TaskName="Microsoft.Build.Tasks.AssignProjectConfiguration" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll" />
 
   <Import Project="$(EnlistmentRoot)\.build\CBT\build.props" />
 
