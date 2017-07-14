@@ -101,6 +101,12 @@ namespace CBT.NuGet.Tasks
                     return true;
                 }
 
+                if (Directory.Exists(packageRestoreFile))
+                {
+                    Log.LogMessage(MessageImportance.Low, $"A directory with the name '{packageRestoreFile}' exist.  Please consider renaming this directory to avoid breaking nuget convention.");
+                    return true;
+                }
+
                 PackageRestoreFile = packageRestoreFile;
                 Inputs = inputs;
                 PropsFile = propsFile;
