@@ -10,14 +10,27 @@
     </RebuildDependsOn>
   </PropertyGroup>
 
-  <!-- This is necessary when a project takes a ProjectReference on a dirs.proj for build ordering as ResolveProjectReference from the default CSharp targets expects this target to exist. -->
-  <Target Name="GetNativeManifest" />
 
   <Import Project="$(CustomBeforeTraversalTargets)" Condition=" '$(CustomBeforeTraversalTargets)' != '' And Exists('$(CustomBeforeTraversalTargets)') " />
 
   <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)') " />
 
   <Import Project="$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\Before.$(MSBuildThisFile)') " />
+
+  <!-- Must import Microsoft.Common.targets for nuget restore of traversal to generate the AssetsLockFilePath.flag. -->
+  <PropertyGroup>
+    <_tmpReBuildDependsOn>$(ReBuildDependsOn)</_tmpReBuildDependsOn>
+    <_tmpBuildDependsOn>$(BuildDependsOn)</_tmpBuildDependsOn>
+    <_tmpCleanDependsOn>$(CleanDependsOn)</_tmpCleanDependsOn>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets"/>
+
+  <PropertyGroup>
+    <CleanDependsOn>$(_tmpCleanDependsOn)</CleanDependsOn>
+    <ReBuildDependsOn>$(_tmpReBuildDependsOn)</ReBuildDependsOn>
+    <BuildDependsOn>$(_tmpBuildDependsOn)</BuildDependsOn>
+  </PropertyGroup>
 
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Build" Condition=" '@(PreTraversalProjectFile)' != '' " />

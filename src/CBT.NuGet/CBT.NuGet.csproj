@@ -48,6 +48,7 @@
     <Compile Include="Tasks\NuGetRestore.cs" />
     <Compile Include="Tasks\NuGetSetApiKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tasks\TraversalNuGetRestore.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="version.json" />
