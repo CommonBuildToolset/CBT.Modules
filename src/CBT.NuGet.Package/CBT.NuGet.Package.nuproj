@@ -20,7 +20,6 @@
       <Version>[2.0,)</Version>
     </Dependency>
     <Content Include="build\After.Microsoft.Common.targets" />
-    <Content Include="build\After.Traversal.targets" />
     <Content Include="build\module.config" />
     <Content Include="build\CBT.NuGet.props" />
     <Content Include="build\Microsoft.NuGet\Microsoft.Build.Tasks.Core.dll" />

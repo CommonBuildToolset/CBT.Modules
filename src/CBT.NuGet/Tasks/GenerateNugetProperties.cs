@@ -76,7 +76,6 @@ namespace CBT.NuGet.Tasks
             UpdateAssemblySearchPaths();
             Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", PropsFile);
             NuGetPropertyGenerator nuGetPropertyGenerator = new NuGetPropertyGenerator(_log, PackageRestoreFile);
-            GetPackageRestoreData();
             nuGetPropertyGenerator.Generate(PropsFile, PropertyVersionNamePrefix, PropertyPathNamePrefix, PropertyPathValuePrefix, NuGetPackagesPath, GetPackageRestoreData());
             return true;
         }
@@ -101,7 +100,11 @@ namespace CBT.NuGet.Tasks
                     Log.LogMessage(MessageImportance.Low, $"NuGet package properties file '{propsFile}' is up-to-date");
                     return true;
                 }
-
+                if (Directory.Exists(packageRestoreFile))
+                {
+                    Log.LogMessage(MessageImportance.Low, $"A directory with the name '{packageRestoreFile}' exist.  Please consider renaming this directory to avoid breaking nuget convention.");
+                    return true;
+                }
                 PackageRestoreFile = packageRestoreFile;
                 Inputs = inputs;
                 PropsFile = propsFile;
@@ -115,6 +118,7 @@ namespace CBT.NuGet.Tasks
             }
             catch (Exception e)
             {
+                Log.LogError(e.ToString());
                 Trace.TraceError(e.ToString());
                 return false;
             }
