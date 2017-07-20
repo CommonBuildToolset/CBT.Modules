@@ -15,10 +15,10 @@
   </ItemGroup>
   <ItemGroup>
    <Dependency Include="CBT.Microsoft.Common.targets">
-      <Version>1.0.0</Version>
+      <Version>2.0.0</Version>
     </Dependency>
    <Dependency Include="CBT.Traversal">
-      <Version>1.0.0</Version>
+      <Version>2.0.4</Version>
     </Dependency>
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
