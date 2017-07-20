@@ -2,8 +2,10 @@
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 
@@ -62,18 +64,47 @@ namespace CBT.NuGet.Tasks
         /// </summary>
         public string AssetsFile { get; set; }
 
-        private readonly CBTTaskLogHelper _log;
+        /// <summary>
+        /// Stores a list of assembly search paths where dependencies should be searched for.
+        /// </summary>
+        private readonly ICollection<string> _assemblySearchPaths = new List<string>();
 
+        private readonly CBTTaskLogHelper _log;
 
         public GenerateNuGetProperties()
         {
             _log = new CBTTaskLogHelper(this);
+
+            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+
+            if (!String.IsNullOrWhiteSpace(executingAssembly.Location))
+            {
+                // When loading an assembly from a byte[], the Assembly.Location is not set so it shouldn't be considered
+                //
+                _assemblySearchPaths.Add(Path.GetDirectoryName(executingAssembly.Location));
+            }
+
+            if (AppDomain.CurrentDomain.GetData("CBT_NUGET_ASSEMBLY_PATH") != null)
+            {
+                // CBT.NuGet.props currently sets this value so we can determine where CBT.NuGet.dll is since its loaded as a byte[]
+                //
+                _assemblySearchPaths.Add(Path.GetDirectoryName(AppDomain.CurrentDomain.GetData("CBT_NUGET_ASSEMBLY_PATH").ToString()));
+            }
+
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+            {
+                AssemblyName assemblyName = new AssemblyName(args.Name);
+
+                // Return the first assembly search path that contains the requested assembly
+                //
+                string assemblyPath = _assemblySearchPaths.Select(i => Path.Combine(i, $"{assemblyName.Name}.dll")).FirstOrDefault(File.Exists);
+
+                return assemblyPath == null ? null : Assembly.LoadFrom(assemblyPath);
+            };
         }
 
         public override bool Execute()
         {
-            // Tell appdomain to load nuget references and newtonsoft.json from current directory.
-            UpdateAssemblySearchPaths();
             Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", PropsFile);
             NuGetPropertyGenerator nuGetPropertyGenerator = new NuGetPropertyGenerator(_log, PackageRestoreFile);
             nuGetPropertyGenerator.Generate(PropsFile, PropertyVersionNamePrefix, PropertyPathNamePrefix, PropertyPathValuePrefix, NuGetPackagesPath, GetPackageRestoreData());
@@ -136,19 +167,6 @@ namespace CBT.NuGet.Tasks
                 return null;
             }
             return JsonConvert.DeserializeObject<PackageRestoreData>(File.ReadAllText(AssetsFile));
-        }
-
-        private void UpdateAssemblySearchPaths()
-        {
-            AppDomain.CurrentDomain.AssemblyResolve += LoadFromSameFolder;
-        }
-        static Assembly LoadFromSameFolder(object sender, ResolveEventArgs args)
-        {
-            string folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string assemblyPath = Path.Combine(folderPath, new AssemblyName(args.Name).Name + ".dll");
-            if (!File.Exists(assemblyPath)) return null;
-            Assembly assembly = Assembly.LoadFrom(assemblyPath);
-            return assembly;
         }
     }
 }

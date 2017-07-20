@@ -19,6 +19,7 @@
 
   <PropertyGroup>
     <CBTNuGetTasksAssemblyPath Condition=" '$(CBTNuGetTasksAssemblyPath)' == '' ">$(MSBuildThisFileDirectory)CBT.NuGet.dll</CBTNuGetTasksAssemblyPath>
+    <CBTNuGetTasksAssemblyName Condition=" '$(CBTNuGetPackagesRestored)' == '' And Exists($(CBTNuGetTasksAssemblyPath)) And '$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType(`System.AppDomain`).GetProperty(`CurrentDomain`).GetValue(null).GetData(`CBT_NUGET_ASSEMBLY`))' == '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).SetData('CBT_NUGET_ASSEMBLY_PATH', $(CBTNuGetTasksAssemblyPath)))$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).SetData('CBT_NUGET_ASSEMBLY', $(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).Load($(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.IO.File').GetMethod('ReadAllBytes').Invoke(null, $([System.IO.Directory]::GetFiles($([System.IO.Path]::GetDirectoryName($(CBTNuGetTasksAssemblyPath))), $([System.IO.Path]::GetFileName($(CBTNuGetTasksAssemblyPath)))))))))))$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY'))</CBTNuGetTasksAssemblyName>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildThisFileFullPath);$(MSBuildThisFileDirectory)After.Microsoft.Common.targets;$(CBTNuGetTasksAssemblyPath)</CBTNuGetAllProjects>
     <CBTNuGetPath Condition=" '$(CBTNuGetPath)' == '' And '$(CBTModuleRestoreCommand)' != '' And $([System.IO.Path]::GetFileName($(CBTModuleRestoreCommand))) == 'NuGet.exe' And Exists($(CBTModuleRestoreCommand)) ">$([System.IO.Path]::GetDirectoryName($(CBTModuleRestoreCommand)))</CBTNuGetPath>
     <CBTEnableImportBuildPackages Condition=" '$(CBTEnableImportBuildPackages)' == '' ">true</CBTEnableImportBuildPackages>
@@ -40,7 +41,7 @@
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\packages.config</CBTNuGetAllProjects>
   </PropertyGroup>
 
-  <!-- Assume project might contain a <PackageReference element and set CBTNugetRestoreFile to it if not already defined. -->
+  <!-- Assume project might contain a <PackageReference element and set CBTNuGetRestoreFile to it if not already defined. -->
   <PropertyGroup Condition=" '$(CBTNuGetRestoreFile)' == '' ">
     <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectFullPath)</CBTNuGetAllProjects>
@@ -63,11 +64,11 @@
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' And '$(IsRestoreOnly)' != 'true' ">
     <!-- Restore packages if not running under Visual Studio and not running as part of NuGet's restore -->
-    <CBTNuGetPackagesRestored Condition=" '$(CBTNuGetPackagesRestored)'=='' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.NuGetRestore').Execute($(CBTNuGetRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetRestoreRequireConsent), $(NuGetRestoreSolutionDirectory), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';')), '$(NuGetMsBuildPath)', '$(CBTNuGetRestoreAdditionalArguments)'))</CBTNuGetPackagesRestored>
+    <CBTNuGetPackagesRestored Condition=" '$(CBTNuGetPackagesRestored)' == '' And  '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.NuGetRestore').Execute($(CBTNuGetRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetRestoreRequireConsent), $(NuGetRestoreSolutionDirectory), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';')), '$(NuGetMsBuildPath)', '$(CBTNuGetRestoreAdditionalArguments)'))</CBTNuGetPackagesRestored>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
-    <CBTNuGetPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix), $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetAssetsFlagFile)))</CBTNuGetPackagePropertiesCreated>
+    <CBTNuGetPackagePropertiesCreated Condition=" '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix), $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetAssetsFlagFile)))</CBTNuGetPackagePropertiesCreated>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnableImportBuildPackages)' != 'false' ">
@@ -75,7 +76,7 @@
     <CBTBuildPackageTargetsFile Condition=" '$(CBTBuildPackageTargetsFile)' == '' ">$(CBTModulePath)\NuGetBuildPackages.targets</CBTBuildPackageTargetsFile>
     <CBTBuildPackageImportInputs Condition=" '$(CBTBuildPackageImportInputs)' == '' ">$(MSBuildThisFileFullPath);$(CBTNuGetTasksAssemblyPath);$(CBTModulePackageConfigPath)</CBTBuildPackageImportInputs>
 
-    <CBTGlobalBuildPackagesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap('$(CBTNuGetTasksAssemblyPath)', 'CBT.NuGet.Tasks.ImportBuildPackages').Execute('$(CBTModulePackageConfigPath)', '$(CBTBuildPackagePropsFile)', '$(CBTBuildPackageTargetsFile)', $(CBTBuildPackageImportInputs.Split(';')), $(CBTAllModulePaths.Split(';'))))</CBTGlobalBuildPackagesCreated>
+    <CBTGlobalBuildPackagesCreated Condition=" '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.ImportBuildPackages').Execute('$(CBTModulePackageConfigPath)', '$(CBTBuildPackagePropsFile)', '$(CBTBuildPackageTargetsFile)', $(CBTBuildPackageImportInputs.Split(';')), $(CBTAllModulePaths.Split(';'))))</CBTGlobalBuildPackagesCreated>
   </PropertyGroup>
 
   <ItemGroup>
@@ -118,7 +119,7 @@
   <Import Project="$(CBTBuildPackagePropsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
 
 
-  <!-- If the nuget restore targets are not in the import graph then rely on CBT already having restored the nuget packages. If the restore targets are imported then this target will be overridden. -->
+  <!-- If the NuGet restore targets are not in the import graph then rely on CBT already having restored the NuGet packages. If the restore targets are imported then this target will be overridden. -->
   <Target Name="Restore"/>
 
   <!--
@@ -170,7 +171,7 @@
     <CallTarget Targets="_CheckForCBTNuGetPackagesRestoredMarker" />
 
     <PropertyGroup Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' And '$(IsRestoreOnly)' == 'true' ">
-      <CBTNuGetPackagePropertiesCreated>$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).CreateInstanceFromAndUnwrap($(CBTNuGetTasksAssemblyPath), 'CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix), $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetAssetsFlagFile)))</CBTNuGetPackagePropertiesCreated>
+      <CBTNuGetPackagePropertiesCreated Condition=" '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData(`CBT_NUGET_ASSEMBLY`).CreateInstance('CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetPackagePropertyPathValuePrefix), $(CBTNuGetRestorePackagesDirectory), $(CBTNuGetAssetsFlagFile)))</CBTNuGetPackagePropertiesCreated>
     </PropertyGroup>
 
   </Target>
@@ -183,7 +184,7 @@
 
   </Target>
 
- <!-- _GenerateRestoreProjectSpec is a from the nuget.targets new to nuget 4.x. This target must be in the props chaining in by the cbt\obj\modules\build.props and not in the after.microsoft.common.targets extension as the microsoft common targets are not pulled in during the nuget evaluation of the project. -->
+ <!-- _GenerateRestoreProjectSpec is a from the NuGet.targets new to NuGet 4.x. This target must be in the props chaining in by the cbt\obj\modules\build.props and not in the after.microsoft.common.targets extension as the Microsoft common targets are not pulled in during the NuGet evaluation of the project. -->
   <Target Name="GenerateNuGetAssetFlagFile" AfterTargets="_GenerateRestoreProjectSpec"  >
     <ItemGroup>
       <RestoreAssetsFlagData Remove="@(RestoreAssetsFlagData)"/>
