@@ -1,13 +1,13 @@
 ﻿using CBT.NuGet.Internal;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 
 namespace CBT.NuGet.Tasks
 {
@@ -18,52 +18,6 @@ namespace CBT.NuGet.Tasks
     /// </summary>
     public sealed class GenerateNuGetProperties : Task
     {
-        /// <summary>
-        /// Gets or sets the packages.config or project.json file to be parsed by this command.
-        /// </summary>
-        [Required]
-        public string PackageRestoreFile { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list of file inputs that should be considered for incrementality if the PropsFile exist and is older then the inputs this is considered a no-op.
-        /// </summary>
-        [Required]
-        public string[] Inputs { get; set; }
-
-        /// <summary>
-        /// Gets or sets the full path of the props file that is written.
-        /// </summary>
-        [Required]
-        public string PropsFile { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property name prefix for the version variables. Properties are formed as ($(PropertyVersionNamePrefix_)+PackageID.Replace('.','_')).
-        /// </summary>
-        [Required]
-        public string PropertyVersionNamePrefix { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property name prefix for the path variables. Properties are formed as ($(PropertyPathNamePrefix_)+PackageID.Replace('.','_')).
-        /// </summary>
-        [Required]
-        public string PropertyPathNamePrefix { get; set; }
-
-        /// <summary>
-        /// Gets or sets the property value prefix for the path variables. Property values are formed as ($(PropertyPathValuePrefix_)+PackageInstallRelativePath).
-        /// </summary>
-        [Required]
-        public string PropertyPathValuePrefix { get; set; }
-
-        /// <summary>
-        /// Gets or sets the NuGetPackagesPath.
-        /// </summary>
-        public string NuGetPackagesPath { get; set; }
-
-        /// <summary>
-        /// Gets or sets the assets file from the nuget restore.
-        /// </summary>
-        public string AssetsFile { get; set; }
-
         /// <summary>
         /// Stores a list of assembly search paths where dependencies should be searched for.
         /// </summary>
@@ -80,13 +34,13 @@ namespace CBT.NuGet.Tasks
         {
             _log = new CBTTaskLogHelper(this);
 
-            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+            string executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
 
-            if (!String.IsNullOrWhiteSpace(executingAssembly.Location))
+            if (!String.IsNullOrWhiteSpace(executingAssemblyLocation))
             {
                 // When loading an assembly from a byte[], the Assembly.Location is not set so it shouldn't be considered
                 //
-                _assemblySearchPaths.Add(Path.GetDirectoryName(executingAssembly.Location));
+                _assemblySearchPaths.Add(Path.GetDirectoryName(executingAssemblyLocation));
             }
 
             if (AppDomain.CurrentDomain.GetData("CBT_NUGET_ASSEMBLY_PATH") != null)
@@ -96,33 +50,54 @@ namespace CBT.NuGet.Tasks
                 _assemblySearchPaths.Add(Path.GetDirectoryName(AppDomain.CurrentDomain.GetData("CBT_NUGET_ASSEMBLY_PATH").ToString()));
             }
 
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-            {
-                AssemblyName assemblyName = new AssemblyName(args.Name);
-
-                // Return the assembly if its already been loaded
-                //
-                if (_loadedAssemblies.ContainsKey(assemblyName))
-                {
-                    return _loadedAssemblies[assemblyName];
-                }
-
-                // Return the first assembly search path that contains the requested assembly
-                //
-                string assemblyPath = _assemblySearchPaths.Select(i => Path.Combine(i, $"{assemblyName.Name}.dll")).FirstOrDefault(File.Exists);
-
-                if (assemblyPath != null)
-                {
-                    // Load the assembly and keep it in the list of loaded assemblies
-                    //
-                    _loadedAssemblies[assemblyName] = Assembly.Load(File.ReadAllBytes(assemblyPath));
-
-                    return _loadedAssemblies[assemblyName];
-                }
-
-                return null;
-            };
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         }
+
+        /// <summary>
+        /// Gets or sets the assets file from the nuget restore.
+        /// </summary>
+        public string AssetsFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of file inputs that should be considered for incrementality if the PropsFile exist and is older then the inputs this is considered a no-op.
+        /// </summary>
+        [Required]
+        public string[] Inputs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the NuGetPackagesPath.
+        /// </summary>
+        public string NuGetPackagesPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the packages.config or project.json file to be parsed by this command.
+        /// </summary>
+        [Required]
+        public string PackageRestoreFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property name prefix for the path variables. Properties are formed as ($(PropertyPathNamePrefix_)+PackageID.Replace('.','_')).
+        /// </summary>
+        [Required]
+        public string PropertyPathNamePrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property value prefix for the path variables. Property values are formed as ($(PropertyPathValuePrefix_)+PackageInstallRelativePath).
+        /// </summary>
+        [Required]
+        public string PropertyPathValuePrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property name prefix for the version variables. Properties are formed as ($(PropertyVersionNamePrefix_)+PackageID.Replace('.','_')).
+        /// </summary>
+        [Required]
+        public string PropertyVersionNamePrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the full path of the props file that is written.
+        /// </summary>
+        [Required]
+        public string PropsFile { get; set; }
 
         public override bool Execute()
         {
@@ -188,6 +163,33 @@ namespace CBT.NuGet.Tasks
                 return null;
             }
             return JsonConvert.DeserializeObject<PackageRestoreData>(File.ReadAllText(AssetsFile));
+        }
+
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            AssemblyName assemblyName = new AssemblyName(args.Name);
+
+            // Return the assembly if its already been loaded
+            //
+            if (_loadedAssemblies.ContainsKey(assemblyName))
+            {
+                return _loadedAssemblies[assemblyName];
+            }
+
+            // Return the first assembly search path that contains the requested assembly
+            //
+            string assemblyPath = _assemblySearchPaths.Select(i => Path.Combine(i, $"{assemblyName.Name}.dll")).FirstOrDefault(File.Exists);
+
+            if (assemblyPath != null)
+            {
+                // Load the assembly and keep it in the list of loaded assemblies
+                //
+                _loadedAssemblies[assemblyName] = Assembly.Load(File.ReadAllBytes(assemblyPath));
+
+                return _loadedAssemblies[assemblyName];
+            }
+
+            return null;
         }
     }
 }
