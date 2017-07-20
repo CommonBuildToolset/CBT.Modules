@@ -69,6 +69,11 @@ namespace CBT.NuGet.Tasks
         /// </summary>
         private readonly ICollection<string> _assemblySearchPaths = new List<string>();
 
+        /// <summary>
+        /// Stores a list of loaded assemblies in the event that the same assembly is requested multiple times.
+        /// </summary>
+        private readonly IDictionary<AssemblyName, Assembly> _loadedAssemblies = new Dictionary<AssemblyName, Assembly>();
+
         private readonly CBTTaskLogHelper _log;
 
         public GenerateNuGetProperties()
@@ -95,11 +100,27 @@ namespace CBT.NuGet.Tasks
             {
                 AssemblyName assemblyName = new AssemblyName(args.Name);
 
+                // Return the assembly if its already been loaded
+                //
+                if (_loadedAssemblies.ContainsKey(assemblyName))
+                {
+                    return _loadedAssemblies[assemblyName];
+                }
+
                 // Return the first assembly search path that contains the requested assembly
                 //
                 string assemblyPath = _assemblySearchPaths.Select(i => Path.Combine(i, $"{assemblyName.Name}.dll")).FirstOrDefault(File.Exists);
 
-                return assemblyPath == null ? null : Assembly.LoadFrom(assemblyPath);
+                if (assemblyPath != null)
+                {
+                    // Load the assembly and keep it in the list of loaded assemblies
+                    //
+                    _loadedAssemblies[assemblyName] = Assembly.Load(File.ReadAllBytes(assemblyPath));
+
+                    return _loadedAssemblies[assemblyName];
+                }
+
+                return null;
             };
         }
 
