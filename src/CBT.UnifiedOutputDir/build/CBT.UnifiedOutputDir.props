@@ -21,6 +21,12 @@
     <CBTIntermediateOutputPathPartial>$(MSBuildProjectFullPath.SubString($(EnlistmentRoot.Length)))</CBTIntermediateOutputPathPartial>
     <IntermediateOutputPath Condition="'$(CBTEnableHashedIntermediateOutputPath)' == 'true'">$([System.IO.Path]::Combine($(IntermediateOutputPath),$(CBTIntermediateOutputPathPartial.Length.ToString())))\</IntermediateOutputPath>
 
+    <!-- Ensure nuGet restore places generated props correctly. -->
+    <MSBuildProjectExtensionsPath>$(IntermediateOutputPath)\</MSBuildProjectExtensionsPath>
+    <RestoreOutputPath>$(MSBuildProjectExtensionsPath)</RestoreOutputPath>
+    <!-- In the projectJson package restore scenario you can not redefine the location of the json file.  If the ProjectAssetsFile is set then it will be assumed to be a PackageReference project.  -->
+    <ProjectAssetsFile Condition="!Exists('$(MSBuildProjectDirectory)\project.json') And !Exists('$(MSBuildProjectDirectory)\package.config')" >$(MSBuildProjectExtensionsPath)project.assets.json</ProjectAssetsFile>
+
     <CBTOutputRootDir Condition=" '$(CBTOverrideBaseOutputPath)' != '' ">$(CBTOverrideBaseOutputPath)</CBTOutputRootDir>
     <CBTOutputPathPlatformPart Condition="'$(CBTOutputPathPlatformPart)' == ''">$(Platform)</CBTOutputPathPlatformPart>
     <CBTOutputRootDir Condition=" '$(CBTOutputRootDir)' == '' ">$(EnlistmentRoot)\bin\$(CBTOutputPathPlatformPart)\$(Configuration)</CBTOutputRootDir>

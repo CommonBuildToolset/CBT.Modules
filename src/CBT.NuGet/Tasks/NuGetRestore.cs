@@ -132,7 +132,11 @@ namespace CBT.NuGet.Tasks
 
                 return true;
             }
-
+            if (Directory.Exists(file))
+            {
+                Log.LogMessage(MessageImportance.Low, $"A directory with the name '{file}' exist.  Please consider renaming this directory to avoid breaking nuget convention.");
+                return true;
+            }
             File = file;
             MsBuildVersion = msBuildVersion;
             MsBuildPath = msBuildPath;

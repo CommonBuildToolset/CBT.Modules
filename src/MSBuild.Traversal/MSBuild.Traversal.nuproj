@@ -1,22 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Configuration">
-    <Description>Provides entry point that all common targets import.</Description>
-    <ProjectGuid>80e75aa2-eacb-48b1-ac12-fa1062585eee</ProjectGuid>
-    <Tags>CBT Module targets</Tags>
+    <Description>Provides project traversal in a source code tree.</Description>
+    <ProjectGuid>ffc653f0-da5f-48c9-b1d5-9c8f30bd7e89</ProjectGuid>
+    <Tags>MSBuild traversal dirs.proj</Tags>
   </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
+    <Content Include="build\MSBuild.Traversal.props" />
+    <Content Include="build\MSBuild.Traversal.targets" />
     <None Include="version.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="build\**\*" />
-  </ItemGroup>
-  <ItemGroup>
-   <Dependency Include="CBT.Microsoft.Common.targets">
-      <Version>2.0.0</Version>
-    </Dependency>
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
 </Project>
