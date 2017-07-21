@@ -36,7 +36,7 @@ namespace CBT.NuGet.Internal
             }
             if (string.IsNullOrWhiteSpace(packageRestoreData?.RestoreOutputAbsolutePath))
             {
-                _log.LogMessage(MessageImportance.Low, $"Missing assests file directory.  If you are running NuGet prior to 4.x this is expected.  If you are running NuGet 4.x or higher then this is typically because the flag generated at $(CBTNuGetAssetsFlagFile) does not exist or is empty.  Ensure the GenerateNuGetAssetFlagFile target is running. It may also be because the project does not import cbt build.props in some fashion.  It may also be because NuGet failed to parse the project you may set the env NUGET_RESTORE_MSBUILD_ARGS to the value '/flp:v=diag;logfile=restore.log;append' and check the restore.log for more details. ");
+                _log.LogMessage(MessageImportance.Low, $"Missing assets file directory.  If you are running NuGet prior to 4.x this is expected.  If you are running NuGet 4.x or higher then this is typically because the flag generated at $(CBTNuGetAssetsFlagFile) does not exist or is empty.  Ensure the GenerateNuGetAssetFlagFile target is running. It may also be because the project does not import cbt build.props in some fashion.  It may also be because NuGet failed to parse the project you may set the env NUGET_RESTORE_MSBUILD_ARGS to the value '/flp:v=diag;logfile=restore.log;append' and check the restore.log for more details. ");
                 yield break;
             }
             VersionFolderPathResolver versionFolderPathResolver = new VersionFolderPathResolver(packagesPath);
