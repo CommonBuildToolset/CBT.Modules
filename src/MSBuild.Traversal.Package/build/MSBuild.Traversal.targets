@@ -7,8 +7,8 @@
       Clean;
       Build
     </RebuildDependsOn>
-    <!-- Microsoft.Common.targets overwrites this so setting it to traversal build targets. But leaving it exposed to the user as BuildDependsOn for ease of convention. -->
-    <BuildDependsOn>$(MSBuildTraversalBuildDependsOn)</BuildDependsOn>
+    <!-- Microsoft.Common.targets overwrites this so setting it to traversal build targets. But leaving it exposed to the user as BuildDependsOn for ease of convention. ResolveProjectReferences is neccesary for traversal restore to finish before projects are built. -->
+    <BuildDependsOn>ResolveProjectReferences;$(MSBuildTraversalBuildDependsOn)</BuildDependsOn>
   </PropertyGroup>
 
   <Import Project="$(CustomBeforeTraversalTargets)" Condition=" '$(CustomBeforeTraversalTargets)' != '' And Exists('$(CustomBeforeTraversalTargets)') " />
