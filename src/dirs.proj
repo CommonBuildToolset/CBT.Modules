@@ -3,6 +3,6 @@
 
   <ItemGroup>
     <PackageReference Include="MSBuild.Traversal" version="1.0.6-rc1-ga1698990ac" />
-    <ProjectReference Include="**\*.??proj" Exclude="$(MSBuildThisFileFullPath)" />
+    <ProjectReference Include="**\*.??proj" Exclude="$(MSBuildThisFileFullPath);CBT.DotNetFx-*\*.??proj" />
   </ItemGroup>
 </Project>
