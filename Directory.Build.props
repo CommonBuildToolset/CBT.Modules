@@ -43,6 +43,8 @@
   <Import Project="$(EnlistmentRoot)\.build\CBT\build.props" />
 
   <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.nuproj'" >
+    <!-- The version of nuget that comes with NuProj (3.4.3) has a bug where it will silently skip files in the nuspec based off certain patterns. -->
+    <NuGetToolPath>$(CBTNuGetPath)</NuGetToolPath>
     <NuProjPath Condition=" Exists('$(MSBuildExtensionsPath)\NuProj\NuProj.props') ">$(MSBuildExtensionsPath)\NuProj</NuProjPath>
     <NuProjPath Condition=" '$(CBTModule_NuProj)' != '' And '$(NuProjPath)' == '' ">$(CBTModule_NuProj)\tools</NuProjPath>
     <CustomAfterNuProjTargets>$(CBTLocalBuildExtensionsPath)\After.NuProj.targets</CustomAfterNuProjTargets>
