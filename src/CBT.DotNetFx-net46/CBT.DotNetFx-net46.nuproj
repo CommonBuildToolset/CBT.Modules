@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Configuration">
+    <!-- Set TargetFrameworkVersion to the version of the framework you want to pack up. -->
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFramework>net46</TargetFramework>
+    <Description>Provides dotnet framework $(TargetFrameworkVersion) build references</Description>
+    <ProjectGuid>80e75aa2-eacb-48b1-ac12-fa1062585eee</ProjectGuid>
+    <Tags>DotNet framework References</Tags>
+  </PropertyGroup>
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
+  <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
+  <ItemGroup>
+    <None Include="version.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="build\CBT.DotNetFx-$(TargetFramework).targets" />
+  </ItemGroup>
+  <Target Name="CreatePackageLayout" BeforeTargets="ConvertItems">
+    <ItemGroup>
+      <File Include="$(_TargetFrameworkDirectories)\**\*" />
+      <File>
+        <TargetPath>build\$(TargetFramework)\%(RecursiveDir)</TargetPath>
+      </File>
+    </ItemGroup>
+  </Target>
+  <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
+</Project>
