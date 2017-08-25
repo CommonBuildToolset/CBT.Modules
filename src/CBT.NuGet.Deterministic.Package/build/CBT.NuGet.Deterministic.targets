@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask AssemblyFile="$(CBTNuGetDeterministicTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.Deterministic" />
+
+  <Target Name="CBTNuGetDeterministic" Condition=" Exists('$(ProjectAssetsFile)') And '$(GenerateNuGetDeterministicProps)' == 'true' " AfterTargets="Build;Restore">
+    <PropertyGroup>
+      <CBTNuGetDeterministicNuGetAssetsFilePath Condition=" '$(CBTNuGetDeterministicNuGetAssetsFilePath)' == '' ">$(ProjectAssetsFile)</CBTNuGetDeterministicNuGetAssetsFilePath>
+    </PropertyGroup>
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(CBTNuGetDeterministicGeneratedOutputPropsFile)))"/>
+    <CBT.NuGet.Tasks.Deterministic GeneratedOutputPropsFile="$(CBTNuGetDeterministicGeneratedOutputPropsFile)" NuGetAssetsFilePath="$(CBTNuGetDeterministicNuGetAssetsFilePath)" OverWritePropsFile="$(CBTNuGetDeterministicOverWritePropsFile)" />
+  </Target>
+
+  <Target Name="ValidateNuGetDeterministic" AfterTargets="Build">
+    <Error Text="'$(CBTNuGetDeterministicGeneratedOutputPropsFile)' does not exist and ImportNuGetDeterministicProps is set to true. Please generate file and check it in. See http://SOMEURL" 
+           Condition=" !Exists($(CBTNuGetDeterministicGeneratedOutputPropsFile)) And '$(ImportNuGetDeterministicProps)' == 'true' "/>
+  </Target>
+</Project>
