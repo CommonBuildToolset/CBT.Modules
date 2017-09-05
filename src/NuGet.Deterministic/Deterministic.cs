@@ -68,9 +68,12 @@ namespace CBT.NuGet.Tasks
                 project = ProjectRootElement.Open(GeneratedOutputPropsFile);
                 itemGroup = project?.ItemGroups.LastOrDefault();
             }
+            // project is null if the file does not exist.
             if (project == null)
             {
                 project = ProjectRootElement.Create();
+                ProjectPropertyGroupElement propertyGroup = project.AddPropertyGroup();
+                propertyGroup.AddProperty("ImportedNuGetDeterministicProps", "true");
             }
             if (itemGroup == null)
             {
@@ -94,16 +97,29 @@ namespace CBT.NuGet.Tasks
                     item = itemGroup.AddItem("PackageReference", package.Name);
                 }
 
-                // Consider to update the metadata instead of deleting it if it exist.  Also do we need to consider the case of multiple metadata elements perhaps they are conditioned?  What if there is a conditioned package or version metadata for multiple versions should we condition the metadata or the item?
-                ProjectMetadataElement metadata = item.Metadata.SingleOrDefault(m => m.Name.Equals("version", StringComparison.OrdinalIgnoreCase));
-                if (metadata != null)
-                {
-                    item.RemoveChild(metadata);
-                }
-                item.AddMetadata("version", $"[{package.Version}]");
+                AddMetadataToProject(item, package, "version", $"[{package.Version}]");
+                AddMetadataToProject(item, package, "sha512", $"{package.Sha512}");
+                AddMetadataToProject(item, package, "path", $"{package.Path}");
+                AddMetadataToProject(item, package, "hashFileName", $"{package.Path.Replace("/", ".")}.nupkg.sha512");
+                AddMetadataToProject(item, package, "packageDirectory", $"{Path.Combine("$(NuGetPackageFolders)", package.Path.Replace("/", "\\"))}");
+
             }
             project.Save(GeneratedOutputPropsFile);
             return File.Exists(GeneratedOutputPropsFile);
+        }
+
+        private static void AddMetadataToProject(ProjectItemElement item, LockFileLibrary package, string name, string value)
+        {
+            ProjectMetadataElement metadata =
+                item.Metadata.SingleOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (metadata == null)
+            {
+                item.AddMetadata(name, value);
+            }
+            else
+            {
+                metadata.Value = value;
+            }
         }
 
         private void SetAssemblyResolver()
