@@ -17,7 +17,7 @@ namespace CBT.NuGet.Tasks
     ///
     /// Generate properties that contain the path and version of a given nuget package.
     /// </summary>
-    public sealed class Deterministic : Task
+    public sealed class GenerateLockedPackageConfigurationFile : Task
     {
 
         /// <summary>
@@ -37,9 +37,9 @@ namespace CBT.NuGet.Tasks
         public string GeneratedOutputPropsFile { get; set; }
 
         /// <summary>
-        /// Gets or sets a true/false flag to determine if the GeneratedOutputPropsFile should be overwritten or updated without deletes defaults to updates with out deletes..
+        /// Gets or sets a true/false flag to determine if the GeneratedOutputPropsFile should be overwritten. Defaults to false which means to update without deletes.
         /// </summary>
-        public bool OverWritePropsFile { get; set; }
+        public bool OverwritePropsFile { get; set; }
 
         /// <summary>
         /// Gets or sets the full path of the nuget assets file that is read from the project to.
@@ -47,7 +47,7 @@ namespace CBT.NuGet.Tasks
         [Required]
         public string NuGetAssetsFilePath { get; set; }
 
-        public Deterministic()
+        public GenerateLockedPackageConfigurationFile()
         {
             SetAssemblyResolver();
         }
@@ -63,17 +63,17 @@ namespace CBT.NuGet.Tasks
                 Log.LogError($"NuGet assets file {NuGetAssetsFilePath} does not exist.");
                 return false;
             }
-            if (File.Exists(GeneratedOutputPropsFile) && !OverWritePropsFile)
+            if (File.Exists(GeneratedOutputPropsFile) && !OverwritePropsFile)
             {
                 project = ProjectRootElement.Open(GeneratedOutputPropsFile);
                 itemGroup = project?.ItemGroups.LastOrDefault();
             }
-            // project is null if the file does not exist.
+            // project is null if the file does not exist or OverwritePropsFile is true.
             if (project == null)
             {
                 project = ProjectRootElement.Create();
                 ProjectPropertyGroupElement propertyGroup = project.AddPropertyGroup();
-                propertyGroup.AddProperty("ImportedNuGetDeterministicProps", "true");
+                propertyGroup.AddProperty("NuGetDeterministicPropsWasImported", "true");
             }
             if (itemGroup == null)
             {

@@ -9,7 +9,7 @@
     <NuGetDeterministicTasksAssemblyPath Condition=" '$(NuGetDeterministicTasksAssemblyPath)' == '' ">$(MSBuildThisFileDirectory)\tasks\NuGet.Tasks.Deterministic.dll</NuGetDeterministicTasksAssemblyPath>
     <NuGetDeterministicGeneratedOutputPropsFile Condition=" '$(NuGetDeterministicGeneratedOutputPropsFile)' == '' ">$(MSBuildProjectDirectory)\NuGetAssetsLock.props</NuGetDeterministicGeneratedOutputPropsFile>
     <NuGetDeterministicOverWritePropsFile Condition=" '$(NuGetDeterministicOverWritePropsFile)' == '' ">false</NuGetDeterministicOverWritePropsFile>
-    <GenerateNuGetDeterministicProps Condition=" '$(GenerateNuGetDeterministicProps)' == '' And '$(ImportedNuGetDeterministicProps)' != 'true' ">true</GenerateNuGetDeterministicProps>
+    <GenerateNuGetDeterministicProps Condition=" '$(GenerateNuGetDeterministicProps)' == '' And '$(NuGetDeterministicPropsWasImported)' != 'true' ">true</GenerateNuGetDeterministicProps>
     <NuGetDeterministicValidatePackageHash  Condition=" '$(NuGetDeterministicValidatePackageHash)' == '' ">true</NuGetDeterministicValidatePackageHash>
     <NuGetDeterministicValidatePackageIsDeterministic  Condition=" '$(NuGetDeterministicValidatePackageIsDeterministic)' == '' ">true</NuGetDeterministicValidatePackageIsDeterministic>
     <ValidateNuGetDeterministicDependsOn>$(ValidateNuGetDeterministicDependsOn);ValidateNuGetPackageHash;ValidateNuGetPackageIsDeterministic</ValidateNuGetDeterministicDependsOn>
