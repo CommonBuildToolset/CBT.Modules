@@ -47,6 +47,8 @@ namespace CBT.NuGet.Tasks
         [Required]
         public string NuGetAssetsFilePath { get; set; }
 
+        public ITaskItem[] PackagesToExclude { get; set; }
+
         public GenerateLockedPackageConfigurationFile()
         {
             SetAssemblyResolver();
@@ -80,7 +82,7 @@ namespace CBT.NuGet.Tasks
                 itemGroup = project.AddItemGroup();
             }
             LockFile lockFile = LockFileUtilities.GetLockFile(NuGetAssetsFilePath, NullLogger.Instance);
-            foreach (var package in lockFile.Libraries)
+            foreach (var package in lockFile.Libraries.Where(p => p.Type.Equals("package")))
             {
                 // should item group be conditioned or items or metadata?  Perhaps item condition should be considered and compared as well as an item could be conditioned.  Consider the below scenarios.  Since we are only parsing the assets file we need to consider the project file entries.
                 // <PackageReference Include="foo" Version="1.2.3" Condition="bar"/>
@@ -90,6 +92,12 @@ namespace CBT.NuGet.Tasks
                 // </PackageReference>
                 // What about dependencies of packages that are conditioned? they should be conditioned as well.
 
+                // Skip any packages listed in the exclusion list.
+                if (PackagesToExclude
+                    .Any(i => i.ItemSpec.Equals(package.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
                 ProjectItemElement item =
                     project.Items.SingleOrDefault(i => i.Include.Equals(package.Name, StringComparison.OrdinalIgnoreCase));
                 if (item == null)
@@ -101,7 +109,6 @@ namespace CBT.NuGet.Tasks
                 AddMetadataToProject(item, package, "sha512", $"{package.Sha512}");
                 AddMetadataToProject(item, package, "path", $"{package.Path}");
                 AddMetadataToProject(item, package, "hashFileName", $"{package.Path.Replace("/", ".")}.nupkg.sha512");
-                AddMetadataToProject(item, package, "packageDirectory", $"{Path.Combine("$(NuGetPackageFolders)", package.Path.Replace("/", "\\"))}");
 
             }
             project.Save(GeneratedOutputPropsFile);
