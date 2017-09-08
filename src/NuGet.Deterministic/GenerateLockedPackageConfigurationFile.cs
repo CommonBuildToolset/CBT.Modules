@@ -47,6 +47,9 @@ namespace CBT.NuGet.Tasks
         [Required]
         public string NuGetAssetsFilePath { get; set; }
 
+        /// <summary>
+        /// Gets or sets the list of packages to exclude from being made deterministic.
+        /// </summary>
         public ITaskItem[] PackagesToExclude { get; set; }
 
         public GenerateLockedPackageConfigurationFile()
@@ -82,6 +85,7 @@ namespace CBT.NuGet.Tasks
                 itemGroup = project.AddItemGroup();
             }
             LockFile lockFile = LockFileUtilities.GetLockFile(NuGetAssetsFilePath, NullLogger.Instance);
+
             foreach (var package in lockFile.Libraries.Where(p => p.Type.Equals("package")))
             {
                 // should item group be conditioned or items or metadata?  Perhaps item condition should be considered and compared as well as an item could be conditioned.  Consider the below scenarios.  Since we are only parsing the assets file we need to consider the project file entries.
