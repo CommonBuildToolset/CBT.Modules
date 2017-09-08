@@ -93,7 +93,7 @@ namespace CBT.NuGet.Tasks
                 // What about dependencies of packages that are conditioned? they should be conditioned as well.
 
                 // Skip any packages listed in the exclusion list.
-                if (PackagesToExclude
+                if (PackagesToExclude != null && PackagesToExclude.Length > 0 && PackagesToExclude
                     .Any(i => i.ItemSpec.Equals(package.Name, StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
