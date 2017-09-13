@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -149,7 +150,7 @@ namespace CBT.NuGet.Internal
 
             lock (_loadedProjects)
             {
-                shouldLoadProject = _loadedProjects.Add(path);
+                shouldLoadProject = _loadedProjects.Add(Path.GetFullPath(path));
             }
 
             if (!shouldLoadProject)
@@ -161,6 +162,7 @@ namespace CBT.NuGet.Internal
 
             try
             {
+                // load project if not loaded or return loaded project if it is already loaded.
                 project = new Project(path, null, toolsVersion, projectCollection, projectLoadSettings);
             }
             catch (Exception e)
