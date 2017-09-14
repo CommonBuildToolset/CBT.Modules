@@ -149,7 +149,7 @@ namespace CBT.NuGet.Internal
 
             lock (_loadedProjects)
             {
-                shouldLoadProject = _loadedProjects.Add(path);
+                shouldLoadProject = _loadedProjects.Add(Path.GetFullPath(path));
             }
 
             if (!shouldLoadProject)
