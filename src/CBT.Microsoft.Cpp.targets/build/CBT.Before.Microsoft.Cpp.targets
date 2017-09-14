@@ -3,12 +3,13 @@
 
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <CBTInjectionFile>Before.Microsoft.Cpp.targets</CBTInjectionFile>
   </PropertyGroup>
 
   <Import Project="$(CBTSavedForceImportBeforeCppTargets)" Condition=" '$(CBTSavedForceImportBeforeCppTargets)' != '' And Exists('$(CBTSavedForceImportBeforeCppTargets)') " />
   
-  <Import Project="$(CBTLocalBuildExtensionsPath)\$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\$(MSBuildThisFile)') " />
+  <Import Project="$(CBTLocalBuildExtensionsPath)\$(CBTInjectionFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\$(CBTInjectionFile)') " />
   
-  <Import Project="$(CBTModuleExtensionsPath)\$(MSBuildThisFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\$(MSBuildThisFile)') " />
+  <Import Project="$(CBTModuleExtensionsPath)\$(CBTInjectionFile)" Condition=" '$(CBTModuleExtensionsPath)' != '' And Exists('$(CBTModuleExtensionsPath)\$(CBTInjectionFile)') " />
   
 </Project>
