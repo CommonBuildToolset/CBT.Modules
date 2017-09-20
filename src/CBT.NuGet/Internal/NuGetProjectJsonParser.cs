@@ -14,18 +14,18 @@ namespace CBT.NuGet.Internal
     {
         public IEnumerable<PackageIdentityWithPath> GetPackages(string packagesPath, string packageConfigPath, PackageRestoreData packageRestoreData)
         {
-            if (packageRestoreData != null &&
-                !packageRestoreData.RestoreProjectStyle.Equals("ProjectJson",
-                    StringComparison.InvariantCultureIgnoreCase))
+            if (!ProjectJsonPathUtilities.IsProjectConfig(packageConfigPath))
             {
-                yield break;
-            }
-            VersionFolderPathResolver versionFolderPathResolver = new VersionFolderPathResolver(packagesPath);
+                if (packageRestoreData?.RestoreProjectStyle != null && !packageRestoreData.RestoreProjectStyle.Equals("ProjectJson", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    yield break;
+                }
 
-            // If a *proj was passed in but it is really a json project then lookup the json file.
-            if (packageRestoreData != null && packageRestoreData.RestoreProjectStyle.Equals("ProjectJson", StringComparison.OrdinalIgnoreCase))
-            {
-                packageConfigPath = packageRestoreData.ProjectJsonPath;
+                // If a *proj was passed in but it is really a json project then lookup the json file.
+                if (packageRestoreData?.RestoreProjectStyle != null && packageRestoreData.RestoreProjectStyle.Equals("ProjectJson", StringComparison.OrdinalIgnoreCase))
+                {
+                    packageConfigPath = packageRestoreData.ProjectJsonPath;
+                }
             }
 
             if (!ProjectJsonPathUtilities.IsProjectConfig(packageConfigPath))
@@ -41,6 +41,8 @@ namespace CBT.NuGet.Internal
             }
 
             LockFile lockFile = LockFileUtilities.GetLockFile(lockFilePath, NullLogger.Instance);
+
+            VersionFolderPathResolver versionFolderPathResolver = new VersionFolderPathResolver(packagesPath);
 
             foreach (LockFileLibrary library in lockFile.Libraries)
             {

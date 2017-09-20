@@ -16,27 +16,26 @@ namespace CBT.NuGet.Internal
     /// </summary>
     internal sealed class NuGetPackageReferenceProjectParser : INuGetPackageConfigParser
     {
-        CBTTaskLogHelper _log = null;
+        private readonly CBTTaskLogHelper _log;
+
         public NuGetPackageReferenceProjectParser(CBTTaskLogHelper logger)
         {
             _log = logger;
         }
         public IEnumerable<PackageIdentityWithPath> GetPackages(string packagesPath, string packageConfigPath, PackageRestoreData packageRestoreData)
         {
-            if (packageRestoreData != null &&
-                !packageRestoreData.RestoreProjectStyle.Equals("PackageReference",
-                    StringComparison.InvariantCultureIgnoreCase))
+            if (packageRestoreData?.RestoreProjectStyle != null && !packageRestoreData.RestoreProjectStyle.Equals("PackageReference", StringComparison.InvariantCultureIgnoreCase))
             {
                 yield break;
             }
-            // This assumes that if it is a non packages.config or project.json being restored that it is a msbuild project using the new PackageReference.  
+            // This assumes that if it is a non packages.config or project.json being restored that it is a MSBuild project using the new PackageReference.  
             if (ProjectJsonPathUtilities.IsProjectConfig(packageConfigPath) || packageConfigPath.EndsWith(Constants.PackageReferenceFile, StringComparison.OrdinalIgnoreCase))
             {
                 yield break;
             }
             if (string.IsNullOrWhiteSpace(packageRestoreData?.RestoreOutputAbsolutePath))
             {
-                _log.LogMessage(MessageImportance.Low, $"Missing assets file directory.  If you are running NuGet prior to 4.x this is expected.  If you are running NuGet 4.x or higher then this is typically because the flag generated at $(CBTNuGetAssetsFlagFile) does not exist or is empty.  Ensure the GenerateNuGetAssetFlagFile target is running. It may also be because the project does not import cbt build.props in some fashion.  It may also be because NuGet failed to parse the project you may set the env NUGET_RESTORE_MSBUILD_ARGS to the value '/flp:v=diag;logfile=restore.log;append' and check the restore.log for more details. ");
+                _log.LogMessage(MessageImportance.Low, "Missing assets file directory.  If you are running NuGet prior to 4.x this is expected.  If you are running NuGet 4.x or higher then this is typically because the flag generated at $(CBTNuGetAssetsFlagFile) does not exist or is empty.  Ensure the GenerateNuGetAssetFlagFile target is running. It may also be because the project does not import cbt build.props in some fashion.  It may also be because NuGet failed to parse the project you may set the env NUGET_RESTORE_MSBUILD_ARGS to the value '/flp:v=diag;logfile=restore.log;append' and check the restore.log for more details. ");
                 yield break;
             }
             VersionFolderPathResolver versionFolderPathResolver = new VersionFolderPathResolver(packagesPath);
@@ -45,7 +44,7 @@ namespace CBT.NuGet.Internal
 
             if (!File.Exists(lockFilePath))
             {
-                _log.LogWarning($"Missing expected nuget assests file '{lockFilePath}'.  If you are redefining BaseIntermediateOutputPath ensure it is unique per project. ");
+                _log.LogWarning($"Missing expected NuGet assets file '{lockFilePath}'.  If you are redefining BaseIntermediateOutputPath ensure it is unique per project. ");
                 yield break;
             }
             HashSet<string> processedPackages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
