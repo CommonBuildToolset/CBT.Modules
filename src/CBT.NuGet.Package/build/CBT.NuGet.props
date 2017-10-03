@@ -48,6 +48,8 @@
   <PropertyGroup Condition=" '$(CBTNuGetRestoreFile)' == '' ">
     <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectFullPath)</CBTNuGetAllProjects>
+    <NuGetProps Condition=" '$(NuGetProps)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props</NuGetProps>
+    <NuGetTargets Condition=" '$(NuGetTargets)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
   </PropertyGroup>
 
   <PropertyGroup>
