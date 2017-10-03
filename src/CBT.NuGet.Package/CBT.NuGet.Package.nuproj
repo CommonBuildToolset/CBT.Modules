@@ -17,7 +17,7 @@
       <TargetDir>build\</TargetDir>
     </ProjectReference>
     <Dependency Include="CBT.Microsoft.Common.targets">
-      <Version>[2.0,)</Version>
+      <Version>[2.0.36,)</Version>
     </Dependency>
     <Content Include="build\After.Microsoft.Common.targets" />
     <Content Include="build\After.Traversal.targets" />
