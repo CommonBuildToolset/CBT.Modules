@@ -142,6 +142,7 @@
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetRestore" />
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetSetApiKey" />
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.TraversalNuGetRestore" />
+  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.WriteNuGetRestoreInfo" />
 
   <Target Name="RestoreNuGetPackages"
     Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' "
@@ -207,7 +208,7 @@
         <version>%(PackageReference.Version)</version>
       </RestoreAssetsFlagData>
     </ItemGroup>
-    <WriteAssetsFlagJsonFile File="$(CBTNuGetAssetsFlagFile)" Input="@(RestoreAssetsFlagData)" />
+    <WriteNuGetRestoreInfo File="$(CBTNuGetAssetsFlagFile)" Input="@(RestoreAssetsFlagData)" />
   </Target>
 
 </Project>
