@@ -13,7 +13,7 @@
 
         NuGet.exe will write out an embedded NuGet.targets which calls an <MSBuild /> task against the original project with $(ExcludeRestorePackageImports) set to 'true'.  In this case, disable the restoring of packages as part of property evaluation.
     -->
-    <CBTEnablePackageRestore Condition=" '$(CBTEnablePackageRestore)' == '' And '$(ExcludeRestorePackageImports)' == 'true' ">false</CBTEnablePackageRestore>
+    <CBTEnablePackageRestore Condition=" '$(CBTEnablePackageRestore)' == '' And ('$(ExcludeRestorePackageImports)' == 'true' Or '$(IsTraversal)' == 'true') ">false</CBTEnablePackageRestore>
     <CBTEnablePackageRestore Condition=" '$(CBTEnablePackageRestore)' == '' ">true</CBTEnablePackageRestore>
   </PropertyGroup>
 
@@ -141,7 +141,6 @@
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetPush" />
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetRestore" />
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.NuGetSetApiKey" />
-  <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.TraversalNuGetRestore" />
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.WriteNuGetRestoreInfo" />
 
   <Target Name="RestoreNuGetPackages"
