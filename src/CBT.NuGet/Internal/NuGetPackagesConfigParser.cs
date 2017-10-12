@@ -1,55 +1,94 @@
-﻿using NuGet.Packaging;
-using NuGet.Packaging.Core;
+﻿using Microsoft.Build.Framework;
+using NuGet.Configuration;
+using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using NuGet.ProjectManagement;
-
 
 namespace CBT.NuGet.Internal
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents a class that can parse a NuGet packages.config file.
     /// </summary>
-    internal sealed class NuGetPackagesConfigParser : INuGetPackageConfigParser
+    internal sealed class NuGetPackagesConfigParser : NuGetPackageConfigParserBase
     {
-        public IEnumerable<PackageIdentityWithPath> GetPackages(string packagesPath, string packageConfigPath, PackageRestoreData packageRestoreData)
+        /// <summary>
+        /// The name of this package configuration file which is packages.config.
+        /// </summary>
+        public const string PackageConfigFilename = "packages.config";
+
+        public NuGetPackagesConfigParser(ISettings settings, CBTTaskLogHelper log)
+            : base(settings, log)
         {
-            if (packageConfigPath != null && !packageConfigPath.EndsWith(Constants.PackageReferenceFile, StringComparison.OrdinalIgnoreCase))
-            {
-                if (packageRestoreData?.RestoreProjectStyle != null && !packageRestoreData.RestoreProjectStyle.Equals("Unknown", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    yield break;
-                }
+        }
 
-                // If a *proj was passed in but it is really a packages.config project then set the packages.config file.
-                if (packageRestoreData?.RestoreProjectStyle != null && packageRestoreData.RestoreProjectStyle.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
+        public static bool IsPackagesConfigFile(string packageConfigPath)
+        {
+            return packageConfigPath.EndsWith(PackageConfigFilename, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public override bool TryGetPackages(string packageConfigPath, PackageRestoreData packageRestoreData, out IEnumerable<PackageIdentityWithPath> packages)
+        {
+            packages = null;
+
+            if (String.Equals("Unknown", packageRestoreData?.RestoreProjectStyle))
+            {
+                packageConfigPath = Path.Combine(Path.GetDirectoryName(packageConfigPath), PackageConfigFilename);
+
+                if (!File.Exists(packageConfigPath))
                 {
-                    var tmpPackageConfigPath = Path.Combine(Path.GetDirectoryName(packageConfigPath ?? string.Empty) ?? string.Empty, "packages.config");
-                    if (File.Exists(tmpPackageConfigPath))
-                    {
-                        packageConfigPath = tmpPackageConfigPath;
-                    }
+                    return false;
                 }
             }
 
-            if (packageConfigPath == null || !packageConfigPath.EndsWith(Constants.PackageReferenceFile, StringComparison.OrdinalIgnoreCase))
+            if (!IsPackagesConfigFile(packageConfigPath))
             {
-                yield break;
+                return false;
             }
+
+            string repositoryPath = SettingsUtility.GetRepositoryPath(NuGetSettings);
+
+            if (String.IsNullOrWhiteSpace(repositoryPath))
+            {
+                Log.LogWarning("Unable to determine the NuGet repository path.  Ensure that you are you specifying a path in your NuGet.config (https://docs.microsoft.com/en-us/nuget/schema/nuget-config-file#config-section).");
+                return false;
+            }
+
+            repositoryPath = Path.GetFullPath(repositoryPath);
+
+            if (!Directory.Exists(repositoryPath))
+            {
+                throw new DirectoryNotFoundException($"The NuGet repository '{repositoryPath}' does not exist.  Ensure that NuGet is restore packages to the location specified in your NuGet.config.");
+            }
+
+            Log.LogMessage(MessageImportance.Low, $"Using repository path: '{repositoryPath}'");
+
+            PackagePathResolver packagePathResolver = new PackagePathResolver(repositoryPath);
 
             XDocument document = XDocument.Load(packageConfigPath);
 
-            PackagePathResolver packagePathResolver = new PackagePathResolver(packagesPath);
-
             PackagesConfigReader packagesConfigReader = new PackagesConfigReader(document);
-            
-            foreach (PackageIdentity item in packagesConfigReader.GetPackages(allowDuplicatePackageIds: true).Select(i => i.PackageIdentity))
+
+            packages = packagesConfigReader.GetPackages(allowDuplicatePackageIds: true).Select(i =>
             {
-                yield return new PackageIdentityWithPath(item, packagePathResolver.GetPackageDirectoryName(item), packagePathResolver.GetInstallPath(item));
-            }
+                string installPath = packagePathResolver.GetInstallPath(i.PackageIdentity);
+
+                if (!String.IsNullOrWhiteSpace(installPath))
+                {
+                    installPath = Path.GetFullPath(installPath);
+                }
+                else
+                {
+                    Log.LogWarning($"The package '{i.PackageIdentity.Id}' was not found in the repository.");
+                }
+
+                return new PackageIdentityWithPath(i.PackageIdentity, installPath);
+            }).Where(i => !String.IsNullOrWhiteSpace(i.FullPath));
+
+            return true;
         }
     }
 }

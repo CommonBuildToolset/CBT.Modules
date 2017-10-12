@@ -65,7 +65,7 @@ namespace CBT.NuGet.AggregatePackage.UnitTests
                     .AddProperty($"CBTNuGetTasksAssemblyPath={Assembly.GetExecutingAssembly().Location}")
                     .AddProperty($"CBTNuGetTasksAssemblyName=$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType(\'System.AppDomain\').GetProperty(\'CurrentDomain\').GetValue(null).SetData(\'CBT_NUGET_ASSEMBLY_PATH\', $(CBTNuGetTasksAssemblyPath)))$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType(\'System.AppDomain\').GetProperty(\'CurrentDomain\').GetValue(null).SetData(\'CBT_NUGET_ASSEMBLY\', $(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType(\'System.AppDomain\').GetProperty(\'CurrentDomain\').GetValue(null).Load($(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType(\'System.IO.File\').GetMethod(\'ReadAllBytes\').Invoke(null, $([System.IO.Directory]::GetFiles($([System.IO.Path]::GetDirectoryName($(CBTNuGetTasksAssemblyPath))), $([System.IO.Path]::GetFileName($(CBTNuGetTasksAssemblyPath)))))))))))$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType(\'System.AppDomain\').GetProperty(\'CurrentDomain\').GetValue(null).GetData(\'CBT_NUGET_ASSEMBLY\'))")
                     .AddProperty("CBTAggregatePackage=NuGetPath_Microsoft_Build=src1|scr2")
-                    .AddProperty($"NuGetPackagesPath={_destPackagesPath}")
+                    .AddProperty($"CBTNuGetIntermediateOutputPath={_destPackagesPath}")
                     .AddProperty($@"IntermediateOutputPath={_enlistmentRoot}\obj\$(Configuration)\$(Platform)\AggregatePackage.proj")
                     .AddImport($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\After.CBT.NuGet.props")
                     .AddImport($@"{_installedNupkgs["CBT.NuGet.AggregatePackage"]}\build\After.Microsoft.Common.targets")
@@ -128,7 +128,6 @@ namespace CBT.NuGet.AggregatePackage.UnitTests
             {
                 new Property("CBTEnableAggregatePackageRestore", "true"),
                 new Property("CBTAggregateDestPackageRoot", $@"{_destPackagesPath}\.agg"),
-                new Property("CBTNuGetAggregatePackageImmutableRoots", $"{_destPackagesPath}"),
                 new Property("CBTNuGetAggregatePackagePropertyFile", $@"{_enlistmentRoot}\obj\Debug\AnyCPU\AggregatePackage.proj\AggregatePackages.props"),
                 new Property("RestoreNuGetPackagesDependsOn", ";AggregateNuGetPackages"),
                 new Property("CBTAggregatePackageImport", $@"{_enlistmentRoot}\src\CBT.AggregatePackages.props"),

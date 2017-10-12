@@ -58,8 +58,8 @@ namespace CBT.NuGet.Tasks
             // NuGet now evaluates msbuild projects during restore, CBTEnablePackageRestore must be set to prevent NuGet from infinite looping.
             // CBTModulesRestored must be set so on it's evaluation it knows to import the generated module imports so it evaluates the proper full closure of the project.
             EnvironmentVariables = new[] {
-                $"CBTEnablePackageRestore=false",
-                $"CBTModulesRestored=true"
+                "CBTEnablePackageRestore=false",
+                "CBTModulesRestored=true"
             };
             // If packages directory was not specified, just execute the restore
             //
@@ -72,9 +72,7 @@ namespace CBT.NuGet.Tasks
             //
             string semaphoreName = PackagesDirectory.ToUpper().GetHashCode().ToString("X");
 
-            bool releaseSemaphore;
-
-            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out releaseSemaphore))
+            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
             {
                 try
                 {
@@ -97,7 +95,7 @@ namespace CBT.NuGet.Tasks
             }
         }
 
-        public bool Execute(string file, string msBuildVersion, string packagesDirectory, bool requireConsent, string solutionDirectory, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs, string msBuildPath, string additionalArguments)
+        public bool Execute(string file, string msBuildVersion, bool requireConsent, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs, string msBuildPath, string additionalArguments)
         {
             if (BuildEngine == null)
             {
@@ -108,9 +106,7 @@ namespace CBT.NuGet.Tasks
             Log.LogMessage(MessageImportance.Low, $"  File = {file}");
             Log.LogMessage(MessageImportance.Low, $"  MSBuildVersion = {msBuildVersion}");
             Log.LogMessage(MessageImportance.Low, $"  MSBuildPath = {msBuildPath}");
-            Log.LogMessage(MessageImportance.Low, $"  PackagesDirectory = {packagesDirectory}");
             Log.LogMessage(MessageImportance.Low, $"  RequireConsent = {requireConsent}");
-            Log.LogMessage(MessageImportance.Low, $"  SolutionDirectory = {solutionDirectory}");
             Log.LogMessage(MessageImportance.Low, $"  DisableParallelProcessing = {disableParallelProcessing}");
             Log.LogMessage(MessageImportance.Low, $"  FallbackSources = {String.Join(";", fallbackSources)}");
             Log.LogMessage(MessageImportance.Low, $"  NoCache = {noCache}");
@@ -140,9 +136,7 @@ namespace CBT.NuGet.Tasks
             File = file;
             MsBuildVersion = msBuildVersion;
             MsBuildPath = msBuildPath;
-            PackagesDirectory = packagesDirectory;
             RequireConsent = RequireConsent;
-            SolutionDirectory = !String.IsNullOrWhiteSpace(solutionDirectory) ? solutionDirectory : null;
             DisableParallelProcessing = disableParallelProcessing;
             FallbackSource = fallbackSources.Any() ? fallbackSources.Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => new TaskItem(i)).Cast<ITaskItem>().ToArray() : null;
             NoCache = noCache;
@@ -167,7 +161,7 @@ namespace CBT.NuGet.Tasks
 
             try
             {
-                ret = Execute();
+                ret = this.Execute();
 
                 if (enableOptimization && !String.IsNullOrWhiteSpace(markerPath))
                 {

@@ -1,53 +1,90 @@
-﻿using System;
+﻿using Microsoft.Build.Framework;
 using NuGet.Common;
+using NuGet.Configuration;
 using NuGet.Packaging;
 using NuGet.ProjectModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CBT.NuGet.Internal
 {
+    /// <inheritdoc />
     /// <summary>
     /// Represents a class that can parse a NuGet project.json file.
     /// </summary>
-    internal sealed class NuGetProjectJsonParser : INuGetPackageConfigParser
+    internal sealed class NuGetProjectJsonParser : NuGetPackageConfigParserBase
     {
-        public IEnumerable<PackageIdentityWithPath> GetPackages(string packagesPath, string packageConfigPath, PackageRestoreData packageRestoreData)
+        public NuGetProjectJsonParser(ISettings settings, CBTTaskLogHelper log)
+            : base(settings, log)
         {
-            if (!ProjectJsonPathUtilities.IsProjectConfig(packageConfigPath))
+        }
+
+        public override bool TryGetPackages(string packageConfigPath, PackageRestoreData packageRestoreData, out IEnumerable<PackageIdentityWithPath> packages)
+        {
+            packages = null;
+
+            string projectJsonPath;
+
+            if (ProjectJsonPathUtilities.IsProjectConfig(packageConfigPath))
             {
-                if (packageRestoreData?.RestoreProjectStyle != null && !packageRestoreData.RestoreProjectStyle.Equals("ProjectJson", StringComparison.InvariantCultureIgnoreCase))
+                projectJsonPath = packageConfigPath;
+            }
+            else
+            {
+                if (!String.Equals("ProjectJson", packageRestoreData?.RestoreProjectStyle, StringComparison.OrdinalIgnoreCase) || String.IsNullOrWhiteSpace(packageRestoreData?.ProjectJsonPath))
                 {
-                    yield break;
+                    return false;
                 }
 
-                // If a *proj was passed in but it is really a json project then lookup the json file.
-                if (packageRestoreData?.RestoreProjectStyle != null && packageRestoreData.RestoreProjectStyle.Equals("ProjectJson", StringComparison.OrdinalIgnoreCase))
-                {
-                    packageConfigPath = packageRestoreData.ProjectJsonPath;
-                }
+                projectJsonPath = packageRestoreData.ProjectJsonPath;
             }
 
-            if (!ProjectJsonPathUtilities.IsProjectConfig(packageConfigPath))
-            {
-                yield break;
-            }
-
-            string lockFilePath = ProjectJsonPathUtilities.GetLockFilePath(packageConfigPath);
+            string lockFilePath = ProjectJsonPathUtilities.GetLockFilePath(projectJsonPath);
 
             if (!File.Exists(lockFilePath))
             {
-                yield break;
+                throw new FileNotFoundException($"The lock file '{lockFilePath}' does not exist.  Ensure that the restore succeeded and that the lock file was generated.");
             }
 
             LockFile lockFile = LockFileUtilities.GetLockFile(lockFilePath, NullLogger.Instance);
 
-            VersionFolderPathResolver versionFolderPathResolver = new VersionFolderPathResolver(packagesPath);
+            string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(NuGetSettings);
 
-            foreach (LockFileLibrary library in lockFile.Libraries)
+            if (String.IsNullOrWhiteSpace(globalPackagesFolder))
             {
-                yield return new PackageIdentityWithPath(library.Name, library.Version, versionFolderPathResolver.GetPackageDirectory(library.Name, library.Version), versionFolderPathResolver.GetInstallPath(library.Name, library.Version));
+                throw new NuGetConfigurationException(@"Unable to determine the NuGet repository path.  This usually defaults to ""%UserProfile%\.nuget\packages"", ""%NUGET_PACKAGES%"", or the ""globalPackagesFolder"" in your NuGet.config.");
             }
+
+            globalPackagesFolder = Path.GetFullPath(globalPackagesFolder);
+
+            if (!Directory.Exists(globalPackagesFolder))
+            {
+                throw new DirectoryNotFoundException($"The NuGet repository '{globalPackagesFolder}' does not exist.  Ensure that NuGet is restore packages to the location specified in your NuGet.config.");
+            }
+
+            Log.LogMessage(MessageImportance.Low, $"Using repository path: '{globalPackagesFolder}'");
+
+            VersionFolderPathResolver versionFolderPathResolver = new VersionFolderPathResolver(globalPackagesFolder);
+
+            packages = lockFile.Libraries.Select(i =>
+            {
+                string installPath = versionFolderPathResolver.GetInstallPath(i.Name, i.Version);
+
+                if (!String.IsNullOrWhiteSpace(installPath))
+                {
+                    installPath = Path.GetFullPath(installPath);
+                }
+                else
+                {
+                    Log.LogWarning($"The package '{i.Name}' was not found in the repository.");
+                }
+
+                return new PackageIdentityWithPath(i.Name, i.Version, installPath);
+            }).Where(i => !String.IsNullOrWhiteSpace(i.FullPath));
+
+            return true;
         }
     }
 }

@@ -22,8 +22,6 @@
     <NuGetRestore
       File="$(CBTNuGetGlobalPackagesRestoreFile)"
       RequireConsent="$(CBTNuGetRestoreRequireConsent)"
-      PackagesDirectory="$(CBTNuGetRestorePackagesDirectory)"
-      SolutionDirectory="$(NuGetRestoreSolutionDirectory)"
       MsBuildVersion="$(NuGetMsBuildVersion)"
       MsBuildPath="$(NuGetMsBuildPath)"
       DisableParallelProcessing="$(CBTNuGetDisableParallelProcessing)"
@@ -46,13 +44,12 @@
     <CallTarget Targets="_CheckForCBTNuGetGlobalPackagesRestoredMarker" />
 
     <GenerateNuGetProperties
-      Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' And '$(IsRestoreOnly)' == 'true' "
+      Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' "
       PackageRestoreFile="$(CBTNuGetGlobalPackagesRestoreFile)"
       Inputs="$(CBTNuGetAllProjects.Split(';'))"
       PropsFile="$(CBTNuGetGlobalPackagePropertyFile)"
       PropertyVersionNamePrefix="$(CBTNuGetPackagePropertyVersionNamePrefix)"
       PropertyPathNamePrefix="$(CBTNuGetPackagePropertyPathNamePrefix)"
-      PropertyPathValuePrefix="$(CBTNuGetPackagePropertyPathValuePrefix)"
       />
 
   </Target>

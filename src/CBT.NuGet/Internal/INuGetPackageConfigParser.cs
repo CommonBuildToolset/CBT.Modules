@@ -10,9 +10,10 @@ namespace CBT.NuGet.Internal
         /// <summary>
         /// Parses the specified package configuration.
         /// </summary>
-        /// <param name="packagesPath">The path to the packages folder.</param>
         /// <param name="packageConfigPath">The path to the NuGet package configuration file.</param>
-        /// <returns>An <see cref="IEnumerable{PackageIdentity}"/> of the packages specified in the configuration.</returns>
-        IEnumerable<PackageIdentityWithPath> GetPackages(string packagesPath, string packageConfigPath, PackageRestoreData packageRestoreData);
+        /// <param name="packageRestoreData"></param>
+        /// <param name="packages">An <see cref="IEnumerable{PackageIdentity}"/> of the packages specified in the configuration.</param>
+        /// <returns><code>true</code> if the parser was able to successfully parse the packages, otherwise <code>false</code>.</returns>
+        bool TryGetPackages(string packageConfigPath, PackageRestoreData packageRestoreData, out IEnumerable<PackageIdentityWithPath> packages);
     }
 }

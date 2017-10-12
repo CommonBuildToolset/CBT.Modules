@@ -4,7 +4,6 @@ using Microsoft.Build.Utilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -54,11 +53,6 @@ namespace CBT.NuGet.Tasks
         }
 
         /// <summary>
-        /// Gets or sets the assets file from the nuget restore.
-        /// </summary>
-        public string AssetsFile { get; set; }
-
-        /// <summary>
         /// Gets or sets the list of file inputs that should be considered for incrementality if the PropsFile exist and is older then the inputs this is considered a no-op.
         /// </summary>
         [Required]
@@ -82,12 +76,6 @@ namespace CBT.NuGet.Tasks
         public string PropertyPathNamePrefix { get; set; }
 
         /// <summary>
-        /// Gets or sets the property value prefix for the path variables. Property values are formed as ($(PropertyPathValuePrefix_)+PackageInstallRelativePath).
-        /// </summary>
-        [Required]
-        public string PropertyPathValuePrefix { get; set; }
-
-        /// <summary>
         /// Gets or sets the property name prefix for the version variables. Properties are formed as ($(PropertyVersionNamePrefix_)+PackageID.Replace('.','_')).
         /// </summary>
         [Required]
@@ -99,28 +87,31 @@ namespace CBT.NuGet.Tasks
         [Required]
         public string PropsFile { get; set; }
 
+        /// <summary>
+        /// Gets or sets the assets file from the NuGet restore.
+        /// </summary>
+        public string RestoreInfoFile { get; set; }
+
         public override bool Execute()
         {
             Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", PropsFile);
             NuGetPropertyGenerator nuGetPropertyGenerator = new NuGetPropertyGenerator(_log, PackageRestoreFile);
-            nuGetPropertyGenerator.Generate(PropsFile, PropertyVersionNamePrefix, PropertyPathNamePrefix, PropertyPathValuePrefix, NuGetPackagesPath, GetPackageRestoreData());
+            nuGetPropertyGenerator.Generate(PropsFile, PropertyVersionNamePrefix, PropertyPathNamePrefix, GetPackageRestoreData());
             return true;
         }
 
-        public bool Execute(string packageRestoreFile, string[] inputs, string propsFile, string propertyVersionNamePrefix, string propertyPathNamePrefix, string propertyPathValuePrefix, string nuGetPackagesPath, string assetsFile = "")
+        public bool Execute(string packageRestoreFile, string[] inputs, string propsFile, string propertyVersionNamePrefix, string propertyPathNamePrefix, string restoreInfoFile = "")
         {
             try
             {
                 BuildEngine = new CBTBuildEngine();
                 Log.LogMessage(MessageImportance.Low, "Generate NuGet packages properties:");
-                Log.LogMessage(MessageImportance.Low, $"  PackageRestoreFile = {packageRestoreFile}");
                 Log.LogMessage(MessageImportance.Low, $"  Inputs = {String.Join(";", inputs)}");
-                Log.LogMessage(MessageImportance.Low, $"  PropsFile = {propsFile}");
-                Log.LogMessage(MessageImportance.Low, $"  PropertyVersionNamePrefix = {propertyVersionNamePrefix}");
+                Log.LogMessage(MessageImportance.Low, $"  PackageRestoreFile = {packageRestoreFile}");
                 Log.LogMessage(MessageImportance.Low, $"  PropertyPathNamePrefix = {propertyPathNamePrefix}");
-                Log.LogMessage(MessageImportance.Low, $"  PropertyPathValuePrefix = {propertyPathValuePrefix}");
-                Log.LogMessage(MessageImportance.Low, $"  NuGetPackagesPath = {nuGetPackagesPath}");
-                Log.LogMessage(MessageImportance.Low, $"  AssetsFile = {assetsFile}");
+                Log.LogMessage(MessageImportance.Low, $"  PropertyVersionNamePrefix = {propertyVersionNamePrefix}");
+                Log.LogMessage(MessageImportance.Low, $"  PropsFile = {propsFile}");
+                Log.LogMessage(MessageImportance.Low, $"  RestoreInfoFile = {restoreInfoFile}");
 
                 if (NuGetRestore.IsFileUpToDate(Log, propsFile, inputs))
                 {
@@ -129,7 +120,7 @@ namespace CBT.NuGet.Tasks
                 }
                 if (Directory.Exists(packageRestoreFile))
                 {
-                    Log.LogMessage(MessageImportance.Low, $"A directory with the name '{packageRestoreFile}' exist.  Please consider renaming this directory to avoid breaking nuget convention.");
+                    Log.LogMessage(MessageImportance.Low, $"A directory with the name '{packageRestoreFile}' exist.  Please consider renaming this directory to avoid breaking NuGet convention.");
                     return true;
                 }
                 PackageRestoreFile = packageRestoreFile;
@@ -137,16 +128,13 @@ namespace CBT.NuGet.Tasks
                 PropsFile = propsFile;
                 PropertyVersionNamePrefix = propertyVersionNamePrefix;
                 PropertyPathNamePrefix = propertyPathNamePrefix;
-                PropertyPathValuePrefix = propertyPathValuePrefix;
-                AssetsFile = assetsFile;
-                NuGetPackagesPath = nuGetPackagesPath;
+                RestoreInfoFile = restoreInfoFile;
 
                 return Execute();
             }
             catch (Exception e)
             {
                 Log.LogError(e.ToString());
-                Trace.TraceError(e.ToString());
                 return false;
             }
         }
@@ -157,12 +145,21 @@ namespace CBT.NuGet.Tasks
         /// <returns> a PackageRestoreData object based off the contents of the flag file.</returns>
         internal PackageRestoreData GetPackageRestoreData()
         {
-            if (string.IsNullOrWhiteSpace(AssetsFile) || !File.Exists(AssetsFile))
+            if (NuGetPackagesConfigParser.IsPackagesConfigFile(PackageRestoreFile))
             {
-                Log.LogMessage(MessageImportance.Low, $"Package reference {AssetsFile} not found.  Either you are not using PackageReference elements for your packages or you are using a version of nuget.exe prior to 4.x, or the project does not import CBT in some way.");
+                return new PackageRestoreData
+                {
+                    RestoreProjectStyle = "PackagesConfig"
+                };
+            }
+
+            if (String.IsNullOrWhiteSpace(RestoreInfoFile) || !File.Exists(RestoreInfoFile))
+            {
+                Log.LogMessage(MessageImportance.Low, $"Package reference {RestoreInfoFile} not found.  Either you are not using PackageReference elements for your packages or you are using a version of nuget.exe prior to 4.x, or the project does not import CBT in some way.");
                 return null;
             }
-            return JsonConvert.DeserializeObject<PackageRestoreData>(File.ReadAllText(AssetsFile));
+
+            return JsonConvert.DeserializeObject<PackageRestoreData>(File.ReadAllText(RestoreInfoFile));
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
