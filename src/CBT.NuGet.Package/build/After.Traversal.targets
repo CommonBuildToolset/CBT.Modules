@@ -3,11 +3,10 @@
 
   <PropertyGroup Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' ">
     <CBTNuGetTraversalRestoreFile Condition=" '$(CBTNuGetTraversalRestoreFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile)\$(MSBuildProjectFile).sln</CBTNuGetTraversalRestoreFile>
-    <CBTNuGetTraversalPackagesRestoredMarker Condition="'$(CBTNuGetTraversalPackagesRestoredMarker)' == ''">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile)\$(MSBuildProjectFile).CBTNuGetPackagesRestored</CBTNuGetTraversalPackagesRestoredMarker>
+    <CBTNuGetTraversalPackagesRestoredMarker Condition=" '$(CBTNuGetTraversalPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetTraversalPackagesRestored</CBTNuGetTraversalPackagesRestoredMarker>
     <CBTNuGetTraversalPackagePropertyFile Condition=" '$(CBTNuGetTraversalPackagePropertyFile)' == '' ">$(CBTNuGetTraversalRestoreFile).props</CBTNuGetTraversalPackagePropertyFile>
     <CBTNuGetAllProjects>$(MSBuildProjectFullPath);$(MSBuildThisFileFullPath);$(CBTNuGetAllProjects)</CBTNuGetAllProjects>
     <CBTNuGetTraversalRestoreGlobalProperties Condition=" '$(CBTNuGetTraversalRestoreGlobalProperties)' == '' ">BuildingInsideVisualStudio=true;DesignTimeBuild=true;CBTModulesRestored=true;CBTNuGetGeneratePackageProperties=false;CBTNuGetTraversalPackagePropertiesCreated=true;CBTNuGetTraversalPackagesRestored=true</CBTNuGetTraversalRestoreGlobalProperties>
-    <CBTNuGetTraversalPackagesRestoredMarker Condition=" '$(CBTNuGetTraversalPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetTraversalPackagesRestored</CBTNuGetTraversalPackagesRestoredMarker>
   </PropertyGroup>
 
 
