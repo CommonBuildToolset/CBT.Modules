@@ -34,8 +34,13 @@ namespace CBT.NuGet.Internal
         {
             packages = null;
 
+
+            // NuGet sets the project restore style to "Unknown" if its not PackageReference or ProjectJson
+            //
             if (String.Equals("Unknown", packageRestoreData?.RestoreProjectStyle))
             {
+                // Attempt to check if there's a packages.config next to the project
+                //
                 packageConfigPath = Path.Combine(Path.GetDirectoryName(packageConfigPath), PackageConfigFilename);
 
                 if (!File.Exists(packageConfigPath))

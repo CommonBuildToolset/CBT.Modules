@@ -149,7 +149,8 @@ namespace CBT.NuGet.Tasks
             {
                 return new PackageRestoreData
                 {
-                    RestoreProjectStyle = "PackagesConfig"
+                    // At the moment, NuGet sets the restore style to Unknown if its not PackageReference or project.json
+                    RestoreProjectStyle = "Unknown"
                 };
             }
 
