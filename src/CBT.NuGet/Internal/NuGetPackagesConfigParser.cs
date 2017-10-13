@@ -53,8 +53,7 @@ namespace CBT.NuGet.Internal
 
             if (String.IsNullOrWhiteSpace(repositoryPath))
             {
-                Log.LogWarning("Unable to determine the NuGet repository path.  Ensure that you are you specifying a path in your NuGet.config (https://docs.microsoft.com/en-us/nuget/schema/nuget-config-file#config-section).");
-                return false;
+                throw new NuGetConfigurationException("Unable to determine the NuGet repository path.  Ensure that you are you specifying a path in your NuGet.config (https://docs.microsoft.com/en-us/nuget/schema/nuget-config-file#config-section).");
             }
 
             repositoryPath = Path.GetFullPath(repositoryPath);

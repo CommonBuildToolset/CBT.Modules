@@ -26,23 +26,24 @@ namespace CBT.NuGet.Internal
         {
             packages = null;
 
-            // This assumes that if it is a non packages.config or project.json being restored that it is a MSBuild project using the new PackageReference.
-            if (ProjectJsonPathUtilities.IsProjectConfig(packageConfigPath) || NuGetPackagesConfigParser.IsPackagesConfigFile(packageConfigPath))
+            // This parser cannot do anything for packages.config or project.json
+            //
+            if (NuGetPackagesConfigParser.IsPackagesConfigFile(packageConfigPath) || ProjectJsonPathUtilities.IsProjectConfig(packageConfigPath))
             {
                 return false;
             }
 
+            // This parser requires that the restore info file was created
+            //
             if (packageRestoreData == null)
             {
-                Log.LogWarning("Missing expected assets file directory.  This is typically because the flag generated at $(CBTModuleNuGetAssetsFlagFile) does not exist or is empty.  Ensure the GenerateModuleAssetFlagFile target is running. It may also be because the CBTModules.proj does not import CBT build.props in some fashion.");
+                Log.LogMessage("Missing expected assets file directory.  This is typically because the flag generated at $(CBTModuleNuGetAssetsFlagFile) does not exist or is empty.  Ensure the GenerateModuleAssetFlagFile target is running. It may also be because the CBTModules.proj does not import CBT build.props in some fashion.");
                 return false;
             }
 
-            if (String.Equals("Unknown", packageRestoreData?.RestoreProjectStyle, StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals("PackageReference", packageRestoreData.RestoreProjectStyle, StringComparison.OrdinalIgnoreCase))
             {
-                packages = Enumerable.Empty<PackageIdentityWithPath>();
-
-                return true;
+                return false;
             }
 
             string lockFilePath = Path.Combine(packageRestoreData.RestoreOutputAbsolutePath, LockFileFormat.AssetsFileName);
@@ -67,7 +68,7 @@ namespace CBT.NuGet.Internal
 
             if (!Directory.Exists(globalPackagesFolder))
             {
-                throw new DirectoryNotFoundException($"The NuGet repository '{globalPackagesFolder}' does not exist.  Ensure that NuGet is restore packages to the location specified in your NuGet.config.");
+                throw new DirectoryNotFoundException($"The NuGet repository '{globalPackagesFolder}' does not exist.  Ensure that NuGet restored packages to the location specified in your NuGet.config.");
             }
 
             Log.LogMessage(MessageImportance.Low, $"Using repository path: '{globalPackagesFolder}'");

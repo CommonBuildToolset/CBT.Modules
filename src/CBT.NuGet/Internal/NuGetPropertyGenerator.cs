@@ -30,11 +30,13 @@ namespace CBT.NuGet.Internal
             {
                 settings = settings ?? Settings.LoadDefaultSettings(Path.GetDirectoryName(_packageConfigPaths[0]), configFileName: null, machineWideSettings: new XPlatMachineWideSetting());
 
+                // Ordering here is based on the most likely scenario.  As PackageReference becomes more popular, we should move it up
+                //
                 return new List<INuGetPackageConfigParser>
                 {
                     new NuGetPackagesConfigParser(settings, _logger),
+                    new NuGetPackageReferenceProjectParser(settings, _logger),
                     new NuGetProjectJsonParser(settings, _logger),
-                    new NuGetPackageReferenceProjectParser(settings, _logger)
                 };
             });
         }
@@ -47,6 +49,8 @@ namespace CBT.NuGet.Internal
 
             ProjectItemGroupElement itemGroup = project.AddItemGroup();
 
+            bool anyPropertiesCreated = false;
+
             foreach (string packageConfigPath in _packageConfigPaths)
             {
                 _logger.LogMessage(MessageImportance.Low, $"Parsing '{packageConfigPath}'");
@@ -57,6 +61,8 @@ namespace CBT.NuGet.Internal
 
                 if (configParser != null && parsedPackages != null)
                 {
+                    anyPropertiesCreated = true;
+
                     foreach (PackageIdentityWithPath packageInfo in parsedPackages)
                     {
                         propertyGroup.SetProperty($"{propertyPathNamePrefix}{packageInfo.Id.Replace(".", "_")}", $"{packageInfo.FullPath}");
@@ -69,7 +75,10 @@ namespace CBT.NuGet.Internal
                 }
             }
 
-            if (propertyGroup.Properties.Count > 1)
+            // Don't save the file if no properties were created.  In Visual Studio design time builds, this can be called multiple times until there are finally
+            // properties that can be created.  If we generate an empty file, it won't get regenerated once there are properties to create.
+            //
+            if (anyPropertiesCreated)
             {
                 project.Save(outputPath);
             }
