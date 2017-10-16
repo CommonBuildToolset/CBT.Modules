@@ -8,7 +8,7 @@
   <Target Name="PrepareTestOutputFolder">
 
     <ItemGroup>
-      <CopyContent Include="$(OutDir)..\$(MSBuildProjectName.Replace('.UnitTests',''))\*nupkg" Exclude="$(OutDir)..\$(MSBuildProjectName.Replace('.UnitTests',''))\*.symbols.nupkg">
+      <CopyContent Include="$(EnlistmentRoot)\src\CBT.NuGet.AggregatePackage\bin\**\*.nupkg" Exclude="$(EnlistmentRoot)\src\CBT.NuGet.AggregatePackage\bin\**\*.symbols.nupkg">
         <DestinationFolder>$(OutDir)repo</DestinationFolder>
       </CopyContent>
     </ItemGroup>

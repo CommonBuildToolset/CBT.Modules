@@ -1,68 +1,89 @@
 ﻿using Microsoft.Build.Construction;
+using Microsoft.Build.Framework;
+using NuGet.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace CBT.NuGet.Internal
 {
     internal sealed class NuGetPropertyGenerator
     {
-        /// <summary>
-        /// The name of the 'ID' attribute in the NuGet packages.config.
-        /// </summary>
-        private const string NuGetPackagesConfigIdAttributeName = "id";
-
-        /// <summary>
-        /// The name of the &lt;package /&gt; element in th NuGet packages.config.
-        /// </summary>
-        private const string NuGetPackagesConfigPackageElementName = "package";
-
-        /// <summary>
-        /// The name of the 'Version' attribute in the NuGet packages.config.
-        /// </summary>
-        private const string NuGetPackagesConfigVersionAttributeName = "version";
-
+        private readonly Lazy<List<INuGetPackageConfigParser>> _configParsersLazy;
+        private readonly CBTTaskLogHelper _logger;
         private readonly string[] _packageConfigPaths;
 
-        private readonly CBTTaskLogHelper _logger;
-
         public NuGetPropertyGenerator(CBTTaskLogHelper logger, params string[] packageConfigPaths)
+            : this(logger, null, packageConfigPaths)
         {
-
-            _packageConfigPaths = packageConfigPaths ?? throw new ArgumentNullException(nameof(packageConfigPaths));
-            _logger = logger;
+            
         }
 
-        public bool Generate(string outputPath, string propertyVersionNamePrefix, string propertyPathNamePrefix, string propertyPathValuePrefix, string nuGetPackagesPath, PackageRestoreData restoreData)
+        public NuGetPropertyGenerator(CBTTaskLogHelper logger, ISettings settings, params string[] packageConfigPaths)
+        {
+            _packageConfigPaths = packageConfigPaths ?? throw new ArgumentNullException(nameof(packageConfigPaths));
+            _logger = logger;
+
+            _configParsersLazy = new Lazy<List<INuGetPackageConfigParser>>(() =>
+            {
+                settings = settings ?? Settings.LoadDefaultSettings(Path.GetDirectoryName(_packageConfigPaths[0]), configFileName: null, machineWideSettings: new XPlatMachineWideSetting());
+
+                // Ordering here is based on the most likely scenario.  As PackageReference becomes more popular, we should move it up
+                //
+                return new List<INuGetPackageConfigParser>
+                {
+                    new NuGetPackagesConfigParser(settings, _logger),
+                    new NuGetPackageReferenceProjectParser(settings, _logger),
+                    new NuGetProjectJsonParser(settings, _logger),
+                };
+            });
+        }
+
+        public bool Generate(string outputPath, string propertyVersionNamePrefix, string propertyPathNamePrefix, PackageRestoreData restoreData)
         {
             ProjectRootElement project = ProjectRootElement.Create();
             ProjectPropertyGroupElement propertyGroup = project.AddPropertyGroup();
             propertyGroup.SetProperty("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)");
 
             ProjectItemGroupElement itemGroup = project.AddItemGroup();
-            foreach (PackageIdentityWithPath packageInfo in ParsePackages(nuGetPackagesPath, restoreData))
+
+            bool anyPropertiesCreated = false;
+
+            foreach (string packageConfigPath in _packageConfigPaths)
             {
-                propertyGroup.SetProperty(
-                    String.Format(CultureInfo.CurrentCulture, "{0}{1}", propertyPathNamePrefix,
-                        packageInfo.Id.Replace(".", "_")),
-                    String.Format(CultureInfo.CurrentCulture, "{0}", packageInfo.FullPath));
-                propertyGroup.SetProperty(
-                    String.Format(CultureInfo.CurrentCulture, "{0}{1}", propertyVersionNamePrefix,
-                        packageInfo.Id.Replace(".", "_")),
-                    String.Format(CultureInfo.CurrentCulture, "{0}", packageInfo.Version.ToString()));
-                // Consider adding item metadata of packageid and version for ease of consumption of this property.
-                itemGroup.AddItem("CBTNuGetPackageDir",
-                    String.Format(CultureInfo.CurrentCulture, "{0}", packageInfo.FullPath));
+                _logger.LogMessage(MessageImportance.Low, $"Parsing '{packageConfigPath}'");
+
+                IEnumerable<PackageIdentityWithPath> parsedPackages = null;
+
+                INuGetPackageConfigParser configParser = _configParsersLazy.Value.FirstOrDefault(i => i.TryGetPackages(packageConfigPath, restoreData, out parsedPackages));
+
+                if (configParser != null && parsedPackages != null)
+                {
+                    anyPropertiesCreated = true;
+
+                    foreach (PackageIdentityWithPath packageInfo in parsedPackages)
+                    {
+                        propertyGroup.SetProperty($"{propertyPathNamePrefix}{packageInfo.Id.Replace(".", "_")}", $"{packageInfo.FullPath}");
+
+                        propertyGroup.SetProperty($"{propertyVersionNamePrefix}{packageInfo.Id.Replace(".", "_")}", $"{packageInfo.Version.ToString()}");
+
+                        // Consider adding item metadata of packageid and version for ease of consumption of this property.
+                        itemGroup.AddItem("CBTNuGetPackageDir", packageInfo.FullPath);
+                    }
+                }
             }
-            project.Save(outputPath);
+
+            // Don't save the file if no properties were created.  In Visual Studio design time builds, this can be called multiple times until there are finally
+            // properties that can be created.  If we generate an empty file, it won't get regenerated once there are properties to create.
+            //
+            if (anyPropertiesCreated)
+            {
+                project.Save(outputPath);
+            }
 
             return true;
-        }
-
-        private IEnumerable<PackageIdentityWithPath> ParsePackages(string packagesPath, PackageRestoreData restoreData)
-        {
-            ModulePropertyGenerator modulePropertyGenerator = new ModulePropertyGenerator(_logger, packagesPath, restoreData, _packageConfigPaths);
-            return modulePropertyGenerator._packages.Values;
         }
     }
 }

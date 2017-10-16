@@ -12,8 +12,7 @@
   <PropertyGroup>
     <CBTEnableAggregatePackageRestore Condition=" '$(CBTEnableAggregatePackageRestore)' == '' And '$(CBTEnablePackageRestore)'=='true' ">true</CBTEnableAggregatePackageRestore>
     <CBTAggregatePackageImport Condition=" '$(CBTAggregatePackageImport)'=='' and Exists('$(MSBuildProjectDirectory)\CBT.AggregatePackages.props') ">$(MSBuildProjectDirectory)\CBT.AggregatePackages.props</CBTAggregatePackageImport>
-    <CBTAggregateDestPackageRoot Condition=" '$(CBTAggregateDestPackageRoot)'=='' ">$(NuGetPackagesPath)\.agg</CBTAggregateDestPackageRoot>
-    <CBTNuGetAggregatePackageImmutableRoots Condition=" '$(CBTNuGetAggregatePackageImmutableRoots)'=='' ">$(NuGetPackagesPath)</CBTNuGetAggregatePackageImmutableRoots>
+    <CBTAggregateDestPackageRoot Condition=" '$(CBTAggregateDestPackageRoot)'=='' ">$(CBTNuGetIntermediateOutputPath)\.agg</CBTAggregateDestPackageRoot>
   </PropertyGroup>
 
   <Import Project="$(CBTAggregatePackageImport)" Condition=" '$(CBTAggregatePackageImport)'!='' and '$(CBTEnableAggregatePackageRestore)'=='true' "/>

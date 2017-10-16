@@ -7,9 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
     <TargetFramework Condition=" '$(TargetFramework)' == '' ">net45</TargetFramework>
-    <!-- Temporarily pin to version 3.4 
-    <CBTNuGetDownloaderArguments>https://dist.nuget.org/win-x86-commandline/v3.4.4/NuGet.exe</CBTNuGetDownloaderArguments>
-    -->
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' ">

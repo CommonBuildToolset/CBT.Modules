@@ -9,7 +9,16 @@ namespace CBT.NuGet.UnitTests
 {
     public abstract class TestBase : IDisposable
     {
-        public string TestRootPath { get; } = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        private readonly string _testRootPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+        public string TestRootPath
+        {
+            get
+            {
+                Directory.CreateDirectory(_testRootPath);
+                return _testRootPath;
+            }
+        }
 
         protected string GetTempFileName()
         {
