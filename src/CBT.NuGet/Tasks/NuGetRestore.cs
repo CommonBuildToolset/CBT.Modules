@@ -125,9 +125,9 @@ namespace CBT.NuGet.Tasks
             if (enableOptimization && IsFileUpToDate(Log, markerPath, inputs))
             {
                 Log.LogMessage(MessageImportance.Low, "NuGet packages are up-to-date");
-
                 return true;
             }
+
             if (Directory.Exists(file))
             {
                 Log.LogMessage(MessageImportance.Low, $"A directory with the name '{file}' exist.  Please consider renaming this directory to avoid breaking nuget convention.");

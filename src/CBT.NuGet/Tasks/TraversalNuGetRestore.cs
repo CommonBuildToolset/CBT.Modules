@@ -23,10 +23,17 @@ namespace CBT.NuGet.Tasks
             {
                 BuildEngine = new CBTBuildEngine();
             }
+            
             MSBuildToolsVersion = msbuildToolsVersion;
             Project = project;
             GlobalProperties = globalProperties;
             File = file;
+
+            if (enableOptimization && IsFileUpToDate(Log, markerPath, inputs))
+            {
+                Log.LogMessage(MessageImportance.Low, "Traversal NuGet packages are up-to-date");
+                return true;
+            }
 
             MSBuildProjectLoader projectLoader = new MSBuildProjectLoader(GlobalProperties.Split(new[] {';', ','}, StringSplitOptions.RemoveEmptyEntries).Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => i.Trim().Split(new[] {'='}, 2, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(i => i.First(), i => i.Last()), MSBuildToolsVersion, Log, ProjectLoadSettings.IgnoreMissingImports);
 

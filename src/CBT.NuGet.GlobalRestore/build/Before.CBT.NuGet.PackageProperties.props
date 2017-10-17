@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <CBTEnableGlobalPackageRestore Condition=" '$(CBTEnablePackageRestore)' == 'false' ">false</CBTEnableGlobalPackageRestore>
+    <CBTEnableGlobalPackageRestore Condition=" '$(CBTEnablePackageRestore)' == 'false' And '$(IsTraversal)' != 'true' ">false</CBTEnableGlobalPackageRestore>
     <CBTEnableGlobalPackageRestore Condition=" '$(ExcludeRestorePackageImports)' == 'true' ">false</CBTEnableGlobalPackageRestore>
     <CBTEnableGlobalPackageRestore Condition=" '$(CBTEnableGlobalPackageRestore)' == '' ">true</CBTEnableGlobalPackageRestore>
   </PropertyGroup>
