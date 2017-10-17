@@ -103,7 +103,7 @@
   <!--
     Import NuGet package properties
   -->
-  <Import Project="$(CBTNuGetPackagePropertyFile)" Condition=" '$(CBTNuGetPackagePropertiesCreated)' == 'true' Or Exists('$(CBTNuGetPackagePropertyFile)') "/>
+  <Import Project="$(CBTNuGetPackagePropertyFile)" Condition=" Exists('$(CBTNuGetPackagePropertyFile)') "/>
 
   <!--
     Import After.CBT.NuGet.PackageProperties from module extensions and then local extensions

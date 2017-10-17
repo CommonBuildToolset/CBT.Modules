@@ -43,6 +43,13 @@ namespace CBT.NuGet.Internal
 
         public bool Generate(string outputPath, string propertyVersionNamePrefix, string propertyPathNamePrefix, PackageRestoreData restoreData)
         {
+            // Delete an existing file in case there are no properties generated and we don't end up saving the file
+            //
+            if (File.Exists(outputPath))
+            {
+                File.Delete(outputPath);
+            }
+
             ProjectRootElement project = ProjectRootElement.Create();
             ProjectPropertyGroupElement propertyGroup = project.AddPropertyGroup();
             propertyGroup.SetProperty("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)");
