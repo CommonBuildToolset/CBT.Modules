@@ -9,7 +9,7 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
     <Dependency Include="CBT.Microsoft.Common.targets">
-      <Version>[2.0,)</Version>
+      <Version>[2.0.36,)</Version>
     </Dependency>
     <Content Include="build\After.Microsoft.Common.targets" />
     <Content Include="build\CBT.Traversal.props" />
