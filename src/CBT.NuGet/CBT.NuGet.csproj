@@ -26,8 +26,8 @@
     <Compile Include="Internal\ExtensionMethods.cs" />
     <Compile Include="Internal\FileUtilities.cs" />
     <Compile Include="Internal\INuGetPackageConfigParser.cs" />
-    <Compile Include="Internal\ModulePropertyGenerator.cs" />
     <Compile Include="Internal\MSBuildProjectLoader.cs" />
+    <Compile Include="Internal\NuGetPackageConfigParserBase.cs" />
     <Compile Include="Internal\NuGetPackageReferenceProjectParser.cs" />
     <Compile Include="Internal\NuGetPackagesConfigParser.cs" />
     <Compile Include="Internal\NuGetProjectJsonParser.cs" />

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project InitialTargets="GenerateNuGetProperties" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <PrepareForBuildDependsOn Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' ">_CheckForCBTNuGetPackagesRestoredMarker;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
@@ -9,5 +9,56 @@
   <Import Project="$(NuGetTargets)" Condition=" '$(NuGetTargets)' != '' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.targets\ImportAfter\Microsoft.NuGet.ImportAfter.targets') " />
 
   <Import Project="$(CBTBuildPackageTargetsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
+
+  <Target Name="GenerateNuGetProperties"
+    Condition=" '$(BuildingInsideVisualStudio)' == 'true' And '$(RestoreSuccess)' == 'true' "
+    DependsOnTargets="GenerateNuGetAssetFlagFileInVisualStudio"
+    Inputs="$(CBTNuGetAllProjects);$(CBTNuGetRestoreFile)"
+    Outputs="$(CBTNuGetPackagePropertyFile)">
+
+    <GenerateNuGetProperties
+      Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' "
+      PackageRestoreFile="$(CBTNuGetRestoreFile)"
+      Inputs="$(CBTNuGetAllProjects.Split(';'))"
+      PropsFile="$(CBTNuGetPackagePropertyFile)"
+      PropertyVersionNamePrefix="$(CBTNuGetPackagePropertyVersionNamePrefix)"
+      PropertyPathNamePrefix="$(CBTNuGetPackagePropertyPathNamePrefix)"
+      RestoreInfoFile="$(CBTNuGetAssetsFlagFile)"
+    />
+  </Target>
+
+  <Target Name="GenerateNuGetAssetFlagFileInVisualStudio"
+    Condition=" '$(BuildingInsideVisualStudio)' == 'true' "
+    Inputs="$(CBTNuGetRestoreFile)"
+    Outputs="$(CBTNuGetAssetsFlagFile)">
+
+    <PropertyGroup>
+      <RestoreOutputPath Condition=" '$(RestoreOutputPath)' == '' " >$(BaseIntermediateOutputPath)</RestoreOutputPath>
+    </PropertyGroup>
+
+    <ConvertToAbsolutePath Paths="$(RestoreOutputPath)">
+      <Output TaskParameter="AbsolutePaths" PropertyName="RestoreOutputAbsolutePath" />
+    </ConvertToAbsolutePath>
+    
+    <ItemGroup>
+      <RestoreAssetsFlagData Remove="@(RestoreAssetsFlagData)"/>
+      <RestoreAssetsFlagData Include="ProjectJsonPath">
+        <value>$(_CurrentProjectJsonPath)</value>
+      </RestoreAssetsFlagData>
+      <RestoreAssetsFlagData Include="RestoreProjectStyle">
+        <value>$(RestoreProjectStyle)</value>
+      </RestoreAssetsFlagData>
+      <RestoreAssetsFlagData Include="RestoreOutputAbsolutePath">
+        <value>$(RestoreOutputAbsolutePath)</value>
+      </RestoreAssetsFlagData>
+      <RestoreAssetsFlagData Include="PackageReference">
+        <id>%(PackageReference.Identity)</id>
+        <version>%(PackageReference.Version)</version>
+      </RestoreAssetsFlagData>
+    </ItemGroup>
+    
+    <WriteNuGetRestoreInfo File="$(CBTNuGetAssetsFlagFile)" Input="@(RestoreAssetsFlagData)" />
+    
+  </Target>
   
 </Project>

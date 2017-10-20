@@ -20,6 +20,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MockBuildEngine.cs" />
+    <Compile Include="MockSettings.cs" />
+    <Compile Include="MockTask.cs" />
     <Compile Include="NuGetPathPropertiesTests.cs" />
     <Compile Include="AggregatePackageTests.cs" />
     <Compile Include="ExtensionMethods.cs" />

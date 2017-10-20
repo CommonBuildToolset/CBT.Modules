@@ -5,9 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CBT.NuGet" Version="2.0.31" />
-    <PackageReference Include="CBT.UnifiedOutputDir" Version="2.0.28-rc1-ga1698990ac" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="1.5.58" />
-    <PackageReference Include="NuProj" Version="0.11.14-beta" />
-    <PackageReference Include="NuProj.Common" Version="0.11.14-beta" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.0.41" />
+    <PackageReference Include="NuProj" Version="0.11.30" />
+    <PackageReference Include="NuProj.Common" Version="0.11.30" />
   </ItemGroup>
 </Project>

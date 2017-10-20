@@ -20,10 +20,17 @@ namespace CBT.NuGet.UnitTests
         private readonly string _packageConfigFileContents = @"<packages><package id=""Newtonsoft.Json"" version=""6.0.1""/></packages>";
         private readonly string _packageProjectJsonFileContents = @"{  ""dependencies"": {    ""NewtonSoft.Json"": ""6.0.3""  },  ""frameworks"": {    ""net45"": {}  },  ""runtimes"": {    ""win"": {}  }}";
 
+        private readonly CBTTaskLogHelper _log = new CBTTaskLogHelper(new MockTask
+        {
+            BuildEngine = new MockBuildEngine()
+        });
+
+
+
         [Fact]
         public void ReadJsonFileTest()
         {
-            var packageRestoreData = LoadPackageRestoreObject(GetTempFileName(), _packageReferenceRestoreFlagContents);
+            PackageRestoreData packageRestoreData = LoadPackageRestoreObject("foo.proj", GetTempFileName(), _packageReferenceRestoreFlagContents);
             packageRestoreData.RestoreProjectStyle.ShouldBe("PackageReference");
             packageRestoreData.ProjectJsonPath.ShouldBe(string.Empty);
             packageRestoreData.RestoreOutputAbsolutePath.ShouldBe("#RestoreOutputPath#");
@@ -35,21 +42,41 @@ namespace CBT.NuGet.UnitTests
         [Fact]
         public void VerifyPackagesConfigParserTest()
         {
-
-            var packageRestoreData = LoadPackageRestoreObject(GetTempFileName(), _packageConfigRestoreFlagContents);
             string packageConfigFile = Path.Combine(TestRootPath, "packages.config");
+
+            PackageRestoreData packageRestoreData = LoadPackageRestoreObject(packageConfigFile, GetTempFileName(), _packageConfigRestoreFlagContents);
+
             File.WriteAllText(packageConfigFile, _packageConfigFileContents);
-            var packagePath =
-                CreatePackagesFolder(
-                    new List<Tuple<string, string>>() {new Tuple<string, string>("Newtonsoft.Json", "6.0.1")});
-            var packages = (new NuGetPackagesConfigParser()).GetPackages(packagePath, packageConfigFile, packageRestoreData).ToDictionary(i => $"{i.Id}.{i.Version}", i => i, StringComparer.OrdinalIgnoreCase);
-            packages.Count.ShouldBe(1);
+
+            string packagePath = CreatePackagesFolder( new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.1") });
+
+            MockSettings settings = new MockSettings
+            {
+                {
+                    "config", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        {"repositoryPath", packagePath},
+                    }
+                }
+            };
+
+            bool result = new NuGetPackagesConfigParser(settings, _log).TryGetPackages(packageConfigFile, packageRestoreData, out IEnumerable<PackageIdentityWithPath> packages);
+
+            result.ShouldBeTrue();
+            packages.Count().ShouldBe(1);
 
             packageConfigFile = Path.Combine(TestRootPath, "foo.proj");
-            packages = (new NuGetPackagesConfigParser()).GetPackages(packagePath, packageConfigFile, packageRestoreData).ToDictionary(i => $"{i.Id}.{i.Version}", i => i, StringComparer.OrdinalIgnoreCase);
-            packages.Count.ShouldBe(1);
-            packages.First().Value.Id.ShouldBe("Newtonsoft.Json");
-            packages.First().Value.Version.ToString().ShouldBe("6.0.1");
+
+            packageRestoreData = LoadPackageRestoreObject(packageConfigFile, GetTempFileName(), _packageConfigRestoreFlagContents);
+
+            result = new NuGetPackagesConfigParser(settings, _log).TryGetPackages(packageConfigFile, packageRestoreData, out packages);
+
+            result.ShouldBeTrue();
+
+            IList<PackageIdentityWithPath> packageIdentityWithPaths = packages as IList<PackageIdentityWithPath> ?? packages.ToList();
+            packageIdentityWithPaths.Count.ShouldBe(1);
+            packageIdentityWithPaths.First().Id.ShouldBe("Newtonsoft.Json");
+            packageIdentityWithPaths.First().Version.ToString().ShouldBe("6.0.1");
         }
 
         [Fact]
@@ -58,56 +85,90 @@ namespace CBT.NuGet.UnitTests
 
             string projectJsonFile = Path.Combine(TestRootPath, "project.json");
             string projectLockJsonFile = Path.Combine(TestRootPath, "project.lock.json");
-            var packageProjectJsonRestoreFlagContents =
-                _packageProjectJsonRestoreFlagContents.Replace("#JsonFile#", projectJsonFile.Replace(@"\",@"\\"));
-            var packageRestoreData = LoadPackageRestoreObject(GetTempFileName(), packageProjectJsonRestoreFlagContents);
+            string packageProjectJsonRestoreFlagContents = _packageProjectJsonRestoreFlagContents.Replace("#JsonFile#", projectJsonFile.Replace(@"\",@"\\"));
+            PackageRestoreData packageRestoreData = LoadPackageRestoreObject(projectJsonFile, GetTempFileName(), packageProjectJsonRestoreFlagContents);
             File.WriteAllText(projectJsonFile, _packageProjectJsonFileContents);
 
-            CreateProjectJsonLockFile(projectLockJsonFile, new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") });
+            CreateProjectJsonLockFile(projectLockJsonFile, new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") });
 
-            var packagePath =
-                CreatePackagesFolder(
-                    new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") },@"\");
-            var packages = (new NuGetProjectJsonParser()).GetPackages(packagePath, projectJsonFile, packageRestoreData).ToDictionary(i => $"{i.Id}.{i.Version}", i => i, StringComparer.OrdinalIgnoreCase);
-            packages.Count.ShouldBe(1);
-            packages.First().Value.Id.ShouldBe("Newtonsoft.Json");
-            packages.First().Value.Version.ToString().ShouldBe("6.0.3");
+            string packagePath = CreatePackagesFolder(new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
+
+            MockSettings settings = new MockSettings
+            {
+                {
+                    "config", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        {"globalPackagesFolder", packagePath},
+                    }
+                }
+            };
+
+            bool result = new NuGetProjectJsonParser(settings, _log).TryGetPackages(projectJsonFile, packageRestoreData, out IEnumerable<PackageIdentityWithPath> packages);
+
+            result.ShouldBeTrue();
+
+            IList<PackageIdentityWithPath> packageIdentityWithPaths = packages as IList<PackageIdentityWithPath> ?? packages.ToList();
+
+            packageIdentityWithPaths.Count.ShouldBe(1);
+            packageIdentityWithPaths.First().Id.ShouldBe("Newtonsoft.Json");
+            packageIdentityWithPaths.First().Version.ToString().ShouldBe("6.0.3");
 
             projectJsonFile = Path.Combine(TestRootPath, "foo.proj");
-            packages = (new NuGetProjectJsonParser()).GetPackages(packagePath, projectJsonFile, packageRestoreData).ToDictionary(i => $"{i.Id}.{i.Version}", i => i, StringComparer.OrdinalIgnoreCase);
-            packages.Count.ShouldBe(1);
-            packages.First().Value.Id.ShouldBe("Newtonsoft.Json");
-            packages.First().Value.Version.ToString().ShouldBe("6.0.3");
+            result = new NuGetProjectJsonParser(settings, _log).TryGetPackages(projectJsonFile, packageRestoreData, out packages);
+
+            result.ShouldBeTrue();
+
+            packageIdentityWithPaths = packages as IList<PackageIdentityWithPath> ?? packages.ToList();
+
+            packageIdentityWithPaths.Count.ShouldBe(1);
+            packageIdentityWithPaths.First().Id.ShouldBe("Newtonsoft.Json");
+            packageIdentityWithPaths.First().Version.ToString().ShouldBe("6.0.3");
         }
 
         [Fact]
         public void VerifyPackageReferenceParserTest()
         {
-            
+            string projectPackageReferenceFile = Path.Combine(TestRootPath, "foo.proj");
             string projectAssetsJsonFile = Path.Combine(TestRootPath, "project.assets.json");
-            var packageRestoreData = LoadPackageRestoreObject(GetTempFileName(), _packageReferenceRestoreFlagContents.Replace("#RestoreOutputPath#",TestRootPath.Replace(@"\", @"\\")));
+            PackageRestoreData packageRestoreData = LoadPackageRestoreObject(projectPackageReferenceFile, GetTempFileName(), _packageReferenceRestoreFlagContents.Replace("#RestoreOutputPath#",TestRootPath.Replace(@"\", @"\\")));
 
+            CreateProjectAssetsJsonFile(projectAssetsJsonFile, (new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }));
 
-            CreateProjectAssetsJsonFile(projectAssetsJsonFile, (new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }));
+            string packagePath = CreatePackagesFolder( new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
 
-            var packagePath =
-                CreatePackagesFolder(
-                    new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
-            var projectPackageReferenceFile = Path.Combine(TestRootPath, "foo.proj");
-            var packages = (new NuGetPackageReferenceProjectParser(null)).GetPackages(packagePath, projectPackageReferenceFile, packageRestoreData).ToDictionary(i => $"{i.Id}.{i.Version}", i => i, StringComparer.OrdinalIgnoreCase);
-            packages.Count.ShouldBe(1);
-            packages.First().Value.Id.ShouldBe("Newtonsoft.Json");
-            packages.First().Value.Version.ToString().ShouldBe("6.0.3");
+            MockSettings settings = new MockSettings
+            {
+                {
+                    "config", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        {"globalPackagesFolder", packagePath},
+                    }
+                }
+            };
+
+            bool result = new NuGetPackageReferenceProjectParser(settings, _log).TryGetPackages(packagePath, packageRestoreData, out IEnumerable<PackageIdentityWithPath> packages);
+
+            result.ShouldBeTrue();
+
+            IList<PackageIdentityWithPath> packageIdentityWithPaths = packages as IList<PackageIdentityWithPath> ?? packages.ToList();
+
+            packageIdentityWithPaths.Count.ShouldBe(1);
+            packageIdentityWithPaths.First().Id.ShouldBe("Newtonsoft.Json");
+            packageIdentityWithPaths.First().Version.ToString().ShouldBe("6.0.3");
 
         }
 
         [Fact]
-        public void ValidatePackagesConfigNugetPropertyGeneratorTest()
+        public void ValidatePackagesConfigNuGetPropertyGeneratorTest()
         {
-            var packageRestoreData = LoadPackageRestoreObject(GetTempFileName(), _packageConfigRestoreFlagContents);
             string packageConfigFile = Path.Combine(TestRootPath, "packages.config");
+
+            PackageRestoreData packageRestoreData = LoadPackageRestoreObject(packageConfigFile, GetTempFileName(), _packageConfigRestoreFlagContents);
+
             File.WriteAllText(packageConfigFile, _packageConfigFileContents);
+
             string outputFile = Path.Combine(TestRootPath, "output.props");
+
             string expectedOutputContent = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <PropertyGroup>
@@ -120,11 +181,19 @@ namespace CBT.NuGet.UnitTests
   </ItemGroup>
 </Project>";
 
-            var packagePath =
-                CreatePackagesFolder(
-                    new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
-            (new NuGetPropertyGenerator(null, packageConfigFile)).Generate(outputFile, "NuGetVersion_", "NuGetPath_", "c:\\foo", packagePath,
-                packageRestoreData).ShouldBe(true);
+            string packagePath = CreatePackagesFolder(new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
+
+            MockSettings settings = new MockSettings
+            {
+                {
+                    "config", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        {"repositoryPath", packagePath},
+                    }
+                }
+            };
+
+            new NuGetPropertyGenerator(_log, settings, packageConfigFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData).ShouldBe(true);
             File.Exists(outputFile).ShouldBe(true);
             File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
 
@@ -134,8 +203,10 @@ namespace CBT.NuGet.UnitTests
         public void ValidatePackageReferenceNugetPropertyGeneratorTest()
         {
             string projectAssetsJsonFile = Path.Combine(TestRootPath, "project.assets.json");
-            var packageRestoreData = LoadPackageRestoreObject(GetTempFileName(), _packageReferenceRestoreFlagContents.Replace("#RestoreOutputPath#", TestRootPath.Replace(@"\", @"\\")));
-            var projectPackageReferenceFile = Path.Combine(TestRootPath, "foo.proj");
+            string projectPackageReferenceFile = Path.Combine(TestRootPath, "foo.proj");
+
+            PackageRestoreData packageRestoreData = LoadPackageRestoreObject(projectPackageReferenceFile, GetTempFileName(), _packageReferenceRestoreFlagContents.Replace("#RestoreOutputPath#", TestRootPath.Replace(@"\", @"\\")));
+
 
             string outputFile = Path.Combine(TestRootPath, "output.props");
             string expectedOutputContent = $@"<?xml version=""1.0"" encoding=""utf-8""?>
@@ -150,13 +221,21 @@ namespace CBT.NuGet.UnitTests
   </ItemGroup>
 </Project>";
 
-            CreateProjectAssetsJsonFile(projectAssetsJsonFile, (new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }));
+            CreateProjectAssetsJsonFile(projectAssetsJsonFile, (new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }));
 
-            var packagePath =
-                CreatePackagesFolder(
-                    new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
-            (new NuGetPropertyGenerator(null, projectPackageReferenceFile)).Generate(outputFile, "NuGetVersion_", "NuGetPath_", "c:\\foo", packagePath,
-                packageRestoreData).ShouldBe(true);
+            string packagePath = CreatePackagesFolder(new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
+
+            MockSettings settings = new MockSettings
+            {
+                {
+                    "config", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        {"globalPackagesFolder", packagePath},
+                    }
+                }
+            };
+
+            new NuGetPropertyGenerator(_log, settings, projectPackageReferenceFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData).ShouldBe(true);
             File.Exists(outputFile).ShouldBe(true);
             File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
         }
@@ -167,12 +246,13 @@ namespace CBT.NuGet.UnitTests
             string projectJsonFile = Path.Combine(TestRootPath, "project.json");
             string projectLockJsonFile = Path.Combine(TestRootPath, "project.lock.json");
 
-            var packageProjectJsonRestoreFlagContents =
-                _packageProjectJsonRestoreFlagContents.Replace("#JsonFile#", projectJsonFile.Replace(@"\", @"\\"));
-            var packageRestoreData = LoadPackageRestoreObject(GetTempFileName(), packageProjectJsonRestoreFlagContents);
             File.WriteAllText(projectJsonFile, _packageProjectJsonFileContents);
 
-            CreateProjectJsonLockFile(projectLockJsonFile, new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") });
+            string packageProjectJsonRestoreFlagContents = _packageProjectJsonRestoreFlagContents.Replace("#JsonFile#", projectJsonFile.Replace(@"\", @"\\"));
+
+            PackageRestoreData packageRestoreData = LoadPackageRestoreObject(projectJsonFile, GetTempFileName(), packageProjectJsonRestoreFlagContents);
+
+            CreateProjectJsonLockFile(projectLockJsonFile, new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") });
 
             string outputFile = Path.Combine(TestRootPath, "output.props");
             string expectedOutputContent = $@"<?xml version=""1.0"" encoding=""utf-8""?>
@@ -187,11 +267,19 @@ namespace CBT.NuGet.UnitTests
   </ItemGroup>
 </Project>";
 
-            var packagePath =
-                CreatePackagesFolder(
-                    new List<Tuple<string, string>>() { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
-            (new NuGetPropertyGenerator(null, projectJsonFile)).Generate(outputFile, "NuGetVersion_", "NuGetPath_", "c:\\foo", packagePath,
-                packageRestoreData).ShouldBe(true);
+            string packagePath = CreatePackagesFolder(new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
+
+            MockSettings settings = new MockSettings
+            {
+                {
+                    "config", new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        {"globalPackagesFolder", packagePath},
+                    }
+                }
+            };
+
+            new NuGetPropertyGenerator(_log, settings, projectJsonFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData).ShouldBe(true);
             File.Exists(outputFile).ShouldBe(true);
             File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
         }
@@ -222,32 +310,36 @@ namespace CBT.NuGet.UnitTests
                     Name = i.Item1,
                     Version = new NuGetVersion(i.Item2),
                 }).ToList(),
-                Targets = new List<LockFileTarget>()
+                Targets = new List<LockFileTarget>
                 {
-                    new LockFileTarget()
+                    new LockFileTarget
                     {
                         TargetFramework = new NuGetFramework(".NETFramework,Version=v4.5"),
-                        Libraries = packageList.Distinct().Select(i => new LockFileTargetLibrary(){Name = i.Item1, Version = new NuGetVersion(i.Item2), Type = "package"}).ToList(),
+                        Libraries = packageList.Distinct().Select(i => new LockFileTargetLibrary {Name = i.Item1, Version = new NuGetVersion(i.Item2), Type = "package"}).ToList(),
                     }
                 }
             });
         }
 
-        private PackageRestoreData LoadPackageRestoreObject(string restoreFlag, string restoreContent)
+        private PackageRestoreData LoadPackageRestoreObject(string packageRestoreFile, string restoreFlag, string restoreContent)
         {
             string packageJsonFlagFile = restoreFlag;
             File.WriteAllText(packageJsonFlagFile, restoreContent);
-            GenerateNuGetProperties genTask = new GenerateNuGetProperties { AssetsFile = packageJsonFlagFile };
+            GenerateNuGetProperties genTask = new GenerateNuGetProperties
+            {
+                RestoreInfoFile = packageJsonFlagFile,
+                PackageRestoreFile = packageRestoreFile
+            };
             return genTask.GetPackageRestoreData();
         }
 
         private string CreatePackagesFolder(IList<Tuple<string,string>> dummyPackages, string idAndVersionDivider=".")
         {
-            var packageFolder = Path.Combine(TestRootPath, "packages");
+            string packageFolder = Path.Combine(TestRootPath, "packages");
             Directory.CreateDirectory(packageFolder);
-            foreach (var pkg in dummyPackages)
+            foreach (Tuple<string, string> pkg in dummyPackages)
             {
-                var dummyPackageFolder = Path.Combine(packageFolder, $"{pkg.Item1}{idAndVersionDivider}{pkg.Item2}");
+                string dummyPackageFolder = Path.Combine(packageFolder, $"{pkg.Item1}{idAndVersionDivider}{pkg.Item2}");
                 if (!Directory.Exists(dummyPackageFolder))
                 {
                     Directory.CreateDirectory(dummyPackageFolder);
