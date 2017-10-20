@@ -8,8 +8,6 @@
 
     <OutputPath Condition=" '$(OutputPath)' == '' And '$(IsTraversal)' == 'true' ">$([System.IO.Path]::Combine(bin, $(Configuration), $(Platform)))\</OutputPath>
     <TraversalTargets>$(MSBuildThisFileDirectory)Traversal.targets</TraversalTargets>
+
   </PropertyGroup>
-
-
-
 </Project>
