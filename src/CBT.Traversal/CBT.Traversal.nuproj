@@ -15,6 +15,7 @@
     <Content Include="build\CBT.Traversal.props" />
     <Content Include="build\module.config" />
     <Content Include="build\Traversal.targets" />
+    <Content Include="build\Empty.props" />
     <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
