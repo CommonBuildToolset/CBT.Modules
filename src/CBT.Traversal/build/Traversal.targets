@@ -30,6 +30,7 @@
     <CleanDependsOn>$(_tmpCleanDependsOn)</CleanDependsOn>
     <ReBuildDependsOn>$(_tmpReBuildDependsOn)</ReBuildDependsOn>
     <BuildDependsOn>$(_tmpBuildDependsOn)</BuildDependsOn>
+    <LanguageTargets>$(MSBuildThisFileDirectory)\Empty.props</LanguageTargets>
   </PropertyGroup>
 
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
