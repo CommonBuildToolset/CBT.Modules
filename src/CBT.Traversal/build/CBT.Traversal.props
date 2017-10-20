@@ -5,8 +5,11 @@
 
     <IsTraversal Condition=" '$(IsTraversal)' != '' ">$([System.Convert]::ToBoolean($(IsTraversal)))</IsTraversal>
     <IsTraversal Condition=" '$(IsTraversal)' == '' And $(TraversalProjectNames.Contains($(MSBuildProjectFile))) ">true</IsTraversal>
-    
-    <TraversalTargets>$(MSBuildThisFileDirectory)Traversal.targets</TraversalTargets>
 
+    <OutputPath Condition=" '$(OutputPath)' == '' And '$(IsTraversal)' == 'true' ">$([System.IO.Path]::Combine(bin, $(Configuration), $(Platform)))\</OutputPath>
+    <TraversalTargets>$(MSBuildThisFileDirectory)Traversal.targets</TraversalTargets>
   </PropertyGroup>
+
+
+
 </Project>
