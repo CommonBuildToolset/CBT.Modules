@@ -17,7 +17,7 @@
       <Version>[2.0.36,)</Version>
     </Dependency>
     <Dependency Include="CBT.Traversal">
-      <Version>[2.0,)</Version>
+      <Version>[2.0.40,)</Version>
     </Dependency>
     <Content Include="build\After.Microsoft.Common.targets" />
     <Content Include="build\After.Traversal.targets" />
