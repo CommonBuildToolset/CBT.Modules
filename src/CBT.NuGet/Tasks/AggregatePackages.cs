@@ -51,45 +51,66 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
+            string semaphoreName = PropsFile.ToUpper().GetHashCode().ToString("X");
 
-            IDictionary<string, string> propertiesToCreate = new Dictionary<string, string>();
-
-            foreach (var pkg in ParsePackagesToAggregate())
+            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
             {
                 try
                 {
-                    if (!CreateAggregatePackage(pkg))
+                    if (!releaseSemaphore)
                     {
-                        Log.LogError("Failed to create aggregate package {0} for input of {1}", pkg.OutPropertyId, PackagesToAggregate);
+                        releaseSemaphore = semaphore.WaitOne(TimeSpan.FromMinutes(30));
+
+                        return releaseSemaphore;
+                    }
+
+                    IDictionary<string, string> propertiesToCreate = new Dictionary<string, string>();
+
+                    foreach (var pkg in ParsePackagesToAggregate())
+                    {
+                        try
+                        {
+                            if (!CreateAggregatePackage(pkg))
+                            {
+                                Log.LogError("Failed to create aggregate package {0} for input of {1}", pkg.OutPropertyId, PackagesToAggregate);
+                            }
+                        }
+                        catch (DirectoryNotFoundException)
+                        {
+                            Log.LogError("Aggregate package {0} not found after aggregation.", pkg.OutPropertyValue);
+                        }
+                        if (propertiesToCreate.ContainsKey(pkg.OutPropertyId))
+                        {
+                            Log.LogWarning("Duplicate Aggregate package {0} specified.  Using first defined.", pkg.OutPropertyId);
+                            continue;
+                        }
+                        propertiesToCreate.Add(pkg.OutPropertyId, pkg.OutPropertyValue);
+                    }
+
+                    try
+                    {
+                        CreatePropsFile(propertiesToCreate, PropsFile);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.LogErrorFromException(e);
+                    }
+
+                    if (Log.HasLoggedErrors)
+                    {
+                        Log.LogError("Define aggregate packages in the format of 'MYAGGPROPERTY=c:\\pkg1|c:\\pkg2|!c:\\pkg3;MYAAGPROPERTY2=c:\\pkg1|c:\\pkg2' where ; seperates aggregate packages and | seperates paths to be aggregated for a package and ! denotes content that should be excluded from the aggregate.");
+                    }
+
+                    return !Log.HasLoggedErrors;
+                }
+                finally
+                {
+                    if (releaseSemaphore)
+                    {
+                        semaphore.Release();
                     }
                 }
-                catch (DirectoryNotFoundException)
-                {
-                    Log.LogError("Aggregate package {0} not found after aggregation.", pkg.OutPropertyValue);
-                }
-                if (propertiesToCreate.ContainsKey(pkg.OutPropertyId))
-                {
-                    Log.LogWarning("Duplicate Aggregate package {0} specified.  Using first defined.", pkg.OutPropertyId);
-                    continue;
-                }
-                propertiesToCreate.Add(pkg.OutPropertyId, pkg.OutPropertyValue);
             }
-
-            try
-            {
-                CreatePropsFile(propertiesToCreate, PropsFile);
-            }
-            catch (Exception e)
-            {
-                Log.LogErrorFromException(e);
-            }
-
-            if (Log.HasLoggedErrors)
-            {
-                Log.LogError("Define aggregate packages in the format of 'MYAGGPROPERTY=c:\\pkg1|c:\\pkg2|!c:\\pkg3;MYAAGPROPERTY2=c:\\pkg1|c:\\pkg2' where ; seperates aggregate packages and | seperates paths to be aggregated for a package and ! denotes content that should be excluded from the aggregate.");
-            }
-
-            return !Log.HasLoggedErrors;
         }
 
         public bool Execute(string aggregateDestRoot, string packagesToAggregate, string propsFile, string immutableRoots)
