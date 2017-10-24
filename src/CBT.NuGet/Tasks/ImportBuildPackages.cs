@@ -43,9 +43,7 @@ namespace CBT.NuGet.Tasks
 
             string semaphoreName = PropsFile.ToUpper().GetHashCode().ToString("X");
 
-            bool releaseSemaphore;
-
-            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out releaseSemaphore))
+            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
             {
                 try
                 {
