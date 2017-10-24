@@ -144,7 +144,7 @@ namespace CBT.NuGet.Tasks
                     import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
                 }
 
-                Log.LogMessage(MessageImportance.High, "[{0}] {1} {2}", Thread.CurrentThread.ManagedThreadId, buildPackageInfo.Id, buildPackageInfo.RunPropertyName);
+                Log.LogMessage($"  {buildPackageInfo.Id}");
             }
 
             propsProject.Save();
