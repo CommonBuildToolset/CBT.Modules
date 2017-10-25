@@ -1,0 +1,14 @@
+﻿{
+  "dependencies": {
+    "MSTest.TestFramework": "1.2.0",
+    "MSTest.TestAdapter": "1.2.0",
+    "NuGet.Protocol": "4.3.0",
+    "NuGet.Commands": "4.3.0"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {} 
+  }
+}
