@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{E1A167BF-825E-4250-9A56-29A685B83736}</ProjectGuid>
+    <ProjectGuid>{728B794A-F0EB-4A61-987D-26CB0B57B0EA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>NuGet.Tasks.Deterministic</RootNamespace>
     <AssemblyName>NuGet.Tasks.Deterministic</AssemblyName>
