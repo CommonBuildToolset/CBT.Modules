@@ -81,8 +81,9 @@ namespace CBT.NuGet.Tasks
 
         private bool TryWriteSolutionFile(ProjectCollection projectCollection)
         {
-            Uri fromUri = new Uri(File);
-            Directory.CreateDirectory(Path.GetDirectoryName(File));
+            string folder = $"{Path.GetDirectoryName(File)}{Path.DirectorySeparatorChar}";
+            Uri fromUri = new Uri(folder);
+            Directory.CreateDirectory(folder);
             using (var writer = System.IO.File.CreateText(File))
             {
                 writer.WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
