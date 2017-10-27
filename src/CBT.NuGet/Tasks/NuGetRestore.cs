@@ -2,6 +2,7 @@
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -26,7 +27,7 @@ namespace CBT.NuGet.Tasks
         /// <summary>
         /// Gets or sets the path of MSBuild to be used with this command. Supported value is a path to msbuild.exe
         /// </summary>
-        public string MsBuildPath { get; set; }
+        public string MSBuildPath { get; set; }
 
         /// <summary>
         /// Gets or sets the version of MSBuild to be used with this command. Supported values are 4, 12, 14. By default the MSBuild in your path is picked, otherwise it defaults to the highest installed version of MSBuild.
@@ -176,7 +177,7 @@ namespace CBT.NuGet.Tasks
             }
             File = file;
             MsBuildVersion = msBuildVersion;
-            MsBuildPath = msBuildPath;
+            MSBuildPath = msBuildPath;
             RequireConsent = RequireConsent;
             DisableParallelProcessing = disableParallelProcessing;
             FallbackSource = fallbackSources.Any() ? fallbackSources.Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => new TaskItem(i)).Cast<ITaskItem>().ToArray() : null;
@@ -238,7 +239,10 @@ namespace CBT.NuGet.Tasks
 
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildVersion ", MsBuildVersion);
 
-            commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildPath ", MsBuildPath);
+            if (IsNuGetVersion4OrGreater())
+            {
+                commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-MSBuildPath ", MSBuildPath);
+            }
 
             commandLineBuilder.AppendSwitchIfNotNullOrWhiteSpace("-Project2ProjectTimeOut ", Project2ProjectTimeOut);
 
@@ -280,6 +284,31 @@ namespace CBT.NuGet.Tasks
                         semaphore.Release();
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Determines if the version of NuGet.exe is 4.0 or greater.
+        /// </summary>
+        /// <returns><code>true</code> if the version of NuGet.exe is 4.0 or greater, otherwise <code>false</code>.</returns>
+        private bool IsNuGetVersion4OrGreater()
+        {
+            try
+            {
+                if (!System.IO.File.Exists(ToolPath))
+                {
+                    return false;
+                }
+
+                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(ToolPath);
+
+                return fileVersionInfo.ProductMajorPart >= 4;
+            }
+            catch (Exception e)
+            {
+                Log.LogWarning($"Failed to determine the version of assembly '{ToolPath}'.  Ensure that path is a valid NuGet.exe.  The error was: {Environment.NewLine}{e}");
+
+                return false;
             }
         }
     }
