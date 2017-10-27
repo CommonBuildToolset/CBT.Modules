@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CBT.UnitTests.Common;
 using NuGet.Frameworks;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
