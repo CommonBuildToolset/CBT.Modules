@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CBT.NuGet.UnitTests
+namespace CBT.UnitTests.Common
 {
     public abstract class TestBase : IDisposable
     {
@@ -20,11 +16,10 @@ namespace CBT.NuGet.UnitTests
             }
         }
 
-        protected string GetTempFileName()
+        public void Dispose()
         {
-            Directory.CreateDirectory(TestRootPath);
-
-            return Path.Combine(TestRootPath, Path.GetRandomFileName());
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -38,10 +33,11 @@ namespace CBT.NuGet.UnitTests
             }
         }
 
-        public void Dispose()
+        protected string GetTempFileName()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            Directory.CreateDirectory(TestRootPath);
+
+            return Path.Combine(TestRootPath, Path.GetRandomFileName());
         }
     }
 }

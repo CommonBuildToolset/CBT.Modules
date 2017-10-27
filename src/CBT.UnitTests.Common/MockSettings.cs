@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace CBT.NuGet.UnitTests
+namespace CBT.UnitTests.Common
 {
-    internal sealed class MockSettings : Dictionary<string, IDictionary<string, string>>, ISettings
+    public sealed class MockSettings : Dictionary<string, IDictionary<string, string>>, ISettings
     {
         public MockSettings()
             : base(StringComparer.OrdinalIgnoreCase)
