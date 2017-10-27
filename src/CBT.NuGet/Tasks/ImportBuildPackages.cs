@@ -43,9 +43,7 @@ namespace CBT.NuGet.Tasks
 
             string semaphoreName = PropsFile.ToUpper().GetHashCode().ToString("X");
 
-            bool releaseSemaphore;
-
-            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out releaseSemaphore))
+            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
             {
                 try
                 {
@@ -146,7 +144,7 @@ namespace CBT.NuGet.Tasks
                     import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
                 }
 
-                Log.LogMessage(MessageImportance.High, "[{0}] {1} {2}", Thread.CurrentThread.ManagedThreadId, buildPackageInfo.Id, buildPackageInfo.RunPropertyName);
+                Log.LogMessage($"  {buildPackageInfo.Id}");
             }
 
             propsProject.Save();

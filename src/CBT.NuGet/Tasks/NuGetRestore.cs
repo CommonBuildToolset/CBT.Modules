@@ -15,18 +15,23 @@ namespace CBT.NuGet.Tasks
     /// </summary>
     public class NuGetRestore : DownloadCommandBase
     {
+        /// <summary>
+        /// Gets or sets additional NuGet restore arguments.
+        /// </summary>
+        public string AdditionalArguments { get; set; }
+
         [Required]
         public string File { get; set; }
-
-        /// <summary>
-        /// Gets or sets the version of MSBuild to be used with this command. Supported values are 4, 12, 14. By default the MSBuild in your path is picked, otherwise it defaults to the highest installed version of MSBuild.
-        /// </summary>
-        public string MsBuildVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the path of MSBuild to be used with this command. Supported value is a path to msbuild.exe
         /// </summary>
         public string MsBuildPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of MSBuild to be used with this command. Supported values are 4, 12, 14. By default the MSBuild in your path is picked, otherwise it defaults to the highest installed version of MSBuild.
+        /// </summary>
+        public string MsBuildVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the packages folder.
@@ -48,29 +53,58 @@ namespace CBT.NuGet.Tasks
         /// </summary>
         public string SolutionDirectory { get; set; }
 
-        /// <summary>
-        /// Gets or sets additional NuGet restore arguments.
-        /// </summary>
-        public string AdditionalArguments { get; set; }
+        public static bool IsFileUpToDate(TaskLoggingHelper log, string input, params string[] outputs)
+        {
+            if (String.IsNullOrWhiteSpace(input))
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            if (!System.IO.File.Exists(input))
+            {
+                log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because it does not exist.");
+                return false;
+            }
+            if (outputs == null || outputs.Length == 0)
+            {
+                log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because no outputs were specified.");
+                return false;
+            }
+
+            DateTime lastWriteTime = System.IO.File.GetLastWriteTimeUtc(input);
+
+            foreach (var output in outputs.Where(i => !String.IsNullOrWhiteSpace(i)))
+            {
+                if (!System.IO.File.Exists(output))
+                {
+                    log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because the output file '{output}' does not exist.");
+                    return false;
+                }
+
+                var outputLastWriteTime = System.IO.File.GetLastWriteTimeUtc(output);
+
+                if (outputLastWriteTime.Ticks > lastWriteTime.Ticks)
+                {
+                    log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because the output file '{output}' is newer ({lastWriteTime:O} > {outputLastWriteTime:O}).");
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public override bool Execute()
         {
             // NuGet now evaluates msbuild projects during restore, CBTEnablePackageRestore must be set to prevent NuGet from infinite looping.
             // CBTModulesRestored must be set so on it's evaluation it knows to import the generated module imports so it evaluates the proper full closure of the project.
-            EnvironmentVariables = new[] {
+            EnvironmentVariables = new[]
+            {
                 "CBTEnablePackageRestore=false",
                 "CBTModulesRestored=true"
             };
-            // If packages directory was not specified, just execute the restore
-            //
-            if (String.IsNullOrEmpty(PackagesDirectory))
-            {
-                return base.Execute();
-            }
 
             // Do restoration in a semaphore to prevent NuGet restore having locking issues
             //
-            string semaphoreName = PackagesDirectory.ToUpper().GetHashCode().ToString("X");
+            string semaphoreName = File.ToUpper().GetHashCode().ToString("X");
 
             using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
             {
@@ -83,7 +117,14 @@ namespace CBT.NuGet.Tasks
                         return releaseSemaphore;
                     }
 
-                    return base.Execute();
+                    bool ret = base.Execute();
+
+                    if (ret)
+                    {
+                        ExecutePostRestore();
+                    }
+
+                    return ret && !Log.HasLoggedErrors;
                 }
                 finally
                 {
@@ -161,27 +202,11 @@ namespace CBT.NuGet.Tasks
 
             try
             {
-                ret = this.Execute();
+                ret = Execute();
 
                 if (enableOptimization && !String.IsNullOrWhiteSpace(markerPath))
                 {
-                    string dir = Path.GetDirectoryName(markerPath);
-                    if (!String.IsNullOrWhiteSpace(dir))
-                    {
-                        Log.LogMessage(MessageImportance.Low, "Creating marker file for NuGet package restore optimization: '{0}'", markerPath);
-
-                        using (Mutex mutex = new Mutex(false, markerPath.ToUpper().GetHashCode().ToString("X")))
-                        {
-                            if (!mutex.WaitOne(TimeSpan.FromMinutes(30)))
-                            {
-                                return false;
-                            }
-
-                            Directory.CreateDirectory(dir);
-
-                            System.IO.File.WriteAllText(markerPath, String.Empty);
-                        }
-                    }
+                    GenerateNuGetOptimizationFile(markerPath);
                 }
             }
             catch (Exception e)
@@ -190,6 +215,13 @@ namespace CBT.NuGet.Tasks
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// Executes any post-restore actions after a successful restore.
+        /// </summary>
+        protected virtual void ExecutePostRestore()
+        {
         }
 
         protected override void GenerateCommandLineCommands(CommandLineBuilder commandLineBuilder)
@@ -215,43 +247,40 @@ namespace CBT.NuGet.Tasks
             base.GenerateCommandLineCommands(commandLineBuilder);
         }
 
-        public static bool IsFileUpToDate(TaskLoggingHelper log, string input, params string[] outputs)
+        protected void GenerateNuGetOptimizationFile(string markerPath)
         {
-            if (String.IsNullOrWhiteSpace(input))
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
+            string semaphoreName = markerPath.ToUpper().GetHashCode().ToString("X");
 
-            if (!System.IO.File.Exists(input))
+            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
             {
-                log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because it does not exist.");
-                return false;
-            }
-            if (outputs == null || outputs.Length == 0)
-            {
-                log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because no outputs were specified.");
-                return false;
-            }
-
-            DateTime lastWriteTime = System.IO.File.GetLastWriteTimeUtc(input);
-
-            foreach (var output in outputs.Where(i => !String.IsNullOrWhiteSpace(i)))
-            {
-                if (!System.IO.File.Exists(output))
+                try
                 {
-                    log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because the output file '{output}' does not exist.");
-                    return false;
+                    if (!releaseSemaphore)
+                    {
+                        releaseSemaphore = semaphore.WaitOne(TimeSpan.FromMinutes(30));
+
+                        return;
+                    }
+
+                    string dir = Path.GetDirectoryName(markerPath);
+
+                    if (!String.IsNullOrWhiteSpace(dir))
+                    {
+                        Log.LogMessage(MessageImportance.Low, "Creating marker file for NuGet package restore optimization: '{0}'", markerPath);
+
+                        Directory.CreateDirectory(dir);
+
+                        System.IO.File.WriteAllText(markerPath, String.Empty);
+                    }
                 }
-
-                var outputLastWriteTime = System.IO.File.GetLastWriteTimeUtc(output);
-
-                if (outputLastWriteTime.Ticks > lastWriteTime.Ticks)
+                finally
                 {
-                    log.LogMessage(MessageImportance.Low, $"File '{input}' is not up-to-date because the output file '{output}' is newer ({lastWriteTime:O} > {outputLastWriteTime:O}).");
-                    return false;
+                    if (releaseSemaphore)
+                    {
+                        semaphore.Release();
+                    }
                 }
             }
-            return true;
         }
     }
 }

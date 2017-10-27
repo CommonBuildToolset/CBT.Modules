@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 
 namespace CBT.NuGet.Tasks
 {
@@ -94,10 +95,33 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
-            Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", PropsFile);
-            NuGetPropertyGenerator nuGetPropertyGenerator = new NuGetPropertyGenerator(_log, PackageRestoreFile);
-            
-            return nuGetPropertyGenerator.Generate(PropsFile, PropertyVersionNamePrefix, PropertyPathNamePrefix, GetPackageRestoreData());
+            string semaphoreName = PropsFile.ToUpper().GetHashCode().ToString("X");
+
+            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
+            {
+                try
+                {
+                    if (!releaseSemaphore)
+                    {
+                        releaseSemaphore = semaphore.WaitOne(TimeSpan.FromMinutes(30));
+
+                        return releaseSemaphore;
+                    }
+
+                    Log.LogMessage(MessageImportance.Low, "Generating MSBuild property file '{0}' for NuGet packages", PropsFile);
+
+                    NuGetPropertyGenerator nuGetPropertyGenerator = new NuGetPropertyGenerator(_log, PackageRestoreFile);
+
+                    return nuGetPropertyGenerator.Generate(PropsFile, PropertyVersionNamePrefix, PropertyPathNamePrefix, GetPackageRestoreData());
+                }
+                finally
+                {
+                    if (releaseSemaphore)
+                    {
+                        semaphore.Release();
+                    }
+                }
+            }
         }
 
         public bool Execute(string packageRestoreFile, string[] inputs, string propsFile, string propertyVersionNamePrefix, string propertyPathNamePrefix, string restoreInfoFile = "")

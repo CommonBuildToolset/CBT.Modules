@@ -9,6 +9,8 @@ namespace CBT.NuGet.Tasks
 {
     public sealed class TraversalNuGetRestore : NuGetRestore
     {
+        private bool _enableOptimization = true;
+        private ProjectCollection _projectCollection;
         public string GlobalProperties { get; set; }
 
         [Required]
@@ -23,7 +25,7 @@ namespace CBT.NuGet.Tasks
             {
                 BuildEngine = new CBTBuildEngine();
             }
-            
+
             MSBuildToolsVersion = msbuildToolsVersion;
             Project = project;
             GlobalProperties = globalProperties;
@@ -35,43 +37,46 @@ namespace CBT.NuGet.Tasks
                 return true;
             }
 
-            MSBuildProjectLoader projectLoader = new MSBuildProjectLoader(GlobalProperties.Split(new[] {';', ','}, StringSplitOptions.RemoveEmptyEntries).Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => i.Trim().Split(new[] {'='}, 2, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(i => i.First(), i => i.Last()), MSBuildToolsVersion, Log, ProjectLoadSettings.IgnoreMissingImports);
+            MSBuildProjectLoader projectLoader = new MSBuildProjectLoader(GlobalProperties.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => i.Trim().Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(i => i.First(), i => i.Last()), MSBuildToolsVersion, Log, ProjectLoadSettings.IgnoreMissingImports);
 
             Log.LogMessage(MessageImportance.Normal, $"Loading project references for '{Project}'...");
-            ProjectCollection projectCollection = projectLoader.LoadProjectsAndReferences(new[] {Project});
+            _projectCollection = projectLoader.LoadProjectsAndReferences(new[] { Project });
+
+            _enableOptimization = enableOptimization;
 
             if (Log.HasLoggedErrors)
             {
                 return false;
             }
 
-            Log.LogMessage(MessageImportance.Normal, $"Loaded '{projectCollection.LoadedProjects.Count}' projects");
+            Log.LogMessage(MessageImportance.Normal, $"Loaded '{_projectCollection.LoadedProjects.Count}' projects");
 
-            if (!TryWriteSolutionFile(projectCollection))
+            if (!TryWriteSolutionFile(_projectCollection))
             {
                 return false;
             }
 
             bool ret = Execute(file, msBuildVersion, requireConsent, disableParallelProcessing, fallbackSources, noCache, packageSaveMode, sources, configFile, nonInteractive, verbosity, timeout, toolPath, enableOptimization, markerPath, inputs, msbuildPath, additionalArguments);
 
-            if (ret)
+            return ret && !Log.HasLoggedErrors;
+        }
+
+        protected override void ExecutePostRestore()
+        {
+            if (_enableOptimization)
             {
-                foreach (Project loadedProject in projectCollection.LoadedProjects)
+                foreach (Project loadedProject in _projectCollection.LoadedProjects)
                 {
                     string restoreMarkerPath = loadedProject.GetPropertyValue("CBTNuGetPackagesRestoredMarker");
 
                     if (!String.IsNullOrWhiteSpace(restoreMarkerPath))
                     {
-                        Log.LogMessage(MessageImportance.Low, $"Creating '{restoreMarkerPath}' for project '{loadedProject.FullPath}'");
-
-                        Directory.CreateDirectory(Path.GetDirectoryName(restoreMarkerPath));
-
-                        System.IO.File.WriteAllText(restoreMarkerPath, String.Empty);
+                        GenerateNuGetOptimizationFile(restoreMarkerPath);
                     }
                 }
             }
 
-            return ret && !Log.HasLoggedErrors;
+            base.ExecutePostRestore();
         }
 
         private bool TryWriteSolutionFile(ProjectCollection projectCollection)
