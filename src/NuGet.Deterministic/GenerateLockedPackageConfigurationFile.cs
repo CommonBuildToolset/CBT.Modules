@@ -113,7 +113,6 @@ namespace CBT.NuGet.Tasks
                 AddMetadataToProject(item, package, "sha512", $"{package.Sha512}");
                 AddMetadataToProject(item, package, "path", $"{package.Path}");
                 AddMetadataToProject(item, package, "hashFileName", $"{package.Path.Replace("/", ".")}.nupkg.sha512");
-
             }
             project.Save(GeneratedOutputPropsFile);
             return File.Exists(GeneratedOutputPropsFile);
