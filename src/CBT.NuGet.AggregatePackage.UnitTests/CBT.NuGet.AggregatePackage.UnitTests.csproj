@@ -30,8 +30,10 @@
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="System" />
-    <ProjectReference Include="$(EnlistmentRoot)\src\CBT.NuGet.AggregatePackage\CBT.NuGet.AggregatePackage.nuproj">
+    <ProjectReference Include="..\CBT.NuGet.AggregatePackage\CBT.NuGet.AggregatePackage.nuproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Project>{C0FEDA7D-30A2-4E62-BB92-98700DE46B79}</Project>
+      <Name>CBT.NuGet.AggregatePackage</Name>
     </ProjectReference>
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.XML" />

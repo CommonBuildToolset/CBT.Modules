@@ -1,9 +1,9 @@
-﻿using Microsoft.Build.Framework;
-using System;
+﻿using System;
+using Microsoft.Build.Framework;
 
-namespace CBT.NuGet.UnitTests
+namespace CBT.UnitTests.Common
 {
-    internal sealed class MockTask : ITask
+    public sealed class MockTask : ITask
     {
         public IBuildEngine BuildEngine { get; set; }
 

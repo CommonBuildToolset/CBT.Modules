@@ -7,6 +7,7 @@ using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CBT.UnitTests.Common;
 using Xunit;
 
 namespace CBT.NuGet.UnitTests
@@ -15,7 +16,7 @@ namespace CBT.NuGet.UnitTests
     {
         private const string MSBuildToolsVersion = "4.0";
 
-        private readonly TestBuildEngine _buildEngine = new TestBuildEngine();
+        private readonly MockBuildEngine _buildEngine = new MockBuildEngine();
         private readonly Lazy<TaskLoggingHelper> _logLazy;
 
         public MSBuildProjectLoaderTests()
