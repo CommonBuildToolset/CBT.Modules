@@ -63,11 +63,12 @@
     <CBTNuGetPackagePropertyFile Condition=" '$(CBTNuGetPackagePropertyFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(CBTNuGetRestoreFile)')).props</CBTNuGetPackagePropertyFile>
     <CBTNuGetPackagePropertyVersionNamePrefix Condition=" '$(CBTNuGetPackagePropertyVersionNamePrefix)' == '' ">NuGetVersion_</CBTNuGetPackagePropertyVersionNamePrefix>
     <CBTNuGetPackagePropertyPathNamePrefix Condition=" '$(CBTNuGetPackagePropertyPathNamePrefix)' == '' ">NuGetPath_</CBTNuGetPackagePropertyPathNamePrefix>
+    <NuGetMSBuildPath Condition=" '$(NuGetMSBuildPath)' == '' ">$(MSBuildBinPath)</NuGetMSBuildPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' And '$(IsRestoreOnly)' != 'true' ">
     <!-- Restore packages if not running under Visual Studio and not running as part of NuGet's restore -->
-    <CBTNuGetPackagesRestored Condition=" '$(CBTNuGetPackagesRestored)' == '' And '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.NuGetRestore').Execute($(CBTNuGetRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestoreRequireConsent), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';')), '$(NuGetMsBuildPath)', '$(CBTNuGetRestoreAdditionalArguments)'))</CBTNuGetPackagesRestored>
+    <CBTNuGetPackagesRestored Condition=" '$(CBTNuGetPackagesRestored)' == '' And '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.NuGetRestore').Execute($(CBTNuGetRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestoreRequireConsent), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';')), '$(NuGetMSBuildPath)', '$(CBTNuGetRestoreAdditionalArguments)'))</CBTNuGetPackagesRestored>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTNuGetPackagesRestored)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
@@ -152,7 +153,7 @@
       File="$(CBTNuGetRestoreFile)"
       RequireConsent="$(CBTNuGetRestoreRequireConsent)"
       MsBuildVersion="$(NuGetMsBuildVersion)"
-      MsBuildPath="$(NuGetMsBuildPath)"
+      MSBuildPath="$(NuGetMSBuildPath)"
       DisableParallelProcessing="$(CBTNuGetDisableParallelProcessing)"
       FallbackSource="$(NuGetFallbackSource)"
       NoCache="$(CBTNuGetNoCache)"

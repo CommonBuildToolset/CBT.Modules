@@ -23,7 +23,7 @@
       File="$(CBTNuGetGlobalPackagesRestoreFile)"
       RequireConsent="$(CBTNuGetRestoreRequireConsent)"
       MsBuildVersion="$(NuGetMsBuildVersion)"
-      MsBuildPath="$(NuGetMsBuildPath)"
+      MSBuildPath="$(NuGetMSBuildPath)"
       DisableParallelProcessing="$(CBTNuGetDisableParallelProcessing)"
       FallbackSource="$(NuGetFallbackSource)"
       NoCache="$(CBTNuGetNoCache)"
