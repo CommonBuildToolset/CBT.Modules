@@ -293,20 +293,27 @@ namespace CBT.NuGet.Tasks
         /// <returns><code>true</code> if the version of NuGet.exe is 4.0 or greater, otherwise <code>false</code>.</returns>
         private bool IsNuGetVersion4OrGreater()
         {
+            if (String.IsNullOrWhiteSpace(ToolPath) || String.IsNullOrWhiteSpace(ToolName))
+            {
+                return false;
+            }
+
+            string fullPath = Path.Combine(ToolPath, ToolName);
+
+            if (!System.IO.File.Exists(fullPath))
+            {
+                return false;
+            }
+
             try
             {
-                if (!System.IO.File.Exists(ToolPath))
-                {
-                    return false;
-                }
-
-                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(ToolPath);
+                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(fullPath);
 
                 return fileVersionInfo.ProductMajorPart >= 4;
             }
             catch (Exception e)
             {
-                Log.LogWarning($"Failed to determine the version of assembly '{ToolPath}'.  Ensure that path is a valid NuGet.exe.  The error was: {Environment.NewLine}{e}");
+                Log.LogWarning($"Failed to determine the version of assembly '{fullPath}'.  Ensure that path is a valid NuGet.exe.  The error was: {Environment.NewLine}{e}");
 
                 return false;
             }
