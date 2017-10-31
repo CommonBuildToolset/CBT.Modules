@@ -48,7 +48,7 @@ namespace CBT.NuGet.Internal
             //
             if (File.Exists(outputPath))
             {
-                File.Delete(outputPath);
+                Retry(() => File.Delete(outputPath), TimeSpan.FromMilliseconds(500));
             }
 
             ProjectRootElement project = ProjectRootElement.Create();
