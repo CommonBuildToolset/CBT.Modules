@@ -18,7 +18,7 @@
   <Import Project="$(CBTAggregatePackageImport)" Condition=" '$(CBTAggregatePackageImport)'!='' and '$(CBTEnableAggregatePackageRestore)'=='true' "/>
 
   <PropertyGroup Condition=" '$(CBTEnableAggregatePackageRestore)' == 'true' "> 
-    <CBTNuGetAggregatePackagePropertyFile Condition=" '$(CBTNuGetAggregatePackagePropertyFile)' == '' And '$(IntermediateOutputPath)' == '' ">$(MSBuildProjectDirectory)\obj\AggregatePackages.props</CBTNuGetAggregatePackagePropertyFile> 
+    <CBTNuGetAggregatePackagePropertyFile Condition=" '$(CBTNuGetAggregatePackagePropertyFile)' == '' And '$(IntermediateOutputPath)' == '' ">$(CBTNuGetIntermediateOutputPath)\AggregatePackages.props</CBTNuGetAggregatePackagePropertyFile> 
     <CBTNuGetAggregatePackagePropertyFile Condition=" '$(CBTNuGetAggregatePackagePropertyFile)' == '' ">$(IntermediateOutputPath)\AggregatePackages.props</CBTNuGetAggregatePackagePropertyFile> 
     <CBTNuGetAggregatePackageGenerated Condition=" '$(CBTNuGetAggregatePackageGenerated)' == '' And '$(DesignTimeBuild)' != 'true' And '$(CBTNuGetTasksAssemblyName)' != ''">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.AggregatePackages').Execute('$(CBTAggregateDestPackageRoot)', '$(CBTAggregatePackage)', '$(CBTNuGetAggregatePackagePropertyFile)', '$(CBTNuGetAggregatePackageImmutableRoots)'))</CBTNuGetAggregatePackageGenerated> 
   </PropertyGroup>
