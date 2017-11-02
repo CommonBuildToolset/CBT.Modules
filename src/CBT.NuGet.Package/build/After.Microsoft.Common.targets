@@ -1,18 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project InitialTargets="GenerateNuGetProperties" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project InitialTargets="GenerateNuGetPropertiesInsideVisualStudio" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <PrepareForBuildDependsOn Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' ">_CheckForCBTNuGetPackagesRestoredMarker;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
-    <RestoreDependsOn>RestoreNuGetPackages;$(RestoreDependsOn)</RestoreDependsOn>
+    <RestoreDependsOn>$(RestoreDependsOn);RestoreNuGetPackages</RestoreDependsOn>
+    <RestoreDependsOn Condition=" '$(CBTNuGetGeneratePackageProperties)' != 'false' ">$(RestoreDependsOn);GenerateNuGetProperties</RestoreDependsOn>
   </PropertyGroup>
 
   <Import Project="$(NuGetTargets)" Condition=" '$(NuGetTargets)' != '' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.targets\ImportAfter\Microsoft.NuGet.ImportAfter.targets') " />
 
   <Import Project="$(CBTBuildPackageTargetsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
 
-  <Target Name="GenerateNuGetProperties"
+  <!--
+  This target generates NuGet package properties when the project is loaded in Visual Studio.  Design-time builds are called
+  a few times and eventually RestoreSuccess is 'true' so properties can be created.
+  -->
+  <Target Name="GenerateNuGetPropertiesInsideVisualStudio"
     Condition=" '$(BuildingInsideVisualStudio)' == 'true' And '$(RestoreSuccess)' == 'true' "
-    DependsOnTargets="GenerateNuGetAssetFlagFileInVisualStudio"
+    DependsOnTargets="GenerateNuGetAssetFlagFileInsideVisualStudio"
     Inputs="$(CBTNuGetAllProjects);$(CBTNuGetRestoreFile)"
     Outputs="$(CBTNuGetPackagePropertyFile)">
 
@@ -27,7 +32,7 @@
     />
   </Target>
 
-  <Target Name="GenerateNuGetAssetFlagFileInVisualStudio"
+  <Target Name="GenerateNuGetAssetFlagFileInsideVisualStudio"
     Condition=" '$(BuildingInsideVisualStudio)' == 'true' "
     Inputs="$(CBTNuGetRestoreFile)"
     Outputs="$(CBTNuGetAssetsFlagFile)">
@@ -60,5 +65,28 @@
     <WriteNuGetRestoreInfo File="$(CBTNuGetAssetsFlagFile)" Input="@(RestoreAssetsFlagData)" />
     
   </Target>
+
+  
+  <!--
+  This target only runs during traversal restore because the stock Restore target has no DependsOn set, command-line builds
+  do restore as part of property evaluation, and Visual Studio based builds run the GenerateNuGetPropertiesInsideVisualStudio
+  target instead.
+  -->
+  <Target Name="GenerateNuGetProperties"
+          Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' "
+          Inputs="$(CBTNuGetAllProjects);$(CBTNuGetRestoreFile)"
+          Outputs="$(CBTNuGetPackagePropertyFile)">
+
+    <GenerateNuGetProperties
+      PackageRestoreFile="$(CBTNuGetRestoreFile)"
+      Inputs="$(CBTNuGetAllProjects.Split(';'))"
+      PropsFile="$(CBTNuGetPackagePropertyFile)"
+      PropertyVersionNamePrefix="$(CBTNuGetPackagePropertyVersionNamePrefix)"
+      PropertyPathNamePrefix="$(CBTNuGetPackagePropertyPathNamePrefix)"
+      RestoreInfoFile="$(CBTNuGetAssetsFlagFile)"
+    />
+  </Target>
+
+  <Import Project="RestoreOnly.targets" Condition=" '$(IsRestoreOnly)' == 'true' " />
   
 </Project>
