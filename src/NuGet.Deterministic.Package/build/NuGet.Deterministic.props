@@ -8,15 +8,16 @@
 <Import Project="$(NuGetDeterministicGeneratedOutputPropsFile)" Condition=" '$(ImportNuGetDeterministicProps)' == 'true' And Exists('$(NuGetDeterministicGeneratedOutputPropsFile)') " />
 
  -->
- <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <EnableNuGetDeterministic Condition=" '$(EnableNuGetDeterministic)' == '' ">true</EnableNuGetDeterministic>
     <NuGetDeterministicTasksAssemblyPath Condition=" '$(NuGetDeterministicTasksAssemblyPath)' == '' ">$(MSBuildThisFileDirectory)\tasks\NuGet.Tasks.Deterministic.dll</NuGetDeterministicTasksAssemblyPath>
     <NuGetDeterministicGeneratedOutputPropsFile Condition=" '$(NuGetDeterministicGeneratedOutputPropsFile)' == '' ">$(MSBuildProjectDirectory)\NuGetAssetsLock.props</NuGetDeterministicGeneratedOutputPropsFile>
-    <NuGetDeterministicOverWritePropsFile Condition=" '$(NuGetDeterministicOverWritePropsFile)' == '' ">false</NuGetDeterministicOverWritePropsFile>
+    <!-- This property is currently not supported and the .props file is always recreated. -->
+    <!--<NuGetDeterministicOverWritePropsFile Condition=" '$(NuGetDeterministicOverWritePropsFile)' == '' ">false</NuGetDeterministicOverWritePropsFile>-->
     <NuGetDeterministicValidatePackageHash  Condition=" '$(NuGetDeterministicValidatePackageHash)' == '' ">true</NuGetDeterministicValidatePackageHash>
     <NuGetDeterministicValidatePackageIsDeterministic  Condition=" '$(NuGetDeterministicValidatePackageIsDeterministic)' == '' ">true</NuGetDeterministicValidatePackageIsDeterministic>
     <NuGetDeterministicValidatePropsIsImported Condition=" '$(NuGetDeterministicValidatePropsIsImported)' == '' ">true</NuGetDeterministicValidatePropsIsImported>
     <ValidateNuGetDeterministicDependsOn>$(ValidateNuGetDeterministicDependsOn);ValidatePropsIsImported;ValidateNuGetPackageHash;ValidateNuGetPackageIsDeterministic</ValidateNuGetDeterministicDependsOn>
-</PropertyGroup>
+  </PropertyGroup>
 </Project>
