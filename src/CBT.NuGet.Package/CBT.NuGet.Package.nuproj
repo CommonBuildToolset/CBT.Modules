@@ -19,6 +19,7 @@
     <Dependency Include="CBT.Traversal">
       <Version>[2.0.40,)</Version>
     </Dependency>
+    <Content Include="build\RestoreOnly.targets" />
     <Content Include="build\After.Microsoft.Common.targets" />
     <Content Include="build\After.Traversal.targets" />
     <Content Include="build\module.config" />
