@@ -1,10 +1,6 @@
 {
-  "version": "1.0",
+  "version": "1.0-beta",
   "assemblyVersion": "1.0",
-  "buildNumberOffset": 0,
-  "nugetPackageVersion": {
-    "semVer": 2
-  },
   "publicReleaseRefSpec": [
     "^refs/tags/CBT\\.NoTarget.*"
   ],
