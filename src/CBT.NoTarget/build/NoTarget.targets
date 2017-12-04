@@ -1,157 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(CustomBeforeMicrosoftCSharpTargets)" Condition=" '$(CustomBeforeMicrosoftCSharpTargets)' != '' and Exists('$(CustomBeforeMicrosoftCSharpTargets)')"/>
+
+  <Import Project="$(CustomBeforeNoTargets)" Condition="'$(CustomBeforeNoTargets)' != '' and Exists('$(CustomBeforeNoTargets)')" />
+  
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+
+  <ItemGroup>
+    <IntermediateAssembly Remove="@(IntermediateAssembly)" />
+    <IntermediateRefAssembly Remove="@(IntermediateRefAssembly)" />
+  </ItemGroup>
 
   <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MsBuildThisFileFullPath)</MSBuildAllProjects>
-    
-    <BuildDependsOn>
-      BeforeBuild;
+    <!--
+      This property must be overridden to remove a few targets that compile assemblies
+    -->
+    <CoreBuildDependsOn>
       BuildOnlySettings;
+      PrepareForBuild;
+      PreBuildEvent;
       ResolveProjectReferences;
-      BeforeCompile;
-      $(BuildDependsOn);
-      AfterCompile;
-      AfterBuild;
-    </BuildDependsOn>
-    
-    <BuildProjectReferences Condition=" '$(BuildProjectReferences)' == '' and '$(DesignTimeBuild)' == 'true' ">false</BuildProjectReferences>
-    
-    <BuildProjectReferences Condition=" '$(BuildProjectReferences)' == '' ">true</BuildProjectReferences>
-    
-    <BuildInParallel Condition=" '$(BuildInParallel)' == '' ">true</BuildInParallel>
+      GetTargetPath;
+      PrepareForRun;
+      IncrementalClean;
+      PostBuildEvent
+    </CoreBuildDependsOn>
   </PropertyGroup>
 
-  <Target Name="AssignProjectConfiguration" 
-          Condition=" '@(ProjectReference)'!='' ">
-
-    <PropertyGroup>
-      <OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration Condition=" '$(OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration)' == '' ">false</OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration>
-      
-      <ShouldUnsetParentConfigurationAndPlatform Condition=" '$(ShouldUnsetParentConfigurationAndPlatform)' == '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingSolutionFile)' == 'true')">true</ShouldUnsetParentConfigurationAndPlatform>
-      
-      <ShouldUnsetParentConfigurationAndPlatform Condition=" '$(ShouldUnsetParentConfigurationAndPlatform)' == '' ">false</ShouldUnsetParentConfigurationAndPlatform>
-    </PropertyGroup>
-
-    <AssignProjectConfiguration
-        ProjectReferences="@(ProjectReference)"
-        CurrentProjectConfiguration="$(Configuration)"
-        CurrentProjectPlatform="$(Platform)"
-        DefaultToVcxPlatformMapping="$(DefaultToVcxPlatformMapping)"
-        VcxToDefaultPlatformMapping="$(VcxToDefaultPlatformMapping)"
-        OutputType="$(OutputType)"
-        ResolveConfigurationPlatformUsingMappings="false"
-        SolutionConfigurationContents="$(CurrentSolutionConfigurationContents)"
-        OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration = "$(OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration)"
-        ShouldUnsetParentConfigurationAndPlatform = "$(ShouldUnsetParentConfigurationAndPlatform)" >
-
-      <Output TaskParameter="AssignedProjects" ItemName="_ProjectReferenceWithConfiguration"/>
-      
-      <Output TaskParameter="UnassignedProjects" ItemName="_ProjectReferenceWithConfiguration"/>
-
-      <Output TaskParameter="AssignedProjects" ItemName="ProjectReferenceWithConfiguration"/>
-      
-      <Output TaskParameter="UnassignedProjects" ItemName="ProjectReferenceWithConfiguration"/>
-    </AssignProjectConfiguration>
-
-    <ItemGroup>
-      <_ProjectReferenceWithConfiguration>
-        <BuildReference Condition=" '%(_ProjectReferenceWithConfiguration.BuildReference)' == '' ">true</BuildReference>
-        <ReferenceOutputAssembly Condition=" '%(_ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == '' ">true</ReferenceOutputAssembly>
-      </_ProjectReferenceWithConfiguration>
-      
-      <ProjectReferenceWithConfiguration>
-        <BuildReference Condition=" '%(ProjectReferenceWithConfiguration.BuildReference)' == '' ">true</BuildReference>
-        <ReferenceOutputAssembly Condition=" '%(ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == '' ">true</ReferenceOutputAssembly>
-      </ProjectReferenceWithConfiguration>
-    </ItemGroup>
-  </Target>
-
-  <Target Name="_SplitProjectReferencesByFileExistence">
-
-    <ResolveNonMSBuildProjectOutput
-        ProjectReferences="@(ProjectReferenceWithConfiguration)"
-        PreresolvedProjectOutputs="$(VSIDEResolvedNonMSBuildProjectOutputs)"
-        Condition=" '$(BuildingInsideVisualStudio)'=='true' and '@(ProjectReferenceWithConfiguration)'!='' ">
-
-      <Output TaskParameter="ResolvedOutputPaths" ItemName="_ResolvedProjectReferencePaths"/>
-      
-      <Output TaskParameter="UnresolvedProjectReferences" ItemName="_MSBuildProjectReference"/>
-    </ResolveNonMSBuildProjectOutput>
-
-    <ItemGroup>
-      <_MSBuildProjectReference Include="@(ProjectReferenceWithConfiguration)" Condition=" '$(BuildingInsideVisualStudio)'!='true' and '@(ProjectReferenceWithConfiguration)'!='' "/>
-
-      <_MSBuildProjectReferenceExistent Include="@(_MSBuildProjectReference)" Condition=" Exists('%(Identity)') "/>
-      
-      <_MSBuildProjectReferenceNonexistent Include="@(_MSBuildProjectReference)" Condition=" !Exists('%(Identity)') "/>
-    </ItemGroup>
-
-  </Target>
-
-  <Target Name="ResolveProjectReferences"
-      DependsOnTargets="AssignProjectConfiguration;_SplitProjectReferencesByFileExistence">
-
-    <MSBuild
-        Projects="@(_MSBuildProjectReferenceExistent)"
-        Targets="%(_MSBuildProjectReferenceExistent.Targets);GetTargetPath"
-        BuildInParallel="$(BuildInParallel)"
-        Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
-        Condition=" '%(_MSBuildProjectReferenceExistent.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '@(_MSBuildProjectReferenceExistent)' != '' "
-        ContinueOnError="!$(BuildingProject)"
-        RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
-
-      <Output TaskParameter="TargetOutputs" ItemName="_ResolvedProjectReferencePaths" Condition=" '%(_MSBuildProjectReferenceExistent.ReferenceOutputAssembly)'=='true' "/>
-      
-      <Output TaskParameter="TargetOutputs" ItemName="%(_MSBuildProjectReferenceExistent.OutputItemType)" Condition=" '%(_MSBuildProjectReferenceExistent.OutputItemType)' != '' "/>
-    </MSBuild>
-
-    <MSBuild
-        Projects="@(_MSBuildProjectReferenceExistent)"
-        Targets="%(_MSBuildProjectReferenceExistent.Targets)"
-        BuildInParallel="$(BuildInParallel)"
-        Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
-        Condition=" '%(_MSBuildProjectReferenceExistent.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and '$(BuildingInsideVisualStudio)' != 'true' and '$(BuildProjectReferences)' == 'true' and '@(_MSBuildProjectReferenceExistent)' != '' "
-        RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
-
-      <Output TaskParameter="TargetOutputs" ItemName="_ResolvedProjectReferencePaths" Condition=" '%(_MSBuildProjectReferenceExistent.ReferenceOutputAssembly)'=='true' or '$(DesignTimeBuild)' == 'true' "/>
-      
-      <Output TaskParameter="TargetOutputs" ItemName="%(_MSBuildProjectReferenceExistent.OutputItemType)" Condition=" '%(_MSBuildProjectReferenceExistent.OutputItemType)' != '' "/>
-    </MSBuild>
-  </Target>
-
-
-  <PropertyGroup>
-    <BuildingProject>false</BuildingProject>
-  </PropertyGroup>
-
-  <Target Name="BuildOnlySettings">
-    <PropertyGroup>
-      <BuildingProject>true</BuildingProject>
-    </PropertyGroup>
-  </Target>
-
-
-  <Target Name="Clean"
-          DependsOnTargets="$(CleanDependsOn)"/>
-  
-  <Target Name="Rebuild"
-          DependsOnTargets="Clean;Build"/>
-
-  <Target Name="PrepareForBuild"/>
-  <Target Name="Build"
-          DependsOnTargets="$(BuildDependsOn)"/>
-
-  <Target Name="PreBuildEvent"/>
-
-  <Target Name="GetCopyToOutputDirectoryItems"
-          Outputs=""/>
-  
-  <Target Name="GetNativeManifest"
-          Outputs=""/>
-  
-  <Target Name="GetTargetPath"
-          Outputs=""/>
-
-  <Import Project="$(CustomAfterMicrosoftCSharpTargets)" Condition=" '$(CustomAfterMicrosoftCSharpTargets)' != '' and Exists('$(CustomAfterMicrosoftCSharpTargets)')"/>
+  <Import Project="$(CustomAfterNoTargets)" Condition="'$(CustomAfterNoTargets)' != '' and Exists('$(CustomAfterNoTargets)')" />
 </Project>
