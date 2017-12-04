@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27019.1
+VisualStudioVersion = 15.0.27110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CBT.NuGet", "CBT.NuGet", "{105F8F9A-A30C-4516-9359-916B2D00C29E}"
 EndProject
@@ -64,6 +64,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet.Deterministic", "NuGet.Deterministic\NuGet.Deterministic.csproj", "{728B794A-F0EB-4A61-987D-26CB0B57B0EA}"
 EndProject
 Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "NuGet.Deterministic.Package", "NuGet.Deterministic.Package\NuGet.Deterministic.Package.nuproj", "{2D264DAF-7C3B-437B-AEB8-3B5C0535D434}"
+EndProject
+Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.NoTarget", "CBT.NoTarget\CBT.NoTarget.nuproj", "{FAD5ADFB-CDB3-49E4-9B24-336C55556059}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -151,6 +153,10 @@ Global
 		{2D264DAF-7C3B-437B-AEB8-3B5C0535D434}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D264DAF-7C3B-437B-AEB8-3B5C0535D434}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D264DAF-7C3B-437B-AEB8-3B5C0535D434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAD5ADFB-CDB3-49E4-9B24-336C55556059}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAD5ADFB-CDB3-49E4-9B24-336C55556059}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAD5ADFB-CDB3-49E4-9B24-336C55556059}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAD5ADFB-CDB3-49E4-9B24-336C55556059}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
