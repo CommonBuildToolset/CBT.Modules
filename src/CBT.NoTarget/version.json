@@ -1,0 +1,17 @@
+{
+  "version": "1.0-beta",
+  "assemblyVersion": "1.0",
+  "publicReleaseRefSpec": [
+    "^refs/tags/CBT\\.NoTarget.*"
+  ],
+  "cloudBuild": {
+    "setVersionVariables": true,
+    "buildNumber": {
+      "enabled": true,
+      "includeCommitId": {
+        "when": "nonPublicReleaseOnly",
+        "where": "buildMetadata"
+      }
+    }
+  }
+}

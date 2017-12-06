@@ -51,7 +51,7 @@
 
   <Target Name="Rebuild" DependsOnTargets="$(RebuildDependsOn)" />
 
-  <Target Name="Restore" DependsOnTargets="$(RestoreDependsOn)" Condition=" '$(EnableProjectRestore)' != 'false' ">
+  <Target Name="Restore" DependsOnTargets="$(RestoreDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Restore" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
     <MSBuild Projects="@(ProjectFile)" Targets="Restore" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);IsRestoreOnly=true;$(TraversalGlobalProperties);$(TraversalRestoreGlobalProperties)" />
