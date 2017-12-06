@@ -71,7 +71,7 @@
     <CBTNuGetPackagesRestored Condition=" '$(CBTNuGetPackagesRestored)' == '' And '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.NuGetRestore').Execute($(CBTNuGetRestoreFile), '$(NuGetMsBuildVersion)', $(CBTNuGetRestoreRequireConsent), $(CBTNuGetDisableParallelProcessing), $(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), $(NuGetPackageSaveMode), $(NuGetSource.Split(';')), $(NuGetConfigFile), $(CBTNuGetNonInteractive), $(NuGetVerbosity), $(CBTNuGetTimeout), $(CBTNuGetPath), $([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')), $(CBTNuGetPackagesRestoredMarker), $(CBTNuGetAllProjects.Split(';')), '$(NuGetMSBuildPath)', '$(CBTNuGetRestoreAdditionalArguments)'))</CBTNuGetPackagesRestored>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(CBTNuGetPackagesRestored)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
+  <PropertyGroup Condition=" '$(CBTNuGetPackagesRestored)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true'  And '$(IsRestoreOnly)' != 'true'  ">
     <CBTNuGetPackagePropertiesCreated Condition=" '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetAssetsFlagFile)))</CBTNuGetPackagePropertiesCreated>
   </PropertyGroup>
 
@@ -144,7 +144,7 @@
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.GenerateNuGetProperties" />
 
   <Target Name="RestoreNuGetPackages"
-    Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(BuildingInsideVisualStudio)' != 'true' "
+    Condition=" '$(CBTEnablePackageRestore)' == 'true' And '$(CBTNuGetPackagesRestored)' != 'true' And '$(BuildingInsideVisualStudio)' != 'true' "
     DependsOnTargets="_CheckForCBTNuGetPackagesRestoredMarker;$(RestoreNuGetPackagesDependsOn)"
     Inputs="$(CBTNuGetAllProjects);$(CBTNuGetRestoreFile)"
     Outputs="$(CBTNuGetPackagesRestoredMarker)">
@@ -172,11 +172,6 @@
     <Touch AlwaysCreate="true" ForceTouch="true" Files="$(CBTNuGetPackagesRestoredMarker)" Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' " />
 
     <CallTarget Targets="_CheckForCBTNuGetPackagesRestoredMarker" />
-
-    <PropertyGroup Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' And '$(IsRestoreOnly)' == 'true' ">
-      <CBTNuGetPackagePropertiesCreated Condition=" '$(CBTNuGetTasksAssemblyName)' != '' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData(`CBT_NUGET_ASSEMBLY`).CreateInstance('CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), $(CBTNuGetAssetsFlagFile)))</CBTNuGetPackagePropertiesCreated>
-    </PropertyGroup>
-
   </Target>
 
   <Target Name="_CheckForCBTNuGetPackagesRestoredMarker">
