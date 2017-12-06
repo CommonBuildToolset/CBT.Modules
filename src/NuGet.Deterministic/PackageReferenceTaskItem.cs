@@ -12,15 +12,15 @@ namespace NuGet.Tasks.Deterministic
         {
             _taskItem = taskItem;
 
-            _pathLazy = new Lazy<string>(() => taskItem.GetMetadata(GenerateLockedPackageConfigurationFile.PathMetadataName)?.Replace('/', System.IO.Path.DirectorySeparatorChar));
+            _pathLazy = new Lazy<string>(() => taskItem.GetMetadata(GenerateLockedPackageReferencesFile.PackagePathMetadataName)?.Replace('/', System.IO.Path.DirectorySeparatorChar));
         }
 
-        public string Sha512 => _taskItem.GetMetadata(GenerateLockedPackageConfigurationFile.Sha512MetadataName);
+        public string Sha512 => _taskItem.GetMetadataNoThrow(GenerateLockedPackageReferencesFile.Sha512MetadataName);
 
         public string Name => _taskItem.ItemSpec;
 
-        public string Hashfile => _taskItem.GetMetadata(GenerateLockedPackageConfigurationFile.HashfileMetadataName);
+        public string Hashfile => _taskItem.GetMetadataNoThrow(GenerateLockedPackageReferencesFile.HashfileMetadataName);
 
-        public string Path => _pathLazy.Value;
+        public string PackagePath => _pathLazy.Value;
     }
 }

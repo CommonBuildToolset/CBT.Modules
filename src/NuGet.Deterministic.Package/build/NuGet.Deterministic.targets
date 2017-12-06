@@ -1,75 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask AssemblyFile="$(NuGetDeterministicTasksAssemblyPath)" TaskName="GenerateLockedPackageConfigurationFile" />
 
-  <PropertyGroup>
-    <NuGetDeterministicExcludeExplicitPackages Condition="'$(NuGetDeterministicExcludeExplicitPackages)'==''">true</NuGetDeterministicExcludeExplicitPackages>
-    <GenerateNuGetDeterministicProps Condition=" '$(GenerateNuGetDeterministicProps)' == '' And '$(NuGetDeterministicPropsWasImported)' != 'true' And '$(ImportNuGetDeterministicProps)' != 'true' ">true</GenerateNuGetDeterministicProps>
-    <PrepareForBuildDependsOn Condition=" '$(GenerateNuGetDeterministicProps)' == 'true' ">$(PrepareForBuildDependsOn);GenerateNuGetDeterministicProps</PrepareForBuildDependsOn>
-    <PrepareForBuildDependsOn Condition=" '$(NuGetDeterministicPropsWasImported)' == 'true' Or '$(ImportNuGetDeterministicProps)' == 'true' ">$(PrepareForBuildDependsOn);ValidateNuGetDeterministic</PrepareForBuildDependsOn>
+  <PropertyGroup Condition=" '$(EnableNuGetDeterministic)' != 'false' ">
+    <NuGetDeterministicTasksAssemblyPath Condition=" '$(NuGetDeterministicTasksAssemblyPath)' == '' ">$(MSBuildThisFileDirectory)tasks\NuGet.Tasks.Deterministic.dll</NuGetDeterministicTasksAssemblyPath>
+    
+    <!--
+      The path to a file written to when validating to not run validation unless it is necessary.
+    -->
+    <NuGetDeterministicPackagesValidatedFile Condition=" '$(NuGetDeterministicPackagesValidatedFile)' == '' ">$(IntermediateOutputPath)$(MSBuildProjectFile).ndpv</NuGetDeterministicPackagesValidatedFile>
+
+    <!--
+      Generate or validate but never both.  Users set $(ValidateNuGetPackagesAreDeterministic) to 'true' for hosted builds which disable generation and enables validation.
+    -->
+    <PrepareForBuildDependsOn Condition=" '$(ValidateNuGetPackagesAreDeterministic)' != 'true' ">$(PrepareForBuildDependsOn);GenerateNuGetDeterministicProps</PrepareForBuildDependsOn>
+    <PrepareForBuildDependsOn Condition=" '$(ValidateNuGetPackagesAreDeterministic)' == 'true' ">$(PrepareForBuildDependsOn);ValidateNuGetPackagesAreDeterministic</PrepareForBuildDependsOn>
   </PropertyGroup>
 
-  <Target Name="GenerateNuGetDeterministicStaticExcludeList">
-    <ItemGroup>
-      <NuGetDeterministicPackagesToExcludeFromStaticGraph Include="%(PackageReference.Identity)" Condition="'$(NuGetDeterministicExcludeExplicitPackages)'=='true' And '%(PackageReference.IsImplicitlyDefined)' == 'true'"/>
-    </ItemGroup>
-  </Target>
+  <UsingTask AssemblyFile="$(NuGetDeterministicTasksAssemblyPath)" TaskName="GenerateLockedPackageReferencesFile" Condition=" '$(EnableNuGetDeterministic)' != 'false' "/>
+  <UsingTask AssemblyFile="$(NuGetDeterministicTasksAssemblyPath)" TaskName="ValidateNuGetPackageHashes" Condition=" '$(EnableNuGetDeterministic)' != 'false' " />
 
   <Target Name="GenerateNuGetDeterministicProps"
-          Condition=" Exists('$(ProjectAssetsFile)') "
-          Inputs="$(ProjectAssetsFile)"
-          Outputs="$(NuGetDeterministicGeneratedOutputPropsFile)"
-          DependsOnTargets="GenerateNuGetDeterministicStaticExcludeList">
-    
-    <GenerateLockedPackageConfigurationFile 
-      GeneratedOutputPropsFile="$(NuGetDeterministicGeneratedOutputPropsFile)" 
-      NuGetAssetsFilePath="$(ProjectAssetsFile)"
-      OverWritePropsFile="$(NuGetDeterministicOverWritePropsFile)"
-      PackagesToExclude="@(NuGetDeterministicPackagesToExcludeFromStaticGraph)"
+          Condition=" @(PackageReference->Count()) != '0' "
+          Inputs="$(NuGetDeterministicTasksAssemblyPath);$(MSBuildThisFileFullPath);$(ProjectAssetsFile)"
+          Outputs="$(NuGetDeterministicLockedPropsFile)"
+          DependsOnTargets="GetNuGetDeterministicExcludes;$(GenerateNuGetDeterministicPropsDependsOn)">
+
+    <GenerateLockedPackageReferencesFile
+      PropsFile="$(NuGetDeterministicLockedPropsFile)"
+      ProjectAssetsFile="$(ProjectAssetsFile)"
+      PackagesToExclude="@(NuGetDeterministicPackagesToExclude)"
       />
+
+  </Target>
+
+  <Target Name="ValidateNuGetPackagesAreDeterministic"
+          Condition=" '$(ValidateNuGetPackagesAreDeterministic)' == 'true' And @(PackageReference->Count()) != '0' "
+          DependsOnTargets="GetNuGetDeterministicExcludes;$(ValidateNuGetPackagesAreDeterministicDependsOn)"
+          Inputs="$(NuGetDeterministicTasksAssemblyPath);$(MSBuildThisFileFullPath);$(NuGetDeterministicLockedPropsFile)"
+          Outputs="$(NuGetDeterministicPackagesValidatedFile)">
+
+    <!--
+      Log an error if $(ValidateNuGetPackagesAreDeterministic) is 'true' but NuGetAssetsLock.props was not imported (because $(NuGetDeterministicPropsWasImported) is not 'true')
+    -->
+    <Error Code="ND1004"
+           Condition=" '@(PackageReference)' != '' And '$(NuGetDeterministicPropsWasImported)' != 'true' "
+           Text=" '$(NuGetDeterministicLockedPropsFile)' was not imported and this project contains &lt;PackageReference /&gt; items.  Ensure this file has been generated and commited to source control.  See NuGet.Deterministic NuGet package for more details."
+    />
+
+    <!--
+      Determine what packages are deterministic and which ones are not.
+    -->
+    <ItemGroup>
+      <_DeterministicNuGetPackages Include="@(PackageReference)" Condition=" '%(PackageReference.Sha512)' != '' "/>
+      <_NonDeterministicNuGetPackages Include="@(PackageReference)" Exclude="@(_DeterministicNuGetPackages);@(NuGetDeterministicPackagesToExclude)"/>
+    </ItemGroup>
     
+    <!--
+      Log an error if a package reference from the NuGetAssetsLock.props does not have enough information to determine if it is deterministic.
+    -->
+    <Error Code="ND1005"
+           Condition=" '%(_NonDeterministicNuGetPackages.Identity)' != '' "
+           Text="A non-deterministic package reference was found '%(_NonDeterministicNuGetPackages.Identity)'.  Ensure '$(NuGetDeterministicLockedPropsFile)' contains this package with an explicit version.  You can regenerate the file by deleting it and building locally again."
+           />
+    
+    <!--
+      Validate the SHA512 hashes of the packages
+    -->
+    <ValidateNuGetPackageHashes
+      PackageFolders="$(NuGetPackageFolders)"
+      PackageReferences="@(_DeterministicNuGetPackages)"
+      Condition=" '$(NuGetDeterministicValidatePackageHash)' != 'false' "
+    />
+
+    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(NuGetDeterministicPackagesValidatedFile)'))" />
+    
+    <Touch Files="$(NuGetDeterministicPackagesValidatedFile)"
+           AlwaysCreate="true"
+           ForceTouch="true">
+      <Output TaskParameter="TouchedFiles" ItemName="FileWrites" />
+    </Touch>
   </Target>
 
-  <!-- Only analyze PackageReference items that are generated by this deterministic process. -->
-  <Target Name="ValidateNuGetPackageHash" Inputs="%(PackageReference.sha512)" Outputs="bogus" Condition=" '$(NuGetDeterministicValidatePackageHash)' == 'true' " >
-    <PropertyGroup>
-      <_ValidateNuGetPackagePath>%(PackageReference.Path)</_ValidateNuGetPackagePath>
-      <_ValidateNuGetPackagePath>$(_ValidateNuGetPackagePath.Replace('/','\'))</_ValidateNuGetPackagePath>
-    </PropertyGroup>
+  <!--
+    Adds items to the @(NuGetDeterministicPackagesToExclude) item group which lists packages to not validate.
+  -->
+  <Target Name="GetNuGetDeterministicExcludes">
     <ItemGroup>
-      <_NuGetPackageFoldersToValidatetmp Include="$(NuGetPackageFolders)" />
-      <_NuGetPackageFoldersToValidate Include="@(_NuGetPackageFoldersToValidatetmp->'%(identity)\$(_ValidateNuGetPackagePath)')" />
+      <!--
+        Exclude all implicitly defined packages unless $(NuGetDeterministicExcludeImplicitPackages) is 'true'
+      -->
+      <NuGetDeterministicPackagesToExclude Include="@(PackageReference)" Condition=" '$(NuGetDeterministicExcludeImplicitPackages)' != 'false' And '%(PackageReference.IsImplicitlyDefined)' == 'true' "/>
     </ItemGroup>
-    <PropertyGroup>
-      <_ValidateNuGetPackageHash_NuGetPackagePath Condition = "Exists('%(_NuGetPackageFoldersToValidate.Identity)')" >%(_NuGetPackageFoldersToValidate.Identity)</_ValidateNuGetPackageHash_NuGetPackagePath>
-      <_ValidateNuGetPackageHash_NuGetHashFile>$([System.IO.Path]::Combine('$(_ValidateNuGetPackageHash_NuGetPackagePath)','%(PackageReference.hashFileName)'))</_ValidateNuGetPackageHash_NuGetHashFile>
-    </PropertyGroup>
-
-    <Error Text="nuget hash file does not exist. $(_ValidateNuGetPackageHash_NuGetHashFile)" Condition = "!Exists('$(_ValidateNuGetPackageHash_NuGetHashFile)')"/>
-    <ReadLinesFromFile
-      File="$(_ValidateNuGetPackageHash_NuGetHashFile)" >
-      <Output TaskParameter="Lines" PropertyName="_ValidateNuGetPackageHash_HashFromFile"/>
-    </ReadLinesFromFile>
-    <Error Text="%(PackageReference.Path) Expected Hash '%(PackageReference.sha512)' does not match hash of nuget package '$(_ValidateNuGetPackageHash_HashFromFile)'" Condition = " '%(PackageReference.sha512)' != '$(_ValidateNuGetPackageHash_HashFromFile)' " />
   </Target>
-
-  <Target Name="ValidateNuGetPackageIsDeterministic" Condition=" '$(NuGetDeterministicValidatePackageIsDeterministic)' == 'true' " DependsOnTargets="GenerateNuGetDeterministicStaticExcludeList">
-    <ItemGroup>
-      <_DeterministicPackages Include="%(PackageReference.Identity)" Condition=" '%(PackageReference.sha512)' != '' "/>
-      <_DeterministicPackages Include="@(NuGetDeterministicPackagesToExcludeFromStaticGraph)" />
-      <_NonDeterministicPackages Include="@(PackageReference)" Exclude="@(_DeterministicPackages)"/>
-    </ItemGroup>
-    <Error Text="non-Deterministic package reference was found '%(_NonDeterministicPackages.Identity)'.  Ensure '$(NuGetDeterministicGeneratedOutputPropsFile)' contains this package with an explicit version.  Building with GenerateNuGetDeterministicProps set to true should resolve this problem." Condition=" '%(_NonDeterministicPackages.Identity)' != '' "/>
-  </Target>
-
-  <Target Name="ValidatePropsIsImported" Condition=" '$(NuGetDeterministicValidatePropsIsImported)' == 'true' ">
-    <Error Text="The msbuild property ImportNuGetDeterministicProps must be set to true when '$(NuGetDeterministicGeneratedOutputPropsFile)' is supposed to be imported.  This is to ensure this conditional import is always correct and if not a build error will be generated."
-           Condition=" '$(NuGetDeterministicPropsWasImported)' == 'true' And '$(ImportNuGetDeterministicProps)' != 'true' " />
-
-    <Error Text=" '$(NuGetDeterministicGeneratedOutputPropsFile)' was not imported and this project contains &lt;PackageReference Items.  Ensure this file has been generated and checked in.  See NuGet.Deterministic NuGet package for more details." 
-           Condition=" '@(PackageReference)' != '' And '$(NuGetDeterministicPropsWasImported)' != 'true' And '$(ImportNuGetDeterministicProps)' == 'true' "/>
-  </Target>
-
-  <Target Name="ValidateNuGetDeterministic" DependsOnTargets="$(ValidateNuGetDeterministicDependsOn)"/>
 
 </Project>

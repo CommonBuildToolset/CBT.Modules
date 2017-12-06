@@ -1,23 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- Builds that need determinism in nuGet restore (typically lab builds) would import NuGetAssetsLock.props.  ImportNuGetDeterministicProps must be defined to true for conditions where the NuGetAssetsLock.props should be imported.
-<PropertyGroup>
-  <ImportNuGetDeterministicProps Condition=" '$(BuildingInLab)' == 'true' ">true</ImportNuGetDeterministicProps>
-</PropertyGroup>
-
-<Import Project="$(NuGetDeterministicGeneratedOutputPropsFile)" Condition=" '$(ImportNuGetDeterministicProps)' == 'true' And Exists('$(NuGetDeterministicGeneratedOutputPropsFile)') " />
-
- -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <EnableNuGetDeterministic Condition=" '$(EnableNuGetDeterministic)' == '' ">true</EnableNuGetDeterministic>
-    <NuGetDeterministicTasksAssemblyPath Condition=" '$(NuGetDeterministicTasksAssemblyPath)' == '' ">$(MSBuildThisFileDirectory)\tasks\NuGet.Tasks.Deterministic.dll</NuGetDeterministicTasksAssemblyPath>
-    <NuGetDeterministicGeneratedOutputPropsFile Condition=" '$(NuGetDeterministicGeneratedOutputPropsFile)' == '' ">$(MSBuildProjectDirectory)\NuGetAssetsLock.props</NuGetDeterministicGeneratedOutputPropsFile>
-    <!-- This property is currently not supported and the .props file is always recreated. -->
-    <!--<NuGetDeterministicOverWritePropsFile Condition=" '$(NuGetDeterministicOverWritePropsFile)' == '' ">false</NuGetDeterministicOverWritePropsFile>-->
-    <NuGetDeterministicValidatePackageHash  Condition=" '$(NuGetDeterministicValidatePackageHash)' == '' ">true</NuGetDeterministicValidatePackageHash>
-    <NuGetDeterministicValidatePackageIsDeterministic  Condition=" '$(NuGetDeterministicValidatePackageIsDeterministic)' == '' ">true</NuGetDeterministicValidatePackageIsDeterministic>
-    <NuGetDeterministicValidatePropsIsImported Condition=" '$(NuGetDeterministicValidatePropsIsImported)' == '' ">true</NuGetDeterministicValidatePropsIsImported>
-    <ValidateNuGetDeterministicDependsOn>$(ValidateNuGetDeterministicDependsOn);ValidatePropsIsImported;ValidateNuGetPackageHash;ValidateNuGetPackageIsDeterministic</ValidateNuGetDeterministicDependsOn>
+  <PropertyGroup Condition=" '$(EnableNuGetDeterministic)' != 'false' ">
+    <NuGetDeterministicLockedPropsFile Condition=" '$(NuGetDeterministicLockedPropsFile)' == '' ">$(MSBuildProjectDirectory)\NuGetAssetsLock.props</NuGetDeterministicLockedPropsFile>
   </PropertyGroup>
+
+  <Import Project="$(NuGetDeterministicLockedPropsFile)" Condition=" '$(EnableNuGetDeterministic)' != 'false' And '$(ValidateNuGetPackagesAreDeterministic)' == 'true' And '$(NuGetDeterministicPropsWasImported)' != 'true' And Exists('$(NuGetDeterministicLockedPropsFile)') " />
 </Project>
