@@ -35,8 +35,8 @@
     <!-- For project.json, the file to pass to restore is the project itself -->
     <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectDirectory)\project.json</CBTNuGetAllProjects>
-    <NuGetProps Condition=" '$(NuGetProps)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props</NuGetProps>
-    <NuGetTargets Condition=" '$(NuGetTargets)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
+    <NuGetProps Condition=" '$(NuGetProps)' == '' And !Exists('$(MSBuildExtensionsPath)\Microsoft\NuGet\$(VisualStudioVersion)\Microsoft.NuGet.props') ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props</NuGetProps>
+    <NuGetTargets Condition=" '$(NuGetTargets)' == '' And !Exists('$(MSBuildExtensionsPath)\Microsoft\NuGet\$(VisualStudioVersion)\Microsoft.NuGet.targets') ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTNuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\packages.config') ">
@@ -48,8 +48,8 @@
   <PropertyGroup Condition=" '$(CBTNuGetRestoreFile)' == '' ">
     <CBTNuGetRestoreFile>$(MSBuildProjectFullPath)</CBTNuGetRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(MSBuildProjectFullPath)</CBTNuGetAllProjects>
-    <NuGetProps Condition=" '$(NuGetProps)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props</NuGetProps>
-    <NuGetTargets Condition=" '$(NuGetTargets)' == '' ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
+    <NuGetProps Condition=" '$(NuGetProps)' == '' And !Exists('$(MSBuildExtensionsPath)\Microsoft\NuGet\$(VisualStudioVersion)\Microsoft.NuGet.props') ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.props</NuGetProps>
+    <NuGetTargets Condition=" '$(NuGetTargets)' == '' And !Exists('$(MSBuildExtensionsPath)\Microsoft\NuGet\$(VisualStudioVersion)\Microsoft.NuGet.targets') ">$(MSBuildThisFileDirectory)Microsoft.NuGet\Microsoft.NuGet.targets</NuGetTargets>
   </PropertyGroup>
 
   <PropertyGroup>
