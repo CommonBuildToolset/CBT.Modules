@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!--
+    In order to use the targets below, a user must manually declare NuGetDeterministicLockedPropsFile and set ValidateNuGetPackagesAreDeterministic to true if their build is running in a hosted build environment.
+    
+    You can copy and paste the below commented out section and update the ValidateNuGetPackagesAreDeterministic condition to suite your needs.
+  -->
+  <!--
+  <PropertyGroup Condition=" '$(EnableNuGetDeterministic)' != 'false' ">
+    <NuGetDeterministicLockedPropsFile Condition=" '$(NuGetDeterministicLockedPropsFile)' == '' ">$(MSBuildProjectDirectory)\NuGetAssetsLock.props</NuGetDeterministicLockedPropsFile>
+    
+    <ValidateNuGetPackagesAreDeterministic Condition=" '$(SOME_VARIABLE_THAT_IS_SET_DURING_HOSTED_BUILD)' == 'VALUE_DURING_HOSTED_BUILD' ">true</ValidateNuGetPackagesAreDeterministic>
+  </PropertyGroup>
+
+  <Import Project="$(NuGetDeterministicLockedPropsFile)" Condition=" '$(EnableNuGetDeterministic)' != 'false' And '$(ValidateNuGetPackagesAreDeterministic)' == 'true' And '$(NuGetDeterministicPropsWasImported)' != 'true' And Exists('$(NuGetDeterministicLockedPropsFile)') " />
+  -->
+
   <PropertyGroup Condition=" '$(EnableNuGetDeterministic)' != 'false' ">
     <NuGetDeterministicTasksAssemblyPath Condition=" '$(NuGetDeterministicTasksAssemblyPath)' == '' ">$(MSBuildThisFileDirectory)tasks\NuGet.Tasks.Deterministic.dll</NuGetDeterministicTasksAssemblyPath>
     
-    <!--
-      The path to a file written to when validating to not run validation unless it is necessary.
-    -->
-    <NuGetDeterministicPackagesValidatedFile Condition=" '$(NuGetDeterministicPackagesValidatedFile)' == '' ">$(IntermediateOutputPath)$(MSBuildProjectFile).ndpv</NuGetDeterministicPackagesValidatedFile>
-
     <!--
       Generate or validate but never both.  Users set $(ValidateNuGetPackagesAreDeterministic) to 'true' for hosted builds which disable generation and enables validation.
     -->
@@ -23,21 +33,20 @@
           Condition=" @(PackageReference->Count()) != '0' "
           Inputs="$(NuGetDeterministicTasksAssemblyPath);$(MSBuildThisFileFullPath);$(ProjectAssetsFile)"
           Outputs="$(NuGetDeterministicLockedPropsFile)"
-          DependsOnTargets="GetNuGetDeterministicExcludes;$(GenerateNuGetDeterministicPropsDependsOn)">
-
+          DependsOnTargets="_VerifyNuGetDeterministic;GetNuGetDeterministicExcludes;$(GenerateNuGetDeterministicPropsDependsOn)">
+    
     <GenerateLockedPackageReferencesFile
       PropsFile="$(NuGetDeterministicLockedPropsFile)"
       ProjectAssetsFile="$(ProjectAssetsFile)"
       PackagesToExclude="@(NuGetDeterministicPackagesToExclude)"
+      ExcludeImplicitReferences="$([MSBuild]::ValueOrDefault('$(NuGetDeterministicExcludeImplicitReferences)', 'false'))"
       />
 
   </Target>
 
   <Target Name="ValidateNuGetPackagesAreDeterministic"
           Condition=" '$(ValidateNuGetPackagesAreDeterministic)' == 'true' And @(PackageReference->Count()) != '0' "
-          DependsOnTargets="GetNuGetDeterministicExcludes;$(ValidateNuGetPackagesAreDeterministicDependsOn)"
-          Inputs="$(NuGetDeterministicTasksAssemblyPath);$(MSBuildThisFileFullPath);$(NuGetDeterministicLockedPropsFile)"
-          Outputs="$(NuGetDeterministicPackagesValidatedFile)">
+          DependsOnTargets="_VerifyNuGetDeterministic;GetNuGetDeterministicExcludes;$(ValidateNuGetPackagesAreDeterministicDependsOn)">
 
     <!--
       Log an error if $(ValidateNuGetPackagesAreDeterministic) is 'true' but NuGetAssetsLock.props was not imported (because $(NuGetDeterministicPropsWasImported) is not 'true')
@@ -71,14 +80,6 @@
       PackageReferences="@(_DeterministicNuGetPackages)"
       Condition=" '$(NuGetDeterministicValidatePackageHash)' != 'false' "
     />
-
-    <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(NuGetDeterministicPackagesValidatedFile)'))" />
-    
-    <Touch Files="$(NuGetDeterministicPackagesValidatedFile)"
-           AlwaysCreate="true"
-           ForceTouch="true">
-      <Output TaskParameter="TouchedFiles" ItemName="FileWrites" />
-    </Touch>
   </Target>
 
   <!--
@@ -91,6 +92,24 @@
       -->
       <NuGetDeterministicPackagesToExclude Include="@(PackageReference)" Condition=" '$(NuGetDeterministicExcludeImplicitPackages)' != 'false' And '%(PackageReference.IsImplicitlyDefined)' == 'true' "/>
     </ItemGroup>
+  </Target>
+
+  <Target Name="_VerifyNuGetDeterministic"
+          Condition=" '$(NuGetDeterministicLockedPropsFile)' == '' ">
+
+    <Message Importance="High"
+             Text="
+  &lt;PropertyGroup&gt;
+    &lt;NuGetDeterministicLockedPropsFile Condition=&quot; &apos;%24(NuGetDeterministicLockedPropsFile)&apos; == &apos;&apos; &quot;&gt;%24(MSBuildProjectDirectory)\NuGetAssetsLock.props&lt;/NuGetDeterministicLockedPropsFile&gt;
+    &lt;ValidateNuGetPackagesAreDeterministic Condition=&quot; &apos;%24(SOME_VARIABLE_THAT_IS_SET_DURING_HOSTED_BUILD)&apos; == &apos;VALUE_DURING_HOSTED_BUILD&apos; &quot;&gt;true&lt;/ValidateNuGetPackagesAreDeterministic&gt;
+  &lt;/PropertyGroup&gt;
+  &lt;Import Project=&quot;%24(NuGetDeterministicLockedPropsFile)&quot; Condition=&quot; &apos;%24(ValidateNuGetPackagesAreDeterministic)&apos; == &apos;true&apos; And &apos;%24(NuGetDeterministicPropsWasImported)&apos; != &apos;true&apos; And Exists(&apos;%24(NuGetDeterministicLockedPropsFile)&apos;) &quot; /&gt;" />
+    
+    <Error Code="ND1006"
+           Text="The NuGet.Deterministic functionality is not properly configured.  You must declare a property named %24(NuGetDeterministicLockedPropsFile) that specifies the path of the NuGet 'lock' file to generate.  The above XML should be placed into a common import or the top of each project that references the NuGet.Deterministic package." />
+
+    
+    
   </Target>
 
 </Project>

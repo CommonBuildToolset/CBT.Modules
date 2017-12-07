@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition=" '$(EnableNuGetDeterministic)' != 'false' ">
-    <NuGetDeterministicLockedPropsFile Condition=" '$(NuGetDeterministicLockedPropsFile)' == '' ">$(MSBuildProjectDirectory)\NuGetAssetsLock.props</NuGetDeterministicLockedPropsFile>
-  </PropertyGroup>
-
-  <Import Project="$(NuGetDeterministicLockedPropsFile)" Condition=" '$(EnableNuGetDeterministic)' != 'false' And '$(ValidateNuGetPackagesAreDeterministic)' == 'true' And '$(NuGetDeterministicPropsWasImported)' != 'true' And Exists('$(NuGetDeterministicLockedPropsFile)') " />
-</Project>
