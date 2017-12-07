@@ -13,7 +13,7 @@
     <ProjectReference Include="..\NuGet.Deterministic\NuGet.Deterministic.csproj">
       <TargetDir>build\tasks\</TargetDir>
     </ProjectReference>
-    <Content Include="build\**\*" />
+    <Content Include="build\NuGet.Deterministic.targets" />
     <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />

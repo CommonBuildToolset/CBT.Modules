@@ -1,0 +1,15 @@
+﻿{
+  "dependencies": {
+    "NuGet.Protocol": "4.3.0",
+    "NuGet.Commands": "4.3.0",
+    "Shouldly": "2.8.2",
+    "xunit": "2.1.0",
+    "xunit.runner.visualstudio": "2.1.0"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {} 
+  }
+}
