@@ -117,11 +117,17 @@ namespace NuGet.Tasks.Deterministic
 
                 LockFileTarget target = lockFile.GetTarget(targetFramework.FrameworkName, runtimeIdentifier: null);
 
+                bool addedImplicitReference = false;
+
                 foreach (LibraryDependency libraryDependency in targetFramework.Dependencies.Where(i => !packagesToExclude.Contains(i.Name)))
                 {
-                    if (ExcludeImplicitReferences && libraryDependency.AutoReferenced)
+                    if (libraryDependency.AutoReferenced)
                     {
-                        continue;
+                        if (ExcludeImplicitReferences)
+                        {
+                            continue;
+                        }
+                        addedImplicitReference = true;
                     }
 
                     LockFileLibrary library = lockFile.GetLibrary(libraryDependency);
@@ -142,6 +148,16 @@ namespace NuGet.Tasks.Deterministic
                         addedLibraries.Add(dependency);
 
                         itemGroupElement.AddItem("PackageReference", dependency.Name, GetPackageReferenceItemMetadata(dependency));
+                    }
+                }
+
+                if (addedImplicitReference)
+                {
+                    ProjectPropertyElement disableImplicitFrameworkReferencesPropertyElement = project.AddProperty("DisableImplicitFrameworkReferences", "true");
+
+                    if (crossTargeting)
+                    {
+                        disableImplicitFrameworkReferencesPropertyElement.Condition = $" '$(TargetFramework)' == '{targetFramework.FrameworkName.GetShortFolderName()}' ";
                     }
                 }
             }

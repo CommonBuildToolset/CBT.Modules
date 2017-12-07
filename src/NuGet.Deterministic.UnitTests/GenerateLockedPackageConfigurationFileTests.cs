@@ -31,7 +31,9 @@ namespace NuGet.Deterministic.UnitTests
 
             foreach (LockFileTarget target in lockFile.Targets)
             {
-                ProjectItemGroupElement itemGroupElement = project.ItemGroups.SingleOrDefault(i => i.Condition.Equals($" '$(TargetFramework)' == '{target.TargetFramework.GetShortFolderName()}' ")).ShouldNotBeNull();
+                ProjectItemGroupElement itemGroupElement = project.ItemGroups.SingleOrDefault(i => i.Condition.Equals($" '$(TargetFramework)' == '{target.TargetFramework.GetShortFolderName()}' "));
+
+                itemGroupElement.ShouldNotBeNull();
 
                 itemGroupElement.Items.Count.ShouldBe(target.Libraries.Count);
             }
@@ -48,9 +50,13 @@ namespace NuGet.Deterministic.UnitTests
 
             foreach (LockFileTargetLibrary targetLibrary in lockFile.Targets[0].Libraries)
             {
-                ProjectItemElement itemElement = itemGroupElement.Items.FirstOrDefault(x => x.Include.Equals(targetLibrary.Name)).ShouldNotBeNull();
+                ProjectItemElement itemElement = itemGroupElement.Items.FirstOrDefault(x => x.Include.Equals(targetLibrary.Name));
 
-                ProjectMetadataElement versionMetadataElement = itemElement.Metadata.FirstOrDefault(x => x.Name.Equals("Version")).ShouldNotBeNull();
+                itemElement.ShouldNotBeNull();
+
+                ProjectMetadataElement versionMetadataElement = itemElement.Metadata.FirstOrDefault(x => x.Name.Equals("Version"));
+
+                versionMetadataElement.ShouldNotBeNull();
 
                 versionMetadataElement.Value.ShouldBe($"[{targetLibrary.Version.ToString()}]");
             }
@@ -104,11 +110,15 @@ namespace NuGet.Deterministic.UnitTests
 
             var itemElement = itemGroupElement.Items.Single(i => i.Include.Equals("Package3"));
 
-            ProjectMetadataElement includeAssetsMetadataElement = itemElement.Metadata.FirstOrDefault(i => i.Name.Equals("IncludeAssets")).ShouldNotBeNull();
+            ProjectMetadataElement includeAssetsMetadataElement = itemElement.Metadata.FirstOrDefault(i => i.Name.Equals("IncludeAssets"));
+
+            includeAssetsMetadataElement.ShouldNotBeNull();
 
             includeAssetsMetadataElement.Value.ShouldBe("Runtime;ContentFiles");
 
-            ProjectMetadataElement privateAssetsMetadataElement = itemElement.Metadata.FirstOrDefault(i => i.Name.Equals("PrivateAssets")).ShouldNotBeNull();
+            ProjectMetadataElement privateAssetsMetadataElement = itemElement.Metadata.FirstOrDefault(i => i.Name.Equals("PrivateAssets"));
+
+            privateAssetsMetadataElement.ShouldNotBeNull();
 
             privateAssetsMetadataElement.Value.ShouldBe("Native");
         }
@@ -444,11 +454,23 @@ namespace NuGet.Deterministic.UnitTests
 
             ProjectPropertyGroupElement propertyGroupElement = project.PropertyGroups.ShouldHaveSingleItem();
 
-            ProjectPropertyElement propertyElement = propertyGroupElement.Properties.Single();
+            ProjectPropertyElement propertyElement = propertyGroupElement.Properties.FirstOrDefault(i => i.Name.Equals("NuGetDeterministicPropsWasImported"));
 
-            propertyElement.Name.ShouldBe("NuGetDeterministicPropsWasImported");
+            propertyElement.ShouldNotBeNull();
 
             propertyElement.Value.ShouldBe("true");
+
+            HashSet<string> excludes = new HashSet<string>(task.PackagesToExclude == null ? Enumerable.Empty<string>() : task.PackagesToExclude.Select(i => i.ItemSpec), StringComparer.OrdinalIgnoreCase);
+
+            foreach (TargetFrameworkInformation targetFramework in lockFile.PackageSpec.TargetFrameworks)
+            {
+                if (!task.ExcludeImplicitReferences && targetFramework.Dependencies.Any(i => !excludes.Contains(i.Name) && i.AutoReferenced))
+                {
+                    ProjectPropertyElement disableImplicitFrameworkReferencesPropertyElement = lockFile.PackageSpec.TargetFrameworks.Count > 1 ? project.Properties.FirstOrDefault(i => i.Name.Equals("DisableImplicitFrameworkReferences") && i.Condition.Contains($"'{targetFramework.FrameworkName.GetShortFolderName()}'")) : project.Properties.FirstOrDefault(i => i.Name.Equals("DisableImplicitFrameworkReferences") && i.Condition.Equals(String.Empty));
+
+                    disableImplicitFrameworkReferencesPropertyElement.ShouldNotBeNull();
+                }
+            }
 
             ProjectElement secondElement = project.Children.Skip(1).FirstOrDefault();
 
