@@ -143,7 +143,7 @@ namespace NuGet.Tasks.Deterministic
 
                     itemGroupElement.AddItem("PackageReference", targetLibrary.Name, GetPackageReferenceItemMetadata(library, libraryDependency));
 
-                    foreach (LockFileLibrary dependency in targetLibrary.ResolveDependencies(lockFile, target).Where(i => !addedLibraries.Contains(i)))
+                    foreach (LockFileLibrary dependency in targetLibrary.ResolveDependencies(lockFile, target).Where(i => !addedLibraries.Contains(i) && !packagesToExclude.Contains(i.Name)))
                     {
                         addedLibraries.Add(dependency);
 
