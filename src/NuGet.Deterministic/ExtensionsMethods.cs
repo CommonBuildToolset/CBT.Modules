@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using NuGet.LibraryModel;
 using NuGet.Packaging.Core;
 using NuGet.ProjectModel;
-using NuGet.Versioning;
 
 namespace NuGet.Tasks.Deterministic
 {
@@ -57,7 +57,10 @@ namespace NuGet.Tasks.Deterministic
 
         public static LockFileLibrary GetLibrary(this LockFile lockFile, LibraryDependency libraryDependency)
         {
-            return lockFile.GetLibrary(libraryDependency.Name, libraryDependency.LibraryRange.VersionRange.MinVersion);
+            // lockFile.GetLibrary is case sensitive.  So if a package is referenced in one case but another package list it as a dependency as another case it will fail to look up the library.
+            // https://github.com/NuGet/Home/issues/6500
+            return lockFile.GetLibrary(libraryDependency.Name, libraryDependency.LibraryRange.VersionRange.MinVersion) ??
+                                     lockFile.Libraries.FirstOrDefault(l => l.Name.Equals(libraryDependency.Name, StringComparison.OrdinalIgnoreCase) && l.Version.Equals(libraryDependency.LibraryRange.VersionRange.MinVersion));
         }
         
 
