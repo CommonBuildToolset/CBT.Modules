@@ -5,7 +5,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFramework>net40</TargetFramework>
     <Description>Provides dotnet framework $(TargetFrameworkVersion) build references</Description>
-    <ProjectGuid>80e75aa2-eacb-48b1-ac12-fa1062585eee</ProjectGuid>
+    <ProjectGuid>df5e31a6-c7b5-48b7-a761-738223ae2ea6</ProjectGuid>
     <Tags>DotNet framework References</Tags>
   </PropertyGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
