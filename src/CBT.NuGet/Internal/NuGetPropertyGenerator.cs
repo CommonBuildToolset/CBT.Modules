@@ -65,7 +65,10 @@ namespace CBT.NuGet.Internal
 
                 IEnumerable<PackageIdentityWithPath> parsedPackages = null;
 
-                INuGetPackageConfigParser configParser = _configParsersLazy.Value.FirstOrDefault(i => i.TryGetPackages(packageConfigPath, restoreData, out parsedPackages));
+                INuGetPackageConfigParser configParser = null;
+
+                // A bug in nuget sometimes causes "NuGet.Configuration.NuGetConfigurationException: Unexpected failure reading NuGet.Config." when multiple instances are running in parrallel such as in the quickbuild scenario.
+                Retry(() => configParser = _configParsersLazy.Value.FirstOrDefault(i => i.TryGetPackages(packageConfigPath, restoreData, out parsedPackages)), TimeSpan.FromMilliseconds(1000));
 
                 if (configParser != null && parsedPackages != null)
                 {
