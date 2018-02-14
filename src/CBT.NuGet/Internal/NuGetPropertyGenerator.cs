@@ -42,7 +42,7 @@ namespace CBT.NuGet.Internal
             });
         }
 
-        public bool Generate(string outputPath, string propertyVersionNamePrefix, string propertyPathNamePrefix, PackageRestoreData restoreData)
+        public void Generate(string outputPath, string propertyVersionNamePrefix, string propertyPathNamePrefix, PackageRestoreData restoreData)
         {
             // Delete an existing file in case there are no properties generated and we don't end up saving the file
             //
@@ -93,8 +93,6 @@ namespace CBT.NuGet.Internal
             {
                 Retry(() => project.Save(outputPath), TimeSpan.FromMilliseconds(500));
             }
-
-            return true;
         }
 
         private static void Retry(Action action, TimeSpan retryInterval, int retryCount = 3)
