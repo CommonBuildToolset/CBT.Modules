@@ -18,16 +18,25 @@ namespace CBT.NuGet.Internal
 
         public override bool Execute()
         {
+            // If BeforeRun() returns false, don't continue on
+            if (!BeforeRun())
+            {
+                return !Log.HasLoggedErrors;
+            }
+
             using (Semaphore semaphore = new Semaphore(0, 1, SemaphoreName.GetMd5Hash(), out bool releaseSemaphore))
             {
                 try
                 {
+                    // releaseSemaphore is false if a new semaphore was not acquired
                     if (!releaseSemaphore)
                     {
+                        // Wait for the semaphore
                         releaseSemaphore = semaphore.WaitOne(SemaphoreTimeout);
 
                         if (RunOnceOnly)
                         {
+                            // Return if another thread did the work and the task is marked to only run once (the default)
                             return releaseSemaphore;
                         }
                     }
@@ -47,5 +56,14 @@ namespace CBT.NuGet.Internal
         }
 
         public abstract void Run();
+
+        /// <summary>
+        /// Runs before the semaphore is acquired and determines if remaining actions should be executed.
+        /// </summary>
+        /// <returns><code>true</code> if the semaphone should be acquired and the other actions should be executed, otherwise <code>false</code> to not execute.</returns>
+        protected virtual bool BeforeRun()
+        {
+            return true;
+        }
     }
 }

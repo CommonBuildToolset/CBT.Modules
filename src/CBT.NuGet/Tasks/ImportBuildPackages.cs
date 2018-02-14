@@ -1,18 +1,16 @@
 ﻿using CBT.NuGet.Internal;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace CBT.NuGet.Tasks
 {
     /// <summary>
     /// A class for creating imports to NuGet build packages as if they are modules.
     /// </summary>
-    public sealed class ImportBuildPackages : Task
+    public sealed class ImportBuildPackages : SemaphoreTask
     {
         /// <summary>
         /// The path to the modules packages.config.
@@ -34,37 +32,7 @@ namespace CBT.NuGet.Tasks
         /// </summary>
         public string TargetsFile { get; set; }
 
-        public override bool Execute()
-        {
-            if (File.Exists(PropsFile) && File.Exists(TargetsFile))
-            {
-                return true;
-            }
-
-            string semaphoreName = PropsFile.ToUpper().GetHashCode().ToString("X");
-
-            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
-            {
-                try
-                {
-                    if (!releaseSemaphore)
-                    {
-                        releaseSemaphore = semaphore.WaitOne(TimeSpan.FromMinutes(5));
-
-                        return releaseSemaphore;
-                    }
-
-                    return GenerateBuildPackageImportFile();
-                }
-                finally
-                {
-                    if (releaseSemaphore)
-                    {
-                        semaphore.Release();
-                    }
-                }
-            }
-        }
+        protected override string SemaphoreName => PropsFile;
 
         public bool Execute(string modulePackagesConfig, string propsFile, string targetsFile, string[] inputs, string[] modulePaths)
         {
@@ -81,6 +49,57 @@ namespace CBT.NuGet.Tasks
             ModulePaths = modulePaths;
 
             return Execute();
+        }
+
+        public override void Run()
+        {
+            Log.LogMessage("Creating NuGet build package imports");
+
+            ProjectRootElement propsProject = ProjectRootElement.Create(PropsFile);
+            ProjectRootElement targetsProject = ProjectRootElement.Create(TargetsFile);
+
+            ProjectPropertyGroupElement propertyGroup = propsProject.AddPropertyGroup();
+
+            foreach (BuildPackageInfo buildPackageInfo in ModulePaths.Select(BuildPackageInfo.FromModulePath).Where(i => i != null))
+            {
+                // If this is a cbt module do not auto import props or targets.
+                if (File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath), "module.config")))
+                {
+                    Log.LogMessage(MessageImportance.Low, $"Not auto importing {buildPackageInfo.Id} package because it is a CBT Module.");
+                    continue;
+                }
+
+                ProjectPropertyElement enableProperty = propertyGroup.AddProperty(buildPackageInfo.EnablePropertyName, "false");
+                enableProperty.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == '' ";
+
+                ProjectPropertyElement runProperty = propertyGroup.AddProperty(buildPackageInfo.RunPropertyName, "true");
+                runProperty.Condition = $" '$({buildPackageInfo.RunPropertyName})' == '' ";
+
+                if (File.Exists(buildPackageInfo.PropsPath))
+                {
+                    ProjectImportElement import = propsProject.AddImport(buildPackageInfo.PropsPath);
+
+                    import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
+                }
+
+                if (File.Exists(buildPackageInfo.TargetsPath))
+                {
+                    ProjectImportElement import = targetsProject.AddImport(buildPackageInfo.TargetsPath);
+
+                    import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
+                }
+
+                Log.LogMessage($"  {buildPackageInfo.Id}");
+            }
+
+            propsProject.Save();
+            targetsProject.Save();
+        }
+
+        protected override bool BeforeRun()
+        {
+            // Do not do any work if the props file already exists
+            return !File.Exists(PropsFile) || !File.Exists(TargetsFile);
         }
 
         /// <summary>
@@ -107,52 +126,6 @@ namespace CBT.NuGet.Tasks
             return outputs.All(output => File.Exists(output) && File.GetLastWriteTimeUtc(output).Ticks <= lastWriteTime);
         }
 
-        private bool GenerateBuildPackageImportFile()
-        {
-            Log.LogMessage("Creating NuGet build package imports");
-
-            ProjectRootElement propsProject = ProjectRootElement.Create(PropsFile);
-            ProjectRootElement targetsProject = ProjectRootElement.Create(TargetsFile);
-
-            ProjectPropertyGroupElement propertyGroup = propsProject.AddPropertyGroup();
-
-            foreach (BuildPackageInfo buildPackageInfo in ModulePaths.Select(BuildPackageInfo.FromModulePath).Where(i => i != null))
-            {
-                // If this is a cbt module do not auto import props or targets.
-                if (File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath), "module.config")))
-                {
-                    Log.LogMessage(MessageImportance.Low, $"Not auto importing {buildPackageInfo.Id} package because it is a CBT Module.");
-                    continue;
-                }
-                ProjectPropertyElement enableProperty = propertyGroup.AddProperty(buildPackageInfo.EnablePropertyName, "false");
-                enableProperty.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == '' ";
-
-                ProjectPropertyElement runProperty = propertyGroup.AddProperty(buildPackageInfo.RunPropertyName, "true");
-                runProperty.Condition = $" '$({buildPackageInfo.RunPropertyName})' == '' ";
-
-                if (File.Exists(buildPackageInfo.PropsPath))
-                {
-                    ProjectImportElement import = propsProject.AddImport(buildPackageInfo.PropsPath);
-
-                    import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
-                }
-
-                if (File.Exists(buildPackageInfo.TargetsPath))
-                {
-                    ProjectImportElement import = targetsProject.AddImport(buildPackageInfo.TargetsPath);
-
-                    import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
-                }
-
-                Log.LogMessage($"  {buildPackageInfo.Id}");
-            }
-
-            propsProject.Save();
-            targetsProject.Save();
-
-            return true;
-        }
-
         private class BuildPackageInfo
         {
             private BuildPackageInfo()
@@ -177,6 +150,7 @@ namespace CBT.NuGet.Tasks
                 {
                     return null;
                 }
+
                 string id = parts[0];
                 string path = parts[1];
 
