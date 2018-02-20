@@ -59,8 +59,12 @@ namespace NuGet.Tasks.Deterministic
         {
             // lockFile.GetLibrary is case sensitive.  So if a package is referenced in one case but another package list it as a dependency as another case it will fail to look up the library.
             // https://github.com/NuGet/Home/issues/6500
+            // In the event NuGet resolved with a warning of:
+            //   NUGETRESTORE : warning : NU1603: Microsoft.Aether.Logging.CentralLoggingService depends on NEST (>= 1.9.0) but NEST 1.9.0 was not found. An approximate best match of NEST 1.9.1 was resolved.
+            // Then the lookup for GetLibrary will fail because LockFile.Libraries will actually contain the version resolved to where libraryDependency contains the version specified.  In this case because lockFile.Libraries will only ever contain one version we will just take that version blindly.
             return lockFile.GetLibrary(libraryDependency.Name, libraryDependency.LibraryRange.VersionRange.MinVersion) ??
-                                     lockFile.Libraries.FirstOrDefault(l => l.Name.Equals(libraryDependency.Name, StringComparison.OrdinalIgnoreCase) && l.Version.Equals(libraryDependency.LibraryRange.VersionRange.MinVersion));
+                                     (lockFile.Libraries.FirstOrDefault(l => l.Name.Equals(libraryDependency.Name, StringComparison.OrdinalIgnoreCase) && l.Version.Equals(libraryDependency.LibraryRange.VersionRange.MinVersion)) ??
+                                      lockFile.Libraries.FirstOrDefault(l => l.Name.Equals(libraryDependency.Name, StringComparison.OrdinalIgnoreCase)));
         }
         
 
