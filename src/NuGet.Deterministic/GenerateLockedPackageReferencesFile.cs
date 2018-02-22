@@ -132,6 +132,12 @@ namespace NuGet.Tasks.Deterministic
 
                     LockFileLibrary library = lockFile.GetLibrary(libraryDependency);
 
+                    if (library.Type.Equals("project", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // if a csproj name matches a package id then nuget swaps in the csproj output instead of the package.  Because of this we should skip adding the package as a locked package because it provides no value.
+                        continue;
+                    }
+
                     if (addedLibraries.Contains(library))
                     {
                         continue;
