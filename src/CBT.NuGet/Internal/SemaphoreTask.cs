@@ -24,7 +24,7 @@ namespace CBT.NuGet.Internal
                 return !Log.HasLoggedErrors;
             }
 
-            using (Semaphore semaphore = new Semaphore(0, 1, SemaphoreName.GetMd5Hash(), out bool releaseSemaphore))
+            using (Semaphore semaphore = new Semaphore(0, 1, SemaphoreName.GetHash(), out bool releaseSemaphore))
             {
                 try
                 {

@@ -112,7 +112,7 @@ namespace CBT.NuGet.Tasks
                 return true;
             }
 
-            using (var mutex = new Mutex(false, FileUtilities.ComputeMutexName(package.OutPropertyValue)))
+            using (var mutex = new Mutex(false, package.OutPropertyValue.GetHash(prefix: @"Global\")))
             {
                 bool owner = false;
                 try

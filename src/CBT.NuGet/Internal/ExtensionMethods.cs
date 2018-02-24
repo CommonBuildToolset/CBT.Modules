@@ -9,6 +9,8 @@ namespace CBT.NuGet.Internal
 {
     internal static class ExtensionMethods
     {
+        private static Lazy<SHA256> _hasherLazy = new Lazy<SHA256>(SHA256.Create, isThreadSafe: true);
+
         public static void AppendSwitchIfAny(this CommandLineBuilder commandLineBuilder, string switchName, IEnumerable<ITaskItem> items)
         {
             if (items != null)
@@ -39,16 +41,15 @@ namespace CBT.NuGet.Internal
         /// <summary>
         /// Gets a case-insensitive MD5 hash of the current string.
         /// </summary>
-        public static string GetMd5Hash(this string input)
+        public static string GetHash(this string input, string prefix = null)
         {
-            using (MD5 md5 = MD5.Create())
+            if (prefix != null)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (byte hashByte in md5.ComputeHash(Encoding.UTF8.GetBytes(input.ToUpperInvariant())))
-                {
-                    sb.Append(hashByte.ToString("X2"));
-                }
-                return sb.ToString();
+                return $"{prefix}{Convert.ToBase64String(_hasherLazy.Value.ComputeHash(Encoding.UTF8.GetBytes(input.ToUpperInvariant())))}";
+            }
+            else
+            {
+                return Convert.ToBase64String(_hasherLazy.Value.ComputeHash(Encoding.UTF8.GetBytes(input.ToUpperInvariant())));
             }
         }
     }
