@@ -1,41 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CBT.NuGet.Internal;
+﻿using CBT.NuGet.Internal;
 using Microsoft.Build.Framework;
 using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace CBT.NuGet.Tasks
 {
-    public class WriteNuGetRestoreInfo : ITask
+    public class WriteNuGetRestoreInfo : SemaphoreTask
     {
+        [Required]
+        public string File { get; set; }
 
         [Required]
         public ITaskItem[] Input { get; set; }
 
-        [Required]
-        public string File { get; set; }
-
         /// <summary>
-        /// Gets or sets the build engine associated with the task.
+        /// Use the path to file to be written as the semaphore name to ensure its only written to once.
         /// </summary>
-        public IBuildEngine BuildEngine { get; set; }
+        protected override string SemaphoreName => File;
 
-        /// <summary>
-        /// Gets or sets any host object that is associated with the task.
-        /// </summary>
-        public ITaskHost HostObject { get; set; }
-
-        public bool Execute()
+        public override void Run()
         {
-            if (!Directory.Exists(Path.GetDirectoryName(File)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(File));
-            }
-
             if (System.IO.File.Exists(File))
             {
                 System.IO.File.Delete(File);
@@ -57,9 +43,9 @@ namespace CBT.NuGet.Tasks
                     .Select(i => new RestorePackage(i.GetMetadata("id"), i.GetMetadata("version"))).ToList()
             };
 
-            System.IO.File.WriteAllText(File, JsonConvert.SerializeObject(packageRestoreData, Formatting.Indented));
+            Directory.CreateDirectory(Path.GetDirectoryName(File));
 
-            return System.IO.File.Exists(File);
+            System.IO.File.WriteAllText(File, JsonConvert.SerializeObject(packageRestoreData, Formatting.Indented));
         }
     }
 }

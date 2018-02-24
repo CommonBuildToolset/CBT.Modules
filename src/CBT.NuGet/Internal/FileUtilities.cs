@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace CBT.NuGet.Internal
 {
@@ -67,17 +62,6 @@ namespace CBT.NuGet.Internal
                     string temppath = Path.Combine(destDirName, subdir.Name);
                     DirectoryRemove(subdir.FullName, temppath, recurseSubDirs);
                 }
-            }
-        }
-
-        // Mutex isn't platform agnostic need to consider options.
-        public static string ComputeMutexName(string sessionString)
-        {
-            // get a hash of the file path; reason: there's a limit on name length for named mutexes
-            using (var algo = SHA256.Create())
-            {
-                // Global: make it work across TS sessions; not that we should need this, but just to be super-extra safe
-                return "Global\\" + Convert.ToBase64String(algo.ComputeHash(Encoding.UTF8.GetBytes(sessionString.ToUpperInvariant())));
             }
         }
 
