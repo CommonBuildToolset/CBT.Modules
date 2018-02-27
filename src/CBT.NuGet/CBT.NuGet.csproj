@@ -36,6 +36,7 @@
     <Compile Include="Internal\PackageIdentityWithPath.cs" />
     <Compile Include="Internal\PackageInfo.cs" />
     <Compile Include="Internal\PackageRestoreData.cs" />
+    <Compile Include="Internal\SemaphoreTask.cs" />
     <Compile Include="Tasks\AggregatePackages.cs" />
     <Compile Include="Tasks\GenerateNuGetProperties.cs" />
     <Compile Include="Tasks\ImportBuildPackages.cs" />

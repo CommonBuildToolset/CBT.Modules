@@ -105,9 +105,7 @@ namespace CBT.NuGet.Tasks
 
             // Do restoration in a semaphore to prevent NuGet restore having locking issues
             //
-            string semaphoreName = File.ToUpper().GetHashCode().ToString("X");
-
-            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
+            using (Semaphore semaphore = new Semaphore(0, 1, File.GetHash(), out bool releaseSemaphore))
             {
                 try
                 {
@@ -253,9 +251,7 @@ namespace CBT.NuGet.Tasks
 
         protected void GenerateNuGetOptimizationFile(string markerPath)
         {
-            string semaphoreName = markerPath.ToUpper().GetHashCode().ToString("X");
-
-            using (Semaphore semaphore = new Semaphore(0, 1, semaphoreName, out bool releaseSemaphore))
+            using (Semaphore semaphore = new Semaphore(0, 1, markerPath.GetHash(), out bool releaseSemaphore))
             {
                 try
                 {

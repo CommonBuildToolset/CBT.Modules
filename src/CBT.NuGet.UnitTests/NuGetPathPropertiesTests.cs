@@ -26,8 +26,6 @@ namespace CBT.NuGet.UnitTests
             BuildEngine = new MockBuildEngine()
         });
 
-
-
         [Fact]
         public void ReadJsonFileTest()
         {
@@ -194,7 +192,9 @@ namespace CBT.NuGet.UnitTests
                 }
             };
 
-            new NuGetPropertyGenerator(_log, settings, packageConfigFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData).ShouldBe(true);
+            new NuGetPropertyGenerator(_log, settings, packageConfigFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData);
+
+            _log.HasLoggedErrors.ShouldBeFalse();
             File.Exists(outputFile).ShouldBe(true);
             File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
 
@@ -236,7 +236,9 @@ namespace CBT.NuGet.UnitTests
                 }
             };
 
-            new NuGetPropertyGenerator(_log, settings, projectPackageReferenceFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData).ShouldBe(true);
+            new NuGetPropertyGenerator(_log, settings, projectPackageReferenceFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData);
+
+            _log.HasLoggedErrors.ShouldBeFalse();
             File.Exists(outputFile).ShouldBe(true);
             File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
         }
@@ -280,7 +282,9 @@ namespace CBT.NuGet.UnitTests
                 }
             };
 
-            new NuGetPropertyGenerator(_log, settings, projectJsonFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData).ShouldBe(true);
+            new NuGetPropertyGenerator(_log, settings, projectJsonFile).Generate(outputFile, "NuGetVersion_", "NuGetPath_", packageRestoreData);
+
+            _log.HasLoggedErrors.ShouldBeFalse();
             File.Exists(outputFile).ShouldBe(true);
             File.ReadAllText(outputFile).NormalizeNewLine().ShouldBe(expectedOutputContent.NormalizeNewLine());
         }

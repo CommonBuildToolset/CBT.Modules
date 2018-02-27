@@ -73,6 +73,13 @@ namespace CBT.NuGet.Tasks
                     {
                         GenerateNuGetOptimizationFile(restoreMarkerPath);
                     }
+
+                    restoreMarkerPath = loadedProject.GetPropertyValue("CBTNuGetTraversalPackagesRestoredMarker");
+
+                    if (!String.IsNullOrWhiteSpace(restoreMarkerPath))
+                    {
+                        GenerateNuGetOptimizationFile(restoreMarkerPath);
+                    }
                 }
             }
 
