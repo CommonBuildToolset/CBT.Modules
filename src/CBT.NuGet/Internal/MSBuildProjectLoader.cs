@@ -43,6 +43,11 @@ namespace CBT.NuGet.Internal
         private readonly TaskLoggingHelper _log;
 
         /// <summary>
+        /// HashSet of projects referenced from traversals
+        /// </summary>
+        private HashSet<string> _projectsFromTraversal = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
         /// Initializes a new instance of the MSBuildProjectLoader class.
         /// </summary>
         /// <param name="globalProperties">Specifies the global properties to use when loading projects.</param>
@@ -56,6 +61,15 @@ namespace CBT.NuGet.Internal
             _projectLoadSettings = projectLoadSettings;
             _log = log ?? throw new ArgumentNullException(nameof(log));
         }
+
+        internal HashSet<string> ProjectsLoadedFromTraversal
+        {
+            get
+            {
+                return _projectsFromTraversal;
+            }
+        }
+
 
         /// <summary>
         /// Gets or sets a value indicating if statistics should be collected.
@@ -118,8 +132,8 @@ namespace CBT.NuGet.Internal
         private void LoadProjectReferences(Project project, ProjectLoadSettings projectLoadSettings)
         {
             IEnumerable<ProjectItem> projects = project.GetItems(ProjectReferenceItemName);
-
-            if (IsTraveralProject(project))
+            bool IsTraversal = IsTraveralProject(project);
+            if (IsTraversal)
             {
                 projects = projects.Concat(project.GetItems(TraveralProjectFileItemName));
             }
@@ -129,6 +143,11 @@ namespace CBT.NuGet.Internal
                 string projectReferencePath = Path.IsPathRooted(projectReferenceItem.EvaluatedInclude) ? projectReferenceItem.EvaluatedInclude : Path.GetFullPath(Path.Combine(projectReferenceItem.Project.DirectoryPath, projectReferenceItem.EvaluatedInclude));
 
                 LoadProject(projectReferencePath, projectReferenceItem.Project.ProjectCollection, projectLoadSettings);
+
+                if (IsTraversal)
+                {
+                    _projectsFromTraversal.Add(projectReferencePath);
+                }
             });
         }
 
@@ -169,7 +188,7 @@ namespace CBT.NuGet.Internal
 
                 return false;
             }
-            
+
 
             if (CollectStats)
             {
