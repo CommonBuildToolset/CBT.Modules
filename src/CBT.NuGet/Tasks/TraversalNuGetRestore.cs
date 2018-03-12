@@ -2,6 +2,7 @@
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -51,7 +52,7 @@ namespace CBT.NuGet.Tasks
 
             Log.LogMessage(MessageImportance.Normal, $"Loaded '{_projectCollection.LoadedProjects.Count}' projects");
 
-            if (!TryWriteSolutionFile(_projectCollection))
+            if (!TryWriteSolutionFile(_projectCollection, projectLoader.ProjectsLoadedFromTraversal))
             {
                 return false;
             }
@@ -86,7 +87,7 @@ namespace CBT.NuGet.Tasks
             base.ExecutePostRestore();
         }
 
-        private bool TryWriteSolutionFile(ProjectCollection projectCollection)
+        private bool TryWriteSolutionFile(ProjectCollection projectCollection, HashSet<string> projectsLoadedFromTraversal)
         {
             string folder = $"{Path.GetDirectoryName(File)}{Path.DirectorySeparatorChar}";
             Uri fromUri = new Uri(folder);
@@ -103,6 +104,15 @@ namespace CBT.NuGet.Tasks
 
                     writer.WriteLine($"Project(\"\") = \"\", \"{relativePath}\", \"\"");
                     writer.WriteLine("EndProject");
+
+                    // don't warn on first project of collection as it is the entry project.
+                    // don't warn on projects that set SuppressProjectNotInTraversalWarnings to true.
+                    if (!project.FullPath.Equals(projectCollection.LoadedProjects.FirstOrDefault()?.FullPath, StringComparison.OrdinalIgnoreCase)
+                        &&!project.AllEvaluatedProperties.Any(p => p.Name.Equals("SuppressProjectNotInTraversalWarnings", StringComparison.OrdinalIgnoreCase) && p.EvaluatedValue.Equals("true", StringComparison.OrdinalIgnoreCase))
+                        && !projectsLoadedFromTraversal.Contains(project.FullPath))
+                    {
+                        Log.LogWarning("TraversalParse", "CBT.NuGet.1003", "ProjectNotInTraversal", "project.FullPath", 0, 0, 0, 0, message: $"Project {project.FullPath} is not detected in traversal graph (dirs.proj) but is being pulled into build graph through (ProjectReference).  Add missing project to traversal graph to ensure proper functionality.  You can set property SuppressProjectNotInTraversalWarnings to true in this project to suppress and ignore these warnings.");
+                    }
                 }
             }
 
