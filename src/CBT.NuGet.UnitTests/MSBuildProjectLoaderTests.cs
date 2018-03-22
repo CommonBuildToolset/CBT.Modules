@@ -120,5 +120,32 @@ namespace CBT.NuGet.UnitTests
 
             projectCollection.LoadedProjects.Select(i => i.FullPath).ShouldBe(new[] {dirsProj.FullPath, projectA.FullPath, projectB.FullPath});
         }
+
+        [Fact]
+        public void InvalidProjectsLogGoodInfo()
+        {
+            var projectA = ProjectBuilder
+                .Create()
+                .AddImport(new Import(@"$(Foo)\foo.props"))
+                .Save(GetTempFileName());
+
+            var dirsProj = ProjectBuilder
+                .Create()
+                .AddProperty("IsTraversal=true")
+                .AddItem($"ProjectFile={projectA.FullPath}")
+                .Save(GetTempFileName());
+
+            MSBuildProjectLoader loader = new MSBuildProjectLoader(null, MSBuildToolsVersion, Log);
+
+            loader.LoadProjectsAndReferences(new[] { dirsProj.FullPath });
+
+            var errorEventArgs = _buildEngine.Errors.ShouldHaveSingleItem();
+
+            errorEventArgs.Code.ShouldBe("MSB4019");
+            errorEventArgs.ColumnNumber.ShouldBe(3);
+            errorEventArgs.HelpKeyword.ShouldBe("MSBuild.ImportedProjectNotFound");
+            errorEventArgs.LineNumber.ShouldBe(3);
+            errorEventArgs.File.ShouldBe(projectA.FullPath);
+        }
     }
 }
