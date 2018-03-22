@@ -182,6 +182,12 @@ namespace CBT.NuGet.Internal
             {
                 project = new Project(path, null, toolsVersion, projectCollection, projectLoadSettings);
             }
+            catch (InvalidProjectFileException e)
+            {
+                _log.LogError(null, e.ErrorCode, e.HelpKeyword, e.ProjectFile, e.LineNumber, e.ColumnNumber, e.EndLineNumber, e.EndColumnNumber, e.Message);
+
+                return false;
+            }
             catch (Exception e)
             {
                 _log.LogErrorFromException(e);
