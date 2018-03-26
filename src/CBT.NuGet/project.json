@@ -1,0 +1,12 @@
+{	
+  "dependencies": {	
+    "NuGet.Commands": "4.3.0",	
+    "NuGet.Protocol": "4.3.0"	
+  },	
+  "frameworks": {	
+    "net45": {}	
+  },	
+  "runtimes": {	
+    "win": {}	
+  }	
+} 
