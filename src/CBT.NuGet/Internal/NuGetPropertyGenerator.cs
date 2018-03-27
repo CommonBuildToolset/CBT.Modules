@@ -24,6 +24,7 @@ namespace CBT.NuGet.Internal
 
         public NuGetPropertyGenerator(CBTTaskLogHelper logger, ISettings settings, params string[] packageConfigPaths)
         {
+            System.Diagnostics.Debugger.Launch();
             _packageConfigPaths = packageConfigPaths ?? throw new ArgumentNullException(nameof(packageConfigPaths));
             _logger = logger;
 
@@ -49,7 +50,9 @@ namespace CBT.NuGet.Internal
 
                 if (string.IsNullOrWhiteSpace(rootConfig))
                 {
-                    Retry(() => settings = settings ?? Settings.LoadDefaultSettings(Path.GetDirectoryName(_packageConfigPaths[0]), configFileName: null, machineWideSettings: new XPlatMachineWideSetting()), TimeSpan.FromMilliseconds(500));
+                    // Instead of passing Path.GetDirectoryName(_packageConfigPaths[0]) as the root value to LoadDefaultSettings and relying on nuget to do it's defaults because of a bug in LoadDefaultSettings we have opted for it to skip the root search for nuget.config and just use the default machine configs by passing null for root.
+                    // https://github.com/NuGet/NuGet.Client/blob/4af25d047d1b63a54608498b5dc5e5e254c73c20/src/NuGet.Core/NuGet.Configuration/Settings/Settings.cs
+                    Retry(() => settings = settings ?? Settings.LoadDefaultSettings(null, configFileName: null, machineWideSettings: new XPlatMachineWideSetting()), TimeSpan.FromMilliseconds(500));
                 }
                 else
                 {
