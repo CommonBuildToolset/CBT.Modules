@@ -24,7 +24,6 @@ namespace CBT.NuGet.Internal
 
         public NuGetPropertyGenerator(CBTTaskLogHelper logger, ISettings settings, params string[] packageConfigPaths)
         {
-            System.Diagnostics.Debugger.Launch();
             _packageConfigPaths = packageConfigPaths ?? throw new ArgumentNullException(nameof(packageConfigPaths));
             _logger = logger;
 
