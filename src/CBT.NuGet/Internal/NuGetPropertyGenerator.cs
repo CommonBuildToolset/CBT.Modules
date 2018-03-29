@@ -19,7 +19,7 @@ namespace CBT.NuGet.Internal
         public NuGetPropertyGenerator(CBTTaskLogHelper logger, params string[] packageConfigPaths)
             : this(logger, null, packageConfigPaths)
         {
-            
+
         }
 
         public NuGetPropertyGenerator(CBTTaskLogHelper logger, ISettings settings, params string[] packageConfigPaths)
@@ -29,7 +29,34 @@ namespace CBT.NuGet.Internal
 
             _configParsersLazy = new Lazy<List<INuGetPackageConfigParser>>(() =>
             {
-                settings = settings ?? Settings.LoadDefaultSettings(Path.GetDirectoryName(_packageConfigPaths[0]), configFileName: null, machineWideSettings: new XPlatMachineWideSetting());
+                // A bug in nuget sometimes causes "NuGet.Configuration.NuGetConfigurationException: Unexpected failure reading NuGet.Config." when multiple instances are running in parallel such as in the quickbuild scenario.
+                // by default in cloudbuild we disable the generation of the nugetpath_ properties because it is done via msbuild/t:Restore dirs.proj before quickbuild is run.
+                // However that scenario only generates the properties if a project has all its projects chained from a dirs.proj.
+                // For those projects that don't they will set SuppressProjectNotInTraversalWarnings to true to suppress that warning and rely on the quickbuild invocation to generate these properties.
+                // Because of the bug in  Settings.LoadDefaultSettings we need to walk the tree and find the specific nuget.config to load if at all possible and use Settings.LoadSpecificSettings instead.
+                string rootConfig = string.Empty;
+                string walkPath = Path.GetDirectoryName(_packageConfigPaths[0]);
+                while (!string.IsNullOrWhiteSpace(walkPath))
+                {
+                    string configFileToCheck = Path.Combine(walkPath, "nuget.config");
+                    if (File.Exists(configFileToCheck))
+                    {
+                        rootConfig = configFileToCheck;
+                        break;
+                    }
+                    walkPath = Directory.GetParent(walkPath)?.FullName;
+                }
+
+                if (string.IsNullOrWhiteSpace(rootConfig))
+                {
+                    // Instead of passing Path.GetDirectoryName(_packageConfigPaths[0]) as the root value to LoadDefaultSettings and relying on nuget to do it's defaults because of a bug in LoadDefaultSettings we have opted for it to skip the root search for nuget.config and just use the default machine configs by passing null for root.
+                    // https://github.com/NuGet/NuGet.Client/blob/4af25d047d1b63a54608498b5dc5e5e254c73c20/src/NuGet.Core/NuGet.Configuration/Settings/Settings.cs
+                    Retry(() => settings = settings ?? Settings.LoadDefaultSettings(null, configFileName: null, machineWideSettings: new XPlatMachineWideSetting()), TimeSpan.FromMilliseconds(500));
+                }
+                else
+                {
+                    Retry(() => settings = settings ?? Settings.LoadSpecificSettings(Path.GetDirectoryName(rootConfig), Path.GetFileName(rootConfig)), TimeSpan.FromMilliseconds(500));
+                }
 
                 // Ordering here is based on the most likely scenario.  As PackageReference becomes more popular, we should move it up
                 //
