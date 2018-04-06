@@ -85,7 +85,7 @@ namespace CBT.NuGet.Tasks
                 }
 
                 // If this is a cbt module do not auto import props or targets.
-                if (File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath), "module.config")))
+                if (File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath ?? buildPackageInfo.TargetsPath), "module.config")))
                 {
                     Log.LogMessage(MessageImportance.Low, $"  Skipping '{buildPackageInfo.Id}' because it is a CBT Module.");
                     continue;
