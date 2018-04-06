@@ -78,6 +78,12 @@ namespace CBT.NuGet.Tasks
 
             foreach (BuildPackageInfo buildPackageInfo in ModulePaths.Select(BuildPackageInfo.FromModulePath).Where(i => i != null))
             {
+                if (buildPackageInfo.PropsPath == null && buildPackageInfo.TargetsPath == null)
+                {
+                    Log.LogMessage(MessageImportance.Low, $"  Skipping '{buildPackageInfo.Id}' because it is not a standard NuGet build package.");
+                    continue;
+                }
+
                 // If this is a cbt module do not auto import props or targets.
                 if (File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath), "module.config")))
                 {
@@ -141,19 +147,14 @@ namespace CBT.NuGet.Tasks
                 string id = parts[0];
                 string path = parts[1];
 
-                string propsPath = Path.Combine(path, "build", $"{id}.props");
-                string targetsPath = Path.Combine(path, "build", $"{id}.targets");
-
-                if (!File.Exists(propsPath) && !File.Exists(targetsPath))
-                {
-                    return null;
-                }
+                FileInfo propsFile = new FileInfo(Path.Combine(path, "build", $"{id}.props"));
+                FileInfo targetsFile = new FileInfo(Path.Combine(path, "build", $"{id}.targets"));
 
                 BuildPackageInfo buildPackageInfo = new BuildPackageInfo
                 {
                     Id = parts[0],
-                    PropsPath = propsPath,
-                    TargetsPath = targetsPath,
+                    PropsPath = propsFile.Exists ? propsFile.FullName : null,
+                    TargetsPath = targetsFile.Exists ? targetsFile.FullName : null,
                     EnablePropertyName = $"Enable{id.Replace(".", "_")}",
                     RunPropertyName = $"Run{id.Replace(".", "_")}",
                 };
