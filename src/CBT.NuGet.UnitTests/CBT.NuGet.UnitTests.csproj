@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtensionMethodsTests.cs" />
+    <Compile Include="ImportBuildPackagesTests.cs" />
     <Compile Include="NuGetPathPropertiesTests.cs" />
     <Compile Include="AggregatePackageTests.cs" />
     <Compile Include="ExtensionMethods.cs" />

@@ -36,24 +36,40 @@ namespace CBT.NuGet.Tasks
 
         public bool Execute(string modulePackagesConfig, string propsFile, string targetsFile, string[] inputs, string[] modulePaths)
         {
-            if (File.Exists(PropsFile) && File.Exists(TargetsFile) && IsFileUpToDate(propsFile, inputs) && IsFileUpToDate(targetsFile, inputs))
+            try
             {
-                return true;
+                BuildEngine = new CBTBuildEngine();
+
+                Log.LogMessage(MessageImportance.Low, "Generate module build package imports:");
+                Log.LogMessage(MessageImportance.Low, $"  ModulePackagesConfig = {modulePackagesConfig}");
+                Log.LogMessage(MessageImportance.Low, $"  PropsFile = {propsFile}");
+                Log.LogMessage(MessageImportance.Low, $"  TargetsFile = {targetsFile}");
+                Log.LogMessage(MessageImportance.Low, $"  Inputs = {String.Join(";", inputs)}");
+                Log.LogMessage(MessageImportance.Low, $"  ModulePaths = {String.Join(";", modulePaths)}");
+
+                if (NuGetRestore.IsFileUpToDate(Log, propsFile, inputs) && NuGetRestore.IsFileUpToDate(Log, targetsFile, inputs))
+                {
+                    Log.LogMessage(MessageImportance.Low, $"Module build package import files '{propsFile}' and '{targetsFile}' are up-to-date");
+                    return true;
+                }
+
+                ModulePackagesConfig = modulePackagesConfig;
+                PropsFile = propsFile;
+                TargetsFile = targetsFile;
+                ModulePaths = modulePaths;
+
+                return Execute();
             }
-
-            BuildEngine = new CBTBuildEngine();
-
-            ModulePackagesConfig = modulePackagesConfig;
-            PropsFile = propsFile;
-            TargetsFile = targetsFile;
-            ModulePaths = modulePaths;
-
-            return Execute();
+            catch (Exception e)
+            {
+                Log.LogError(e.ToString());
+                return false;
+            }
         }
 
         public override void Run()
         {
-            Log.LogMessage("Creating NuGet build package imports");
+            Log.LogMessage("Generating module build package imports");
 
             ProjectRootElement propsProject = ProjectRootElement.Create(PropsFile);
             ProjectRootElement targetsProject = ProjectRootElement.Create(TargetsFile);
@@ -62,10 +78,16 @@ namespace CBT.NuGet.Tasks
 
             foreach (BuildPackageInfo buildPackageInfo in ModulePaths.Select(BuildPackageInfo.FromModulePath).Where(i => i != null))
             {
-                // If this is a cbt module do not auto import props or targets.
-                if (File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath), "module.config")))
+                if (buildPackageInfo.PropsPath == null && buildPackageInfo.TargetsPath == null)
                 {
-                    Log.LogMessage(MessageImportance.Low, $"Not auto importing {buildPackageInfo.Id} package because it is a CBT Module.");
+                    Log.LogMessage(MessageImportance.Low, $"  Skipping '{buildPackageInfo.Id}' because it is not a standard NuGet build package.");
+                    continue;
+                }
+
+                // If this is a cbt module do not auto import props or targets.
+                if (File.Exists(Path.Combine(Path.GetDirectoryName(buildPackageInfo.PropsPath ?? buildPackageInfo.TargetsPath), "module.config")))
+                {
+                    Log.LogMessage(MessageImportance.Low, $"  Skipping '{buildPackageInfo.Id}' because it is a CBT Module.");
                     continue;
                 }
 
@@ -89,42 +111,13 @@ namespace CBT.NuGet.Tasks
                     import.Condition = $" '$({buildPackageInfo.EnablePropertyName})' == 'true' And '$({buildPackageInfo.RunPropertyName})' == 'true' ";
                 }
 
-                Log.LogMessage($"  {buildPackageInfo.Id}");
+                Log.LogMessage($"  Generated imports for '{buildPackageInfo.Id}'.");
             }
 
             propsProject.Save();
             targetsProject.Save();
         }
 
-        protected override bool BeforeRun()
-        {
-            // Do not do any work if the props file already exists
-            return !File.Exists(PropsFile) || !File.Exists(TargetsFile);
-        }
-
-        /// <summary>
-        /// Determines if a file is up-to-date in relation to the specified paths.
-        /// </summary>
-        /// <param name="input">The file to check if it is out-of-date.</param>
-        /// <param name="outputs">The list of files to check against.</param>
-        /// <returns><code>true</code> if the file does not exist or it is older than any of the other files.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="input"/> is <code>null</code>.</exception>
-        private static bool IsFileUpToDate(string input, params string[] outputs)
-        {
-            if (String.IsNullOrWhiteSpace(input))
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
-
-            if (!File.Exists(input) || outputs == null || outputs.Length == 0)
-            {
-                return false;
-            }
-
-            long lastWriteTime = File.GetLastWriteTimeUtc(input).Ticks;
-
-            return outputs.All(output => File.Exists(output) && File.GetLastWriteTimeUtc(output).Ticks <= lastWriteTime);
-        }
 
         private class BuildPackageInfo
         {
@@ -154,19 +147,14 @@ namespace CBT.NuGet.Tasks
                 string id = parts[0];
                 string path = parts[1];
 
-                string propsPath = Path.Combine(path, "build", $"{id}.props");
-                string targetsPath = Path.Combine(path, "build", $"{id}.targets");
-
-                if (!File.Exists(propsPath) && !File.Exists(targetsPath))
-                {
-                    return null;
-                }
+                FileInfo propsFile = new FileInfo(Path.Combine(path, "build", $"{id}.props"));
+                FileInfo targetsFile = new FileInfo(Path.Combine(path, "build", $"{id}.targets"));
 
                 BuildPackageInfo buildPackageInfo = new BuildPackageInfo
                 {
                     Id = parts[0],
-                    PropsPath = propsPath,
-                    TargetsPath = targetsPath,
+                    PropsPath = propsFile.Exists ? propsFile.FullName : null,
+                    TargetsPath = targetsFile.Exists ? targetsFile.FullName : null,
                     EnablePropertyName = $"Enable{id.Replace(".", "_")}",
                     RunPropertyName = $"Run{id.Replace(".", "_")}",
                 };
