@@ -6,7 +6,7 @@
     <CBTNuGetTraversalPackagesRestoredMarker Condition=" '$(CBTNuGetTraversalPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetTraversalPackagesRestored</CBTNuGetTraversalPackagesRestoredMarker>
     <CBTNuGetTraversalPackagePropertyFile Condition=" '$(CBTNuGetTraversalPackagePropertyFile)' == '' ">$(CBTNuGetTraversalRestoreFile).props</CBTNuGetTraversalPackagePropertyFile>
     <CBTNuGetAllProjects>$(MSBuildProjectFullPath);$(MSBuildThisFileFullPath);$(CBTNuGetAllProjects)</CBTNuGetAllProjects>
-    <CBTNuGetTraversalRestoreGlobalProperties Condition=" '$(CBTNuGetTraversalRestoreGlobalProperties)' == '' ">BuildingInsideVisualStudio=true;DesignTimeBuild=true;CBTModulesRestored=true;CBTNuGetTraversalPackagesRestored=true</CBTNuGetTraversalRestoreGlobalProperties>
+    <CBTNuGetTraversalRestoreGlobalProperties Condition=" '$(CBTNuGetTraversalRestoreGlobalProperties)' == '' ">BuildingInsideVisualStudio=true;DesignTimeBuild=true;CBTModulesRestored=true;CBTNuGetTraversalPackagesRestored=true;ExcludeRestorePackageImports=true</CBTNuGetTraversalRestoreGlobalProperties>
   </PropertyGroup>
 
 
