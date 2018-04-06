@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace CBT.UnitTests.Common
@@ -14,6 +15,25 @@ namespace CBT.UnitTests.Common
                 Directory.CreateDirectory(_testRootPath);
                 return _testRootPath;
             }
+        }
+
+        public string CreateDirectory(string name, IDictionary<string, string> files = null)
+        {
+            DirectoryInfo directory = Directory.CreateDirectory(Path.Combine(TestRootPath, name));
+
+            if (files != null)
+            {
+                foreach (KeyValuePair<string, string> file in files)
+                {
+                    FileInfo fileInfo = new FileInfo(Path.Combine(directory.FullName, file.Key));
+
+                    fileInfo.Directory.Create();
+
+                    File.WriteAllText(fileInfo.FullName, file.Value);
+                }
+            }
+
+            return directory.FullName;
         }
 
         public void Dispose()
