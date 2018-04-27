@@ -59,4 +59,7 @@
     <None Include="version.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <ILRepackOutputAssembly>$(OutputPath)\ILMerge\$(TargetName)$(TargetExt)</ILRepackOutputAssembly>
+  </PropertyGroup>
 </Project>
