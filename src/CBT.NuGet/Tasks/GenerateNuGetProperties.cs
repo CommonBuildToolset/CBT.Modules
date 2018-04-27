@@ -47,8 +47,6 @@ namespace CBT.NuGet.Tasks
                 //
                 _assemblySearchPaths.Add(Path.GetDirectoryName(AppDomain.CurrentDomain.GetData("CBT_NUGET_ASSEMBLY_PATH").ToString()));
             }
-
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         }
 
         /// <summary>
@@ -165,33 +163,6 @@ namespace CBT.NuGet.Tasks
             }
 
             return JsonConvert.DeserializeObject<PackageRestoreData>(File.ReadAllText(RestoreInfoFile));
-        }
-
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            AssemblyName assemblyName = new AssemblyName(args.Name);
-
-            // Return the assembly if its already been loaded
-            //
-            if (_loadedAssemblies.ContainsKey(assemblyName))
-            {
-                return _loadedAssemblies[assemblyName];
-            }
-
-            // Return the first assembly search path that contains the requested assembly
-            //
-            string assemblyPath = _assemblySearchPaths.Select(i => Path.Combine(i, $"{assemblyName.Name}.dll")).FirstOrDefault(File.Exists);
-
-            if (assemblyPath != null)
-            {
-                // Load the assembly and keep it in the list of loaded assemblies
-                //
-                _loadedAssemblies[assemblyName] = Assembly.Load(File.ReadAllBytes(assemblyPath));
-
-                return _loadedAssemblies[assemblyName];
-            }
-
-            return null;
         }
     }
 }
