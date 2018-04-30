@@ -10,9 +10,7 @@
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <ItemGroup>
-    <ProjectReference Include="..\CBT.NuGet\CBT.NuGet.csproj">
-      <TargetDir>build\</TargetDir>
-    </ProjectReference>
+    <ProjectReference Include="..\CBT.NuGet\CBT.NuGet.csproj"/>
     <Dependency Include="CBT.Microsoft.Common.targets">
       <Version>[2.0.36,)</Version>
     </Dependency>
@@ -31,6 +29,9 @@
     <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.targets" />
     <Content Include="build\Microsoft.NuGet\Newtonsoft.Json.dll" />
     <None Include="version.json" />
+    <File Include="..\CBT.NuGet\bin\$(Configuration)\ILMerge\CBT.NuGet.dll">
+      <TargetPath>build</TargetPath>
+    </File>
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
 </Project>
