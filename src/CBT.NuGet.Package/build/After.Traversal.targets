@@ -5,6 +5,7 @@
     <CBTNuGetTraversalRestoreFile Condition=" '$(CBTNuGetTraversalRestoreFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile)\$(MSBuildProjectFile).sln</CBTNuGetTraversalRestoreFile>
     <CBTNuGetTraversalPackagesRestoredMarker Condition=" '$(CBTNuGetTraversalPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetTraversalPackagesRestored</CBTNuGetTraversalPackagesRestoredMarker>
     <CBTNuGetTraversalPackagePropertyFile Condition=" '$(CBTNuGetTraversalPackagePropertyFile)' == '' ">$(CBTNuGetTraversalRestoreFile).props</CBTNuGetTraversalPackagePropertyFile>
+    <IncludeTraversalPackagePropertyFile Condition=" '$(IncludeTraversalPackagePropertyFile)' == '' ">true</IncludeTraversalPackagePropertyFile>
     <CBTNuGetAllProjects>$(MSBuildProjectFullPath);$(MSBuildThisFileFullPath);$(CBTNuGetAllProjects)</CBTNuGetAllProjects>
     <CBTNuGetTraversalRestoreGlobalProperties Condition=" '$(CBTNuGetTraversalRestoreGlobalProperties)' == '' ">BuildingInsideVisualStudio=true;DesignTimeBuild=true;CBTModulesRestored=true;CBTNuGetTraversalPackagesRestored=true;ExcludeRestorePackageImports=true</CBTNuGetTraversalRestoreGlobalProperties>
   </PropertyGroup>
@@ -22,4 +23,5 @@
     </CBTParseError>
   </ItemGroup>
 
+  <Import Project="$(CBTNuGetTraversalPackagePropertyFile)" Condition="Exists('$(CBTNuGetTraversalPackagePropertyFile)') And '$(IsTraversal)' == 'true' And '$(IncludeTraversalPackagePropertyFile)' == 'true' "/>
 </Project>

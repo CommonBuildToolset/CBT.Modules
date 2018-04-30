@@ -89,6 +89,7 @@ namespace CBT.NuGet.Tasks
 
         private bool TryWriteSolutionFile(ProjectCollection projectCollection, HashSet<string> projectsLoadedFromTraversal)
         {
+            HashSet<string> missingProjectsHashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             string folder = $"{Path.GetDirectoryName(File)}{Path.DirectorySeparatorChar}";
             Uri fromUri = new Uri(folder);
             Directory.CreateDirectory(folder);
@@ -100,20 +101,46 @@ namespace CBT.NuGet.Tasks
                 {
                     Uri toUri = new Uri(project.FullPath, UriKind.Absolute);
 
-                    string relativePath = Uri.UnescapeDataString(fromUri.MakeRelativeUri(toUri).ToString()).Replace('/', Path.DirectorySeparatorChar);
+                    string relativePath = Uri.UnescapeDataString(fromUri.MakeRelativeUri(toUri).ToString())
+                        .Replace('/', Path.DirectorySeparatorChar);
 
                     writer.WriteLine($"Project(\"\") = \"\", \"{relativePath}\", \"\"");
                     writer.WriteLine("EndProject");
 
                     // don't warn on first project of collection as it is the entry project.
                     // don't warn on projects that set SuppressProjectNotInTraversalWarnings to true.
-                    if (!project.FullPath.Equals(projectCollection.LoadedProjects.FirstOrDefault()?.FullPath, StringComparison.OrdinalIgnoreCase)
-                        &&!project.AllEvaluatedProperties.Any(p => p.Name.Equals("SuppressProjectNotInTraversalWarnings", StringComparison.OrdinalIgnoreCase) && p.EvaluatedValue.Equals("true", StringComparison.OrdinalIgnoreCase))
+                    if (!project.FullPath.Equals(projectCollection.LoadedProjects.FirstOrDefault()?.FullPath,
+                            StringComparison.OrdinalIgnoreCase)
                         && !projectsLoadedFromTraversal.Contains(project.FullPath))
                     {
-                        Log.LogWarning("TraversalParse", "CBT.NuGet.1003", "ProjectNotInTraversal", "project.FullPath", 0, 0, 0, 0, message: $"Project {project.FullPath} is not detected in traversal graph (dirs.proj) but is being pulled into build graph through (ProjectReference).  Add missing project to traversal graph to ensure proper functionality.  You can set property SuppressProjectNotInTraversalWarnings to true in this project to suppress and ignore these warnings.");
+                        missingProjectsHashSet.Add(project.FullPath);
+
+                        if (!project.AllEvaluatedProperties.Any(p =>
+                                    p.Name.Equals("SuppressProjectNotInTraversalWarnings",
+                                        StringComparison.OrdinalIgnoreCase) &&
+                                    p.EvaluatedValue.Equals("true", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            Log.LogWarning("TraversalParse", "CBT.NuGet.1003", "ProjectNotInTraversal",
+                                "project.FullPath", 0, 0, 0, 0,
+                                message:
+                                $"Project {project.FullPath} is not detected in traversal graph (dirs.proj) but is being pulled into build graph through (ProjectReference).  Add missing project to traversal graph to ensure proper functionality.  You can set property SuppressProjectNotInTraversalWarnings to true in this project to suppress and ignore these warnings.");
+                        }
                     }
                 }
+            }
+
+            string slnProps = $"{File}.props";
+            using (var writer = System.IO.File.CreateText(slnProps))
+            {
+                writer.WriteLine("<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n");
+                writer.WriteLine("<ItemGroup>\r\n");
+
+                foreach (var project in missingProjectsHashSet)
+                {
+                    writer.WriteLine($"<ProjectFile Include=\"{project}\" />\r\n");
+                }
+                writer.WriteLine("</ItemGroup>\r\n");
+                writer.WriteLine("</Project>\r\n");
             }
 
             return true;
