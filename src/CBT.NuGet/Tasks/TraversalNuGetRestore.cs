@@ -2,7 +2,6 @@
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Construction;
