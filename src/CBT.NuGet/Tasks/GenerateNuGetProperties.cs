@@ -16,39 +16,11 @@ namespace CBT.NuGet.Tasks
     /// </summary>
     public sealed class GenerateNuGetProperties : SemaphoreTask
     {
-        /// <summary>
-        /// Stores a list of assembly search paths where dependencies should be searched for.
-        /// </summary>
-        private readonly ICollection<string> _assemblySearchPaths = new List<string>();
-
-        /// <summary>
-        /// Stores a list of loaded assemblies in the event that the same assembly is requested multiple times.
-        /// </summary>
-        private readonly IDictionary<AssemblyName, Assembly> _loadedAssemblies = new Dictionary<AssemblyName, Assembly>();
-
         private readonly CBTTaskLogHelper _log;
 
         public GenerateNuGetProperties()
         {
             _log = new CBTTaskLogHelper(this);
-
-            string executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
-
-            if (!String.IsNullOrWhiteSpace(executingAssemblyLocation))
-            {
-                // When loading an assembly from a byte[], the Assembly.Location is not set so it shouldn't be considered
-                //
-                _assemblySearchPaths.Add(Path.GetDirectoryName(executingAssemblyLocation));
-            }
-
-            if (AppDomain.CurrentDomain.GetData("CBT_NUGET_ASSEMBLY_PATH") != null)
-            {
-                // CBT.NuGet.props currently sets this value so we can determine where CBT.NuGet.dll is since its loaded as a byte[]
-                //
-                _assemblySearchPaths.Add(Path.GetDirectoryName(AppDomain.CurrentDomain.GetData("CBT_NUGET_ASSEMBLY_PATH").ToString()));
-            }
-
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         }
 
         /// <summary>
@@ -165,33 +137,6 @@ namespace CBT.NuGet.Tasks
             }
 
             return JsonConvert.DeserializeObject<PackageRestoreData>(File.ReadAllText(RestoreInfoFile));
-        }
-
-        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            AssemblyName assemblyName = new AssemblyName(args.Name);
-
-            // Return the assembly if its already been loaded
-            //
-            if (_loadedAssemblies.ContainsKey(assemblyName))
-            {
-                return _loadedAssemblies[assemblyName];
-            }
-
-            // Return the first assembly search path that contains the requested assembly
-            //
-            string assemblyPath = _assemblySearchPaths.Select(i => Path.Combine(i, $"{assemblyName.Name}.dll")).FirstOrDefault(File.Exists);
-
-            if (assemblyPath != null)
-            {
-                // Load the assembly and keep it in the list of loaded assemblies
-                //
-                _loadedAssemblies[assemblyName] = Assembly.Load(File.ReadAllBytes(assemblyPath));
-
-                return _loadedAssemblies[assemblyName];
-            }
-
-            return null;
         }
     }
 }
