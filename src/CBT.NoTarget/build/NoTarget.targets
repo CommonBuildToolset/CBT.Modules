@@ -4,11 +4,7 @@
   <Import Project="$(CustomBeforeNoTargets)" Condition="'$(CustomBeforeNoTargets)' != '' and Exists('$(CustomBeforeNoTargets)')" />
   
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
-
-  <ItemGroup>
-    <IntermediateAssembly Remove="@(IntermediateAssembly)" />
-    <IntermediateRefAssembly Remove="@(IntermediateRefAssembly)" />
-  </ItemGroup>
+  <Import Project="ClearItems.targets" Condition = " '$(MSBuildToolsVersion)' != '4.0' And '$(MSBuildToolsVersion)' != '12.0' And '$(MSBuildToolsVersion)' != '14.0' " />
 
   <PropertyGroup>
     <!--
