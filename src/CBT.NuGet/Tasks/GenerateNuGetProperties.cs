@@ -2,10 +2,7 @@
 using Microsoft.Build.Framework;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace CBT.NuGet.Tasks
 {

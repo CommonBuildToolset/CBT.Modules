@@ -2,9 +2,9 @@
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Build.Construction;
 
 namespace CBT.NuGet.Tasks
 {
@@ -20,7 +20,7 @@ namespace CBT.NuGet.Tasks
         [Required]
         public string Project { get; set; }
 
-        public bool Execute(string file, string msBuildVersion, bool requireConsent, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs, string msbuildToolsVersion, string project, string globalProperties, string msbuildPath, string additionalArguments)
+        public bool Execute(string file, string projectsFile, string msBuildVersion, bool requireConsent, bool disableParallelProcessing, string[] fallbackSources, bool noCache, string packageSaveMode, string[] sources, string configFile, bool nonInteractive, string verbosity, int timeout, string toolPath, bool enableOptimization, string markerPath, string[] inputs, string msbuildToolsVersion, string project, string globalProperties, string msbuildPath, string additionalArguments)
         {
             if (BuildEngine == null)
             {
@@ -52,7 +52,12 @@ namespace CBT.NuGet.Tasks
 
             Log.LogMessage(MessageImportance.Normal, $"Loaded '{_projectCollection.LoadedProjects.Count}' projects");
 
-            if (!TryWriteSolutionFile(_projectCollection, projectLoader.ProjectsLoadedFromTraversal))
+            if (!TryWriteSolutionFile(_projectCollection))
+            {
+                return false;
+            }
+
+            if (!String.IsNullOrWhiteSpace(projectsFile) && !TryWriteProjectsFile(_projectCollection, new FileInfo(projectsFile)))
             {
                 return false;
             }
@@ -87,7 +92,7 @@ namespace CBT.NuGet.Tasks
             base.ExecutePostRestore();
         }
 
-        private bool TryWriteSolutionFile(ProjectCollection projectCollection, HashSet<string> projectsLoadedFromTraversal)
+        private bool TryWriteSolutionFile(ProjectCollection projectCollection)
         {
             string folder = $"{Path.GetDirectoryName(File)}{Path.DirectorySeparatorChar}";
             Uri fromUri = new Uri(folder);
@@ -104,17 +109,28 @@ namespace CBT.NuGet.Tasks
 
                     writer.WriteLine($"Project(\"\") = \"\", \"{relativePath}\", \"\"");
                     writer.WriteLine("EndProject");
-
-                    // don't warn on first project of collection as it is the entry project.
-                    // don't warn on projects that set SuppressProjectNotInTraversalWarnings to true.
-                    if (!project.FullPath.Equals(projectCollection.LoadedProjects.FirstOrDefault()?.FullPath, StringComparison.OrdinalIgnoreCase)
-                        &&!project.AllEvaluatedProperties.Any(p => p.Name.Equals("SuppressProjectNotInTraversalWarnings", StringComparison.OrdinalIgnoreCase) && p.EvaluatedValue.Equals("true", StringComparison.OrdinalIgnoreCase))
-                        && !projectsLoadedFromTraversal.Contains(project.FullPath))
-                    {
-                        Log.LogWarning("TraversalParse", "CBT.NuGet.1003", "ProjectNotInTraversal", "project.FullPath", 0, 0, 0, 0, message: $"Project {project.FullPath} is not detected in traversal graph (dirs.proj) but is being pulled into build graph through (ProjectReference).  Add missing project to traversal graph to ensure proper functionality.  You can set property SuppressProjectNotInTraversalWarnings to true in this project to suppress and ignore these warnings.");
-                    }
                 }
             }
+
+            return true;
+        }
+
+        private bool TryWriteProjectsFile(ProjectCollection projectCollection, FileInfo projectsFile)
+        {
+            Log.LogMessageFromText($"Generating file '{projectsFile.FullName}'", MessageImportance.Low);
+
+            Directory.CreateDirectory(projectsFile.DirectoryName);
+
+            ProjectRootElement rootElement = ProjectRootElement.Create(projectsFile.FullName);
+
+            ProjectItemGroupElement itemGroup = rootElement.AddItemGroup();
+
+            foreach (Project project in projectCollection.LoadedProjects.Where(i => !String.Equals(i.GetPropertyValue("IsTraversal"), "true", StringComparison.OrdinalIgnoreCase)))
+            {
+                itemGroup.AddItem("ProjectFile", project.FullPath);
+            }
+
+            rootElement.Save();
 
             return true;
         }
