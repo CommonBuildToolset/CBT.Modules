@@ -8,4 +8,11 @@
     <CustomBeforeMicrosoftCommonTargets>$(MSBuildThisFileDirectory)\CBT.Before.Microsoft.Common.targets</CustomBeforeMicrosoftCommonTargets>
     <CustomAfterMicrosoftCommonTargets>$(MSBuildThisFileDirectory)\CBT.After.Microsoft.Common.targets</CustomAfterMicrosoftCommonTargets>
   </PropertyGroup>
+  <PropertyGroup>
+    <CBTSavedCustomBeforeMicrosoftCommonCrossTargetingTargets>$(CustomBeforeMicrosoftCommonCrossTargetingTargets)</CBTSavedCustomBeforeMicrosoftCommonCrossTargetingTargets>
+    <CBTSavedCustomAfterMicrosoftCommonCrossTargetingTargets>$(CustomAfterMicrosoftCommonCrossTargetingTargets)</CBTSavedCustomAfterMicrosoftCommonCrossTargetingTargets>
+
+    <CustomBeforeMicrosoftCommonCrossTargetingTargets>$(MSBuildThisFileDirectory)\CBT.Before.Microsoft.Common.CrossTargeting.targets</CustomBeforeMicrosoftCommonCrossTargetingTargets>
+    <CustomAfterMicrosoftCommonCrossTargetingTargets>$(MSBuildThisFileDirectory)\CBT.After.Microsoft.Common.CrossTargeting.targets</CustomAfterMicrosoftCommonCrossTargetingTargets>
+  </PropertyGroup>
 </Project>
