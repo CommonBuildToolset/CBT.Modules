@@ -11,10 +11,7 @@
     <None Include="version.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="build\CBT.Microsoft.Common.targets.props" />
-    <Content Include="build\CBT.After.Microsoft.Common.targets" />
-    <Content Include="build\CBT.Before.Microsoft.Common.targets" />
-    <Content Include="build\module.config" />
+    <Content Include="build\**\*" />
   </ItemGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" Condition="Exists('$(NuProjPath)\NuProj.targets')" />
 </Project>
