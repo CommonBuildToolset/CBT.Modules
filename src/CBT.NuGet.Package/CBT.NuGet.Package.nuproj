@@ -12,22 +12,12 @@
   <ItemGroup>
     <ProjectReference Include="..\CBT.NuGet\CBT.NuGet.csproj"/>
     <Dependency Include="CBT.Microsoft.Common.targets">
-      <Version>[2.0.36,)</Version>
+      <Version>[2.0.88,)</Version>
     </Dependency>
     <Dependency Include="CBT.Traversal">
       <Version>[2.0.40,)</Version>
     </Dependency>
-    <Content Include="build\RestoreOnly.targets" />
-    <Content Include="build\After.Microsoft.Common.targets" />
-    <Content Include="build\After.Traversal.targets" />
-    <Content Include="build\module.config" />
-    <Content Include="build\CBT.NuGet.props" />
-    <Content Include="build\Microsoft.NuGet\Microsoft.Build.Tasks.Core.dll" />
-    <Content Include="build\Microsoft.NuGet\Microsoft.Build.Utilities.Core.dll" />
-    <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.Build.Tasks.dll" />
-    <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.props" />
-    <Content Include="build\Microsoft.NuGet\Microsoft.NuGet.targets" />
-    <Content Include="build\Microsoft.NuGet\Newtonsoft.Json.dll" />
+    <Content Include="build\**\*" />
     <None Include="version.json" />
     <File Include="..\CBT.NuGet\bin\$(Configuration)\ILMerge\CBT.NuGet.dll">
       <TargetPath>build</TargetPath>
