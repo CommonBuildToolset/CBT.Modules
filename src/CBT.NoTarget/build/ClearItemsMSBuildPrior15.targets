@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Target Name="ClearDefaultAssemblyInfo" BeforeTargets="_CheckForInvalidConfigurationAndPlatform">
+  <Target Name="ClearDefaultAssemblyInfo" BeforeTargets="_CheckForInvalidConfigurationAndPlatform;GetTargetPath">
+    <PropertyGroup>
+      <TargetPath></TargetPath>
+    </PropertyGroup>
     <ItemGroup>
       <IntermediateAssembly Remove="@(IntermediateAssembly)" />
       <IntermediateRefAssembly Remove="@(IntermediateRefAssembly)" />
     </ItemGroup>
   </Target>
+  <Target Name="GetCopyToOutputDirectoryItems" />
 </Project>
