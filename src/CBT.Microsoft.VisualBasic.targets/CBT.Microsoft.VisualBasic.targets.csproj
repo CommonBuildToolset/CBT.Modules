@@ -1,16 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <Description>Provides hooks into Microsoft.VisualBasic.targets.</Description>
     <PackageTags>CBT Module VisualBasic VB</PackageTags>
-    
   </PropertyGroup>
 
   <ItemGroup>
     <Build Include="build\**" />
   </ItemGroup>
-
 </Project>

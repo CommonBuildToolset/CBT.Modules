@@ -14,6 +14,8 @@
     <PackageProjectUrl>https://github.com/CommonBuildToolset</PackageProjectUrl>
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/16727685?v=3&amp;amp;s=200&lt;</PackageIconUrl>
     <Copyright>Copyright © 2016</Copyright>
+
+    <DefaultItemExcludes>**\*.log;**\*.binlog</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>

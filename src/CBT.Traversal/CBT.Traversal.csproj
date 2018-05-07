@@ -7,8 +7,10 @@
     <Description>Provides ability to lock the nuget package graph while using the &lt;PackageReference /&gt; item group in MSBuild.</Description>
     <PackageTags>NuGet Deterministic Packages</PackageTags>
   </PropertyGroup>
-
+  
   <ItemGroup>
+    <PackageReference Include="CBT.Microsoft.Common.targets" Version="[2.0.36,)" ExcludeAssets="build" />
+    
     <Build Include="build\**" />
   </ItemGroup>
 
