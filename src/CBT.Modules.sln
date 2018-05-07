@@ -7,24 +7,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CBT.NuGet", "CBT.NuGet", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBT.NuGet", "CBT.NuGet\CBT.NuGet.csproj", "{E1A167BF-825E-4250-9A56-29A685B83736}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.NuGet.Package", "CBT.NuGet.Package\CBT.NuGet.Package.nuproj", "{20B4C0C1-5C4E-4DD0-9994-D89E78C3B161}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.NuGet.Package", "CBT.NuGet.Package\CBT.NuGet.Package.nuproj", "{20B4C0C1-5C4E-4DD0-9994-D89E78C3B161}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.Microsoft.Common.props", "CBT.Microsoft.Common.props\CBT.Microsoft.Common.props.nuproj", "{702FCEC1-154C-43F0-BAD9-0F7C6B1497D2}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.Microsoft.Common.props", "CBT.Microsoft.Common.props\CBT.Microsoft.Common.props.nuproj", "{702FCEC1-154C-43F0-BAD9-0F7C6B1497D2}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.Microsoft.Common.targets", "CBT.Microsoft.Common.targets\CBT.Microsoft.Common.targets.nuproj", "{59CF21B0-E937-4AB7-B3C6-EE8C1ECCE968}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.Microsoft.Common.targets", "CBT.Microsoft.Common.targets\CBT.Microsoft.Common.targets.nuproj", "{59CF21B0-E937-4AB7-B3C6-EE8C1ECCE968}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.Microsoft.Cpp.targets", "CBT.Microsoft.Cpp.targets\CBT.Microsoft.Cpp.targets.nuproj", "{AF515B3B-3520-44E1-B613-2DF980296E72}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.Microsoft.Cpp.targets", "CBT.Microsoft.Cpp.targets\CBT.Microsoft.Cpp.targets.nuproj", "{AF515B3B-3520-44E1-B613-2DF980296E72}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.Microsoft.CSharp.targets", "CBT.Microsoft.CSharp.targets\CBT.Microsoft.CSharp.targets.nuproj", "{E8A2FBCA-6425-4912-A132-992CBCD788D7}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.Microsoft.CSharp.targets", "CBT.Microsoft.CSharp.targets\CBT.Microsoft.CSharp.targets.nuproj", "{E8A2FBCA-6425-4912-A132-992CBCD788D7}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.Microsoft.VisualBasic.targets", "CBT.Microsoft.VisualBasic.targets\CBT.Microsoft.VisualBasic.targets.nuproj", "{8C05F4BB-D30A-4BFD-B0D0-C292B518FE0F}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.Microsoft.VisualBasic.targets", "CBT.Microsoft.VisualBasic.targets\CBT.Microsoft.VisualBasic.targets.nuproj", "{8C05F4BB-D30A-4BFD-B0D0-C292B518FE0F}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.Traversal", "CBT.Traversal\CBT.Traversal.nuproj", "{76D5982B-6A46-4A41-82D6-FC584ABE36DE}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.Traversal", "CBT.Traversal\CBT.Traversal.nuproj", "{76D5982B-6A46-4A41-82D6-FC584ABE36DE}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.AssemblyInfo", "CBT.AssemblyInfo\CBT.AssemblyInfo.nuproj", "{802789F0-B9A3-4C35-83FC-A12C55C0AD9D}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.AssemblyInfo", "CBT.AssemblyInfo\CBT.AssemblyInfo.nuproj", "{802789F0-B9A3-4C35-83FC-A12C55C0AD9D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{18B754B7-0BE0-4F9C-B888-5BD099AC5083}"
 	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
 		..\build.props = ..\build.props
 		..\NuGet.config = ..\NuGet.config
 	EndProjectSection
@@ -39,11 +40,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 		..\.build\local\Extensions\After.NuProj.targets = ..\.build\local\Extensions\After.NuProj.targets
 	EndProjectSection
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.After.Any.Targets", "CBT.After.Any.Targets\CBT.After.Any.Targets.nuproj", "{80E75AA2-EACB-48B1-AC12-FA1062585EEE}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.After.Any.Targets", "CBT.After.Any.Targets\CBT.After.Any.Targets.nuproj", "{80E75AA2-EACB-48B1-AC12-FA1062585EEE}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.NuGet.GlobalRestore", "CBT.NuGet.GlobalRestore\CBT.NuGet.GlobalRestore.nuproj", "{525E50EB-C6D9-497D-BC54-C625AB62B7D0}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.NuGet.GlobalRestore", "CBT.NuGet.GlobalRestore\CBT.NuGet.GlobalRestore.nuproj", "{525E50EB-C6D9-497D-BC54-C625AB62B7D0}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.UnifiedOutputDir", "CBT.UnifiedOutputDir\CBT.UnifiedOutputDir.nuproj", "{9CF55E9D-97E1-4FC4-ABE7-2E5701A8485F}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.UnifiedOutputDir", "CBT.UnifiedOutputDir\CBT.UnifiedOutputDir.nuproj", "{9CF55E9D-97E1-4FC4-ABE7-2E5701A8485F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBT.NuGet.UnitTests", "CBT.NuGet.UnitTests\CBT.NuGet.UnitTests.csproj", "{DF1E58FD-D11A-4DFF-9437-16257D12DE2D}"
 EndProject
@@ -51,7 +52,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MSBuildProjectBuilder", "MS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildProjectBuilder", "MSBuildProjectBuilder\MSBuildProjectBuilder.csproj", "{69A17EA2-C5F4-44B4-AE85-95018891CDD5}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.NuGet.AggregatePackage", "CBT.NuGet.AggregatePackage\CBT.NuGet.AggregatePackage.nuproj", "{C0FEDA7D-30A2-4E62-BB92-98700DE46B79}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.NuGet.AggregatePackage", "CBT.NuGet.AggregatePackage\CBT.NuGet.AggregatePackage.nuproj", "{C0FEDA7D-30A2-4E62-BB92-98700DE46B79}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBT.NuGet.AggregatePackage.UnitTests", "CBT.NuGet.AggregatePackage.UnitTests\CBT.NuGet.AggregatePackage.UnitTests.csproj", "{5869575A-94F7-4880-B6E9-F7F6178D65A8}"
 EndProject
@@ -59,13 +60,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBuildProjectBuilder.UnitT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet.Deterministic", "NuGet.Deterministic\NuGet.Deterministic.csproj", "{74BB78C6-0BAD-4551-B173-A7603B280217}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "NuGet.Deterministic.Package", "NuGet.Deterministic.Package\NuGet.Deterministic.Package.nuproj", "{2D264DAF-7C3B-437B-AEB8-3B5C0535D434}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "NuGet.Deterministic.Package", "NuGet.Deterministic.Package\NuGet.Deterministic.Package.nuproj", "{2D264DAF-7C3B-437B-AEB8-3B5C0535D434}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet.Deterministic.UnitTests", "NuGet.Deterministic.UnitTests\NuGet.Deterministic.UnitTests.csproj", "{2277E70A-D81C-4A35-BF96-E8CD358BC864}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CBT.UnitTests.Common", "CBT.UnitTests.Common\CBT.UnitTests.Common.csproj", "{D4A35CCE-6ABE-4944-9BC5-F99B143E4330}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "CBT.NoTarget", "CBT.NoTarget\CBT.NoTarget.nuproj", "{FAD5ADFB-CDB3-49E4-9B24-336C55556059}"
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CBT.NoTarget", "CBT.NoTarget\CBT.NoTarget.nuproj", "{FAD5ADFB-CDB3-49E4-9B24-336C55556059}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet.Deterministic", "NuGet.Deterministic", "{0C2B7CE3-5F00-480A-BE5C-A2A020210518}"
 EndProject
