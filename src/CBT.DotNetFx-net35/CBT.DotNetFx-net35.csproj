@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFramework>net35</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <Description>Provides dotnet framework $(TargetFrameworkVersion) build references</Description>
+    <PackageTags>DotNet framework References</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Build Include="build\CBT.DotNetFx-$(TargetFramework).targets" />
+  <Build Include="$(ProgramFiles)\Reference Assemblies\Microsoft\Framework\$(TargetFrameworkVersion)\**\*" PackagePath="build\$(TargetFramework)\%(RecursiveDir)" />
+  </ItemGroup>
+</Project>
+

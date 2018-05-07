@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Condition=" '$(IncludeBuildOutput)' == 'false' ">
+    <IntermediateAssembly Remove="@(IntermediateAssembly)" />
+    <IntermediateRefAssembly Remove="@(IntermediateRefAssembly)" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(IncludeBuildOutput)' == 'false' ">
+    <!--
+      This property must be overridden to remove a few targets that compile assemblies
+    -->
+    <CoreBuildDependsOn>
+      BuildOnlySettings;
+      PrepareForBuild;
+      PreBuildEvent;
+      ResolveProjectReferences;
+      GetTargetPath;
+      PrepareForRun;
+      IncrementalClean;
+      PostBuildEvent
+    </CoreBuildDependsOn>
+  </PropertyGroup>
+
+  <Target Name="_GetBuildPackageFiles" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <_PackageFiles Include="@(Build)" Condition=" %(Build.Pack) != 'false' ">
+        <BuildAction Condition="'%(Build.BuildAction)' == ''">Content</BuildAction>
+      </_PackageFiles>
+    </ItemGroup>
+  </Target>
+</Project>

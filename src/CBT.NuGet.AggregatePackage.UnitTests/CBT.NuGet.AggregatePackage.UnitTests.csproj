@@ -1,62 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5869575A-94F7-4880-B6E9-F7F6178D65A8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CBT.NuGet.AggregatePackage.UnitTests</RootNamespace>
-    <AssemblyName>CBT.NuGet.AggregatePackage.UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
+    <TargetFramework>net45</TargetFramework>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
+  
   <ItemGroup>
-    <ProjectReference Include="..\CBT.NuGet\CBT.NuGet.csproj">
-      <Project>{e1a167bf-825e-4250-9a56-29a685b83736}</Project>
-      <Name>CBT.NuGet</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MSBuildProjectBuilder\MSBuildProjectBuilder.csproj">
-      <Project>{69a17ea2-c5f4-44b4-ae85-95018891cdd5}</Project>
-      <Name>MSBuildProjectBuilder</Name>
-    </ProjectReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.2" />
+    <PackageReference Include="Shouldly" Version="2.8.2" />
+    <PackageReference Include="xunit" Version="2.1.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.1.0" />
+
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="System" />
-    <ProjectReference Include="..\CBT.NuGet.AggregatePackage\CBT.NuGet.AggregatePackage.nuproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <Project>{C0FEDA7D-30A2-4E62-BB92-98700DE46B79}</Project>
-      <Name>CBT.NuGet.AggregatePackage</Name>
-    </ProjectReference>
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.XML" />
+    
+    <ProjectReference Include="..\CBT.NuGet.AggregatePackage\CBT.NuGet.AggregatePackage.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\CBT.NuGet\CBT.NuGet.csproj" />
+    <ProjectReference Include="..\MSBuildProjectBuilder\MSBuildProjectBuilder.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="AggregateTest.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="FakeAggregateTask.cs" />
-    <Compile Include="TestLogger.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestHelper.cs" />
+    <None Include="..\ModuleUnitTestFiles\PrepareOutput.targets">
+      <Link>ModuleUnitTestFiles\PrepareOutput.targets</Link>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="project.json" />
-  </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
   <Import Project="..\ModuleUnitTestFiles\PrepareOutput.targets" />
 </Project>

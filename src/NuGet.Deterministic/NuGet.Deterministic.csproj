@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectGuid>{74BB78C6-0BAD-4551-B173-A7603B280217}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <TargetFramework>net45</TargetFramework>
     <RootNamespace>NuGet.Tasks.Deterministic</RootNamespace>
     <AssemblyName>NuGet.Tasks.Deterministic</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
+    <Description>Provides project traversal in a source code tree.</Description>
+    <PackageTags>CBT Module traversal dirs</PackageTags>
   </PropertyGroup>
-  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., build.props))\build.props" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
+  
   <ItemGroup>
     <Reference Include="Microsoft.Build, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -16,17 +16,11 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <PackageReference Include="NuGet.Commands" Version="4.3.0" PrivateAssets="All" />
+    <PackageReference Include="NuGet.Protocol" Version="4.3.0" PrivateAssets="All" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="ExtensionsMethods.cs" />
-    <Compile Include="GenerateLockedPackageReferencesFile.cs" />
-    <Compile Include="PackageReferenceTaskItem.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskBase.cs" />
-    <Compile Include="ValidateNuGetPackageHashes.cs" />
+    <Build Include="build\**" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="project.json" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

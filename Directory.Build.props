@@ -1,69 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemDefinitionGroup>
+    <Build>
+      <PackagePath>build\</PackagePath>
+    </Build>
+  </ItemDefinitionGroup>
+
   <PropertyGroup>
-    <DirectoryBuildPropsImported>true</DirectoryBuildPropsImported>
     <EnlistmentRoot>$(MSBuildThisFileDirectory.TrimEnd('\\'))</EnlistmentRoot>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
-    <TargetFramework Condition=" '$(TargetFramework)' == '' ">net45</TargetFramework>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <Authors>CBT Developers</Authors>
+    <Product>CBT</Product>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/CommonBuildToolset/CBT.Modules/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/CommonBuildToolset</PackageProjectUrl>
+    <PackageIconUrl>https://avatars2.githubusercontent.com/u/16727685?v=3&amp;amp;s=200&lt;</PackageIconUrl>
+    <Copyright>Copyright © 2016</Copyright>
+
+    <DefaultItemExcludes>**\*.log;**\*.binlog</DefaultItemExcludes>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' ">
-    <AppDesignerFolder Condition=" '$(AppDesignerFolder)' == '' ">Properties</AppDesignerFolder>
-    <FileAlignment Condition=" '$(FileAlignment)' == '' ">512</FileAlignment>
-    <DefineConstants Condition=" !$(DefineConstants.Contains('TRACE')) ">$(DefineConstants);TRACE</DefineConstants>
-    <ErrorReport Condition=" '$(ErrorReport)' == '' ">prompt</ErrorReport>
-    <WarningLevel Condition=" '$(WarningLevel)' == '' ">4</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' And '$(Configuration)' == 'Debug' ">
-    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
-    <DebugType Condition=" '$(DebugType)' == '' ">full</DebugType>
-    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
-    <DefineConstants Condition=" !$(DefineConstants.Contains('DEBUG')) ">$(DefineConstants);DEBUG</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' And '$(Configuration)' == 'Release' ">
-    <DebugType Condition=" '$(DebugType)' == '' ">pdbonly</DebugType>
-    <Optimize Condition=" '$(Optimize)' == '' ">true</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(MSBuildProjectExtension)' != '.nuproj' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.targets\ImportAfter\Microsoft.Common.NuProj.targets') ">
-    <EnableNuProj_Common Condition=" '$(EnableNuProj_Common)' == '' ">true</EnableNuProj_Common>
-  </PropertyGroup>  
-
-  <PropertyGroup Condition=" Exists('$(MSBuildProjectDirectory)\version.json') ">
-    <EnableNerdbank_GitVersioning Condition=" '$(EnableNerdbank_GitVersioning)' == '' ">true</EnableNerdbank_GitVersioning>
-  </PropertyGroup>
-
-  <Import Project="$(EnlistmentRoot)\.build\CBT\build.props" />
-
-  <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.nuproj'" >
-    <!-- The version of nuget that comes with NuProj (3.4.3) has a bug where it will silently skip files in the nuspec based off certain patterns. -->
-    <NuGetToolPath>$(CBTNuGetPath)</NuGetToolPath>
-    <NuProjPath Condition=" Exists('$(MSBuildExtensionsPath)\NuProj\NuProj.props') ">$(MSBuildExtensionsPath)\NuProj</NuProjPath>
-    <NuProjPath Condition=" '$(CBTModule_NuProj)' != '' And '$(NuProjPath)' == '' ">$(CBTModule_NuProj)\tools</NuProjPath>
-    <CustomAfterNuProjTargets>$(CBTLocalBuildExtensionsPath)\After.NuProj.targets</CustomAfterNuProjTargets>
-    <Id Condition=" '$(Id)' == '' ">$(MSBuildProjectName.Replace('.Package', ''))</Id>
-    <Title Condition=" '$(Title)' == '' ">$(Id)</Title>
-    <Authors Condition=" '$(Authors)' == '' ">CBT Developers</Authors>
-    <Owners Condition=" '$(Owners)' == '' ">CBT Developers</Owners>
-    <LicenseUrl Condition=" '$(LicenseUrl)' == '' ">https://raw.githubusercontent.com/CommonBuildToolset/CBT.Modules/master/LICENSE</LicenseUrl>
-    <ProjectUrl Condition=" '$(ProjectUrl)' == '' ">https://github.com/CommonBuildToolset</ProjectUrl>
-    <IconUrl Condition=" '$(IconUrl)' == '' ">https://avatars2.githubusercontent.com/u/16727685?v=3&amp;s=200</IconUrl>
-    <Copyright Condition=" '$(Copyright)' == '' ">Copyright © 2016</Copyright>
-  </PropertyGroup>
-
-  <ItemGroup Label="ProjectConfigurations" Condition=" '$(MSBuildProjectExtension)' == '.nuproj' ">
-    <ProjectConfiguration Include="Debug|AnyCPU">
-      <Configuration>Debug</Configuration>
-      <Platform>AnyCPU</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|AnyCPU">
-      <Configuration>Release</Configuration>
-      <Platform>AnyCPU</Platform>
-    </ProjectConfiguration>
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.0.41" PrivateAssets="All" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFramework>net471</TargetFramework>
+    <Description>Provides dotnet framework $(TargetFrameworkVersion) build references</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <PackageTags>DotNet framework References</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Build Include="build\CBT.DotNetFx-$(TargetFramework).targets" />
+    <Build Include="$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\$(TargetFrameworkVersion)\**\*" PackagePath="build\$(TargetFramework)\%(RecursiveDir)" />
+  </ItemGroup>
+</Project>

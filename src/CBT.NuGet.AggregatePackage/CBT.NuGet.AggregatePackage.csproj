@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <Description>Provides ability to aggregate nuget packages.</Description>
+    <PackageTags>CBT Module NuGet Aggregate Packages</PackageTags>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="CBT.NuGet" Version="[1.0.42,)" ExcludeAssets="build" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Build Include="build\**" />
+  </ItemGroup>
+</Project>

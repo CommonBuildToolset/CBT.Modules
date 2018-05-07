@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <Description>Provides a targets file for projects that do not compile an assembly.</Description>
+    <PackageTags>CBT Module targets notarget notargets</PackageTags>    
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Build Include="build\**" />
+  </ItemGroup>
+
+</Project>
