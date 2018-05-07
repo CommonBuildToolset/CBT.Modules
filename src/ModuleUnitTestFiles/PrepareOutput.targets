@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup>
-    <BuildDependsOn>$(BuildDependsOn);PrepareTestOutputFolder</BuildDependsOn>
-  </PropertyGroup>
-
-  <Target Name="PrepareTestOutputFolder">
+  <Target Name="PrepareTestOutputFolder" AfterTargets="Build">
 
     <ItemGroup>
       <CopyContent Include="$(EnlistmentRoot)\src\CBT.NuGet.AggregatePackage\bin\**\*.nupkg" Exclude="$(EnlistmentRoot)\src\CBT.NuGet.AggregatePackage\bin\**\*.symbols.nupkg">

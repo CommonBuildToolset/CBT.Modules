@@ -56,6 +56,15 @@
     <Copyright Condition=" '$(Copyright)' == '' ">Copyright © 2016</Copyright>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Authors>CBT Developers</Authors>
+    <Product>CBT</Product>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/CommonBuildToolset/CBT.Modules/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/CommonBuildToolset</PackageProjectUrl>
+    <PackageIconUrl>https://avatars2.githubusercontent.com/u/16727685?v=3&amp;amp;s=200&lt;</PackageIconUrl>
+    <Copyright>Copyright © 2016</Copyright>
+  </PropertyGroup>
+
   <ItemGroup Label="ProjectConfigurations" Condition=" '$(MSBuildProjectExtension)' == '.nuproj' ">
     <ProjectConfiguration Include="Debug|AnyCPU">
       <Configuration>Debug</Configuration>
@@ -66,4 +75,10 @@
       <Platform>AnyCPU</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+
+  <ItemDefinitionGroup>
+    <Build>
+      <PackagePath>build\</PackagePath>
+    </Build>
+  </ItemDefinitionGroup>
 </Project>

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <Description>Provides ability to lock the nuget package graph while using the &lt;PackageReference /&gt; item group in MSBuild.</Description>
+    <PackageTags>NuGet Deterministic Packages</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Build Include="build\**" />
+  </ItemGroup>
+
+</Project>
