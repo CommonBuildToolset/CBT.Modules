@@ -18,4 +18,4 @@ on_success:
       Get-ChildItem -Path "." -Recurse -Filter $pattern | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName "NuGet Packages" }
     }
 on_failure:
-- ps: Get-ChildItem .\*.log -Recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+- ps: Get-ChildItem .\*log -Recurse | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }

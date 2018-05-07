@@ -9,6 +9,8 @@
       </CopyContent>
     </ItemGroup>
 
+    <Error Condition=" '@(CopyContent->Count())' == '0' " Text="There are no files to copy" />
+
     <Copy
       SourceFiles="%(CopyContent.Identity)"
       DestinationFolder="%(CopyContent.DestinationFolder)"

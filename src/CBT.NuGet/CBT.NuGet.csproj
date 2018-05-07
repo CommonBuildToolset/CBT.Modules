@@ -32,6 +32,14 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <ILRepackOutputAssembly>$(OutputPath)\ILMerge\$(TargetName)$(TargetExt)</ILRepackOutputAssembly>
+    <ILRepackOutputAssembly>$(OutputPath)ILMerge\$(TargetName)$(TargetExt)</ILRepackOutputAssembly>
   </PropertyGroup>
+
+  <Target Name="UpdateBuildOutputInPackage" AfterTargets="_WalkEachTargetPerFramework">
+    <ItemGroup>
+      <_BuildOutputInPackage Remove="@(_BuildOutputInPackage)" />
+
+      <_BuildOutputInPackage Include="$([System.IO.Path]::GetFullPath($(ILRepackOutputAssembly)))" TargetFramework="$(TargetFramework)" TargetPath="$(TargetName)$(TargetExt)" />
+    </ItemGroup>
+  </Target>
 </Project>

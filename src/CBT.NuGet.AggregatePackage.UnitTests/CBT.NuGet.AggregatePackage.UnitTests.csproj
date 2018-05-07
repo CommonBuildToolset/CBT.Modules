@@ -17,6 +17,7 @@
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.XML" />
     
+    <ProjectReference Include="..\CBT.NuGet.AggregatePackage\CBT.NuGet.AggregatePackage.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\CBT.NuGet\CBT.NuGet.csproj" />
     <ProjectReference Include="..\MSBuildProjectBuilder\MSBuildProjectBuilder.csproj" />
   </ItemGroup>
