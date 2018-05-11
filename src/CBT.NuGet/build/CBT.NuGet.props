@@ -28,8 +28,7 @@
     <CBTEnableImportBuildPackages Condition=" '$(CBTEnableImportBuildPackages)' == '' ">true</CBTEnableImportBuildPackages>
     <CBTNuGetIntermediateOutputPath Condition=" '$(CBTNuGetIntermediateOutputPath)' == '' And '$(IntermediateOutputPath)' != '' ">$(IntermediateOutputPath)</CBTNuGetIntermediateOutputPath>
     <CBTNuGetIntermediateOutputPath Condition=" '$(CBTNuGetIntermediateOutputPath)' == '' And '$(IntermediateOutputPath)' == '' ">$(CBTIntermediateOutputPath)\$(MSBuildProjectDirectory.ToLower().Length.ToString())</CBTNuGetIntermediateOutputPath>
-    <CBTNuGetIntermediateOutputPath Condition=" '$(TargetFramework)' != '' ">$(CBTNuGetIntermediateOutputPath)\$(TargetFramework)</CBTNuGetIntermediateOutputPath>
-    <CBTNuGetAssetsFlagFile Condition=" '$(CBTNuGetAssetsFlagFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).flag</CBTNuGetAssetsFlagFile>
+    <CBTNuGetAssetsFlagFile Condition=" '$(CBTNuGetAssetsFlagFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(TargetFramework)$(MSBuildProjectFile).flag</CBTNuGetAssetsFlagFile>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(CBTNuGetRestoreFile)' == '' And Exists('$(MSBuildProjectDirectory)\project.json') ">
@@ -61,7 +60,7 @@
     <CBTNuGetNoCache Condition=" '$(CBTNuGetNoCache)' == '' ">false</CBTNuGetNoCache>
     <CBTNuGetNonInteractive Condition=" '$(CBTNuGetNonInteractive)' == '' ">true</CBTNuGetNonInteractive>
     <CBTNuGetTimeout Condition=" '$(CBTNuGetTimeout)' == '' ">0</CBTNuGetTimeout>
-    <CBTNuGetPackagePropertyFile Condition=" '$(CBTNuGetPackagePropertyFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$([System.IO.Path]::GetFileName('$(CBTNuGetRestoreFile)')).props</CBTNuGetPackagePropertyFile>
+    <CBTNuGetPackagePropertyFile Condition=" '$(CBTNuGetPackagePropertyFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(TargetFramework)$([System.IO.Path]::GetFileName('$(CBTNuGetRestoreFile)')).props</CBTNuGetPackagePropertyFile>
     <CBTNuGetPackagePropertyVersionNamePrefix Condition=" '$(CBTNuGetPackagePropertyVersionNamePrefix)' == '' ">NuGetVersion_</CBTNuGetPackagePropertyVersionNamePrefix>
     <CBTNuGetPackagePropertyPathNamePrefix Condition=" '$(CBTNuGetPackagePropertyPathNamePrefix)' == '' ">NuGetPath_</CBTNuGetPackagePropertyPathNamePrefix>
     <NuGetMSBuildPath Condition=" '$(NuGetMSBuildPath)' == '' ">$(MSBuildBinPath)</NuGetMSBuildPath>
