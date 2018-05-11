@@ -28,6 +28,7 @@
     <CBTEnableImportBuildPackages Condition=" '$(CBTEnableImportBuildPackages)' == '' ">true</CBTEnableImportBuildPackages>
     <CBTNuGetIntermediateOutputPath Condition=" '$(CBTNuGetIntermediateOutputPath)' == '' And '$(IntermediateOutputPath)' != '' ">$(IntermediateOutputPath)</CBTNuGetIntermediateOutputPath>
     <CBTNuGetIntermediateOutputPath Condition=" '$(CBTNuGetIntermediateOutputPath)' == '' And '$(IntermediateOutputPath)' == '' ">$(CBTIntermediateOutputPath)\$(MSBuildProjectDirectory.ToLower().Length.ToString())</CBTNuGetIntermediateOutputPath>
+    <CBTNuGetIntermediateOutputPath Condition=" '$(TargetFramework)' != '' ">$(CBTNuGetIntermediateOutputPath)\$(TargetFramework)</CBTNuGetIntermediateOutputPath>
     <CBTNuGetAssetsFlagFile Condition=" '$(CBTNuGetAssetsFlagFile)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).flag</CBTNuGetAssetsFlagFile>
   </PropertyGroup>
 
