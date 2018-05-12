@@ -47,10 +47,10 @@ namespace CBT.NuGet.Internal
             }
 
             string lockFilePath = Path.Combine(packageRestoreData.RestoreOutputAbsolutePath, LockFileFormat.AssetsFileName);
-
             if (!File.Exists(lockFilePath))
             {
-                throw new FileNotFoundException($"Missing expected NuGet assets file '{lockFilePath}'.  If you are redefining BaseIntermediateOutputPath ensure it is unique per project. ");
+                Log.LogError(string.Format("Missing expected NuGet assets file '{0}'.  If you are redefining BaseIntermediateOutputPath ensure it is unique per project. ", lockFilePath));
+                return false;
             }
 
             HashSet<string> processedPackages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
