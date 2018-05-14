@@ -53,6 +53,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <!-- Generating nuget package properties does not work for multi-framework projects.  The project.assets.json does not get created soon enough and the .flag file is which causes it to through a file doesn't exist exception.
+	This is due to their outer/inner build pattern. Instead of trying to "fix" this we have decided to deprecate this feature to prevent more people from taking a dependency on property generation.
+    This is why we are deprecating it for all sdk projects and not just for the sdkproject package reference scenario.	-->
     <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' And '$(UsingMicrosoftNETSdk)' == 'true' ">false</CBTNuGetGeneratePackageProperties>
     <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' ">true</CBTNuGetGeneratePackageProperties>
     <CBTNuGetPackagesRestoredMarker Condition=" '$(CBTNuGetPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetPackagesRestored</CBTNuGetPackagesRestoredMarker>
