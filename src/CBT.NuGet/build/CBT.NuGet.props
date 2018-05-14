@@ -53,6 +53,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' And '$(UsingMicrosoftNETSdk)' == 'true' ">false</CBTNuGetGeneratePackageProperties>
     <CBTNuGetGeneratePackageProperties Condition=" '$(CBTNuGetGeneratePackageProperties)' == '' ">true</CBTNuGetGeneratePackageProperties>
     <CBTNuGetPackagesRestoredMarker Condition=" '$(CBTNuGetPackagesRestoredMarker)' == '' ">$(CBTNuGetIntermediateOutputPath)\$(MSBuildProjectFile).CBTNuGetPackagesRestored</CBTNuGetPackagesRestoredMarker>
     <CBTNuGetRestoreRequireConsent Condition=" '$(CBTNuGetRestoreRequireConsent)' == '' ">false</CBTNuGetRestoreRequireConsent>
