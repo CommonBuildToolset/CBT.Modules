@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CBT.Microsoft.Common.targets" Version="[1.0,)" ExcludeAssets="build" />
+    <PackageReference Include="CBT.Microsoft.Common.targets" VersionOverride="[1.0,)" ExcludeAssets="build" />
 
     <Build Include="build\**" />
   </ItemGroup>

@@ -9,7 +9,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="CBT.NuGet" Version="[1.0.42,)" ExcludeAssets="build" />
+    <PackageReference Include="CBT.NuGet" VersionOverride="[1.0.42,)" ExcludeAssets="build" />
   </ItemGroup>
 
   <ItemGroup>
