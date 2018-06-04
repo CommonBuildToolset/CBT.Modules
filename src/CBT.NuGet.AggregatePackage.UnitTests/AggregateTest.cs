@@ -30,7 +30,7 @@ namespace CBT.NuGet.AggregatePackage.UnitTests
         {
             _testRootFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             _enlistmentRoot = Path.Combine(_testRootFolder, "enl1");
-            _repo = Path.Combine(Directory.GetCurrentDirectory(), "repo");
+            _repo = Path.Combine(Path.GetDirectoryName(typeof(AggregateTest).Assembly.ManifestModule.FullyQualifiedName), "repo");
             _destPackagesPath = Path.Combine(_enlistmentRoot, "packages");
         }
 

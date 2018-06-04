@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!--
+      Individual projects should specify a VersionOverride for CBT.* references
+    -->
+    <PackageReference Update="CBT.Microsoft.Common.targets" Version="0.0.0" />
+    <PackageReference Update="CBT.NuGet" Version="0.0.0" />
+
+    <PackageReference Update="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3-private" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+    <PackageReference Update="NuGet.Commands" Version="4.3.0" />
+    <PackageReference Update="NuGet.Commands" Version="4.3.0" />
+    <PackageReference Update="NuGet.ProjectModel" Version="4.3.0" />
+    <PackageReference Update="NuGet.Protocol" Version="4.3.0" />
+    <PackageReference Update="NuGet.Protocol" Version="4.3.0" />
+    <PackageReference Update="Shouldly" Version="3.0.0" />
+    <PackageReference Update="xunit" Version="2.3.1" />
+    <PackageReference Update="xunit.runner.visualstudio" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <GlobalPackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" />
+  </ItemGroup>
+</Project>

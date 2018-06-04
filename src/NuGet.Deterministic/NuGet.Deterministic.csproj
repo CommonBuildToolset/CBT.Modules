@@ -16,8 +16,8 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <PackageReference Include="NuGet.Commands" Version="4.3.0" PrivateAssets="All" />
-    <PackageReference Include="NuGet.Protocol" Version="4.3.0" PrivateAssets="All" />
+    <PackageReference Include="NuGet.Commands" PrivateAssets="All" />
+    <PackageReference Include="NuGet.Protocol" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
