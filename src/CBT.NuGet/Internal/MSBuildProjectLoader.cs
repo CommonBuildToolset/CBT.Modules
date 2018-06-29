@@ -118,7 +118,6 @@ namespace CBT.NuGet.Internal
         private void LoadProjectReferences(Project project, ProjectLoadSettings projectLoadSettings)
         {
             IEnumerable<ProjectItem> projects = project.GetItems(ProjectReferenceItemName);
-
             if (IsTraveralProject(project))
             {
                 projects = projects.Concat(project.GetItems(TraveralProjectFileItemName));
@@ -161,7 +160,10 @@ namespace CBT.NuGet.Internal
 
             try
             {
+                var loadStartTime = DateTime.Now;
                 project = new Project(path, null, toolsVersion, projectCollection, projectLoadSettings);
+                _log.LogMessage(Microsoft.Build.Framework.MessageImportance.Low, $"Loaded {path} in {(DateTime.Now - loadStartTime).TotalMilliseconds} TotalMilliseconds");
+
             }
             catch (InvalidProjectFileException e)
             {
@@ -171,6 +173,7 @@ namespace CBT.NuGet.Internal
             }
             catch (Exception e)
             {
+                _log.LogError($"Load exception {path}");
                 _log.LogErrorFromException(e);
 
                 return false;
