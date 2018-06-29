@@ -89,11 +89,13 @@ namespace CBT.NuGet.Internal
             string ignoreRegex = @"[*]{2}";
             string newEnvValue = string.IsNullOrEmpty(currentEnvValue) ? ignoreRegex : $"{currentEnvValue};{ignoreRegex}";
             Environment.SetEnvironmentVariable("MsBuildSkipEagerWildCardEvaluationRegexes", newEnvValue);
+
+            ProjectCollection projectCollection = null;
             try
             {
                 // Create a ProjectCollection for this thread
                 //
-                ProjectCollection projectCollection = new ProjectCollection(_globalProperties)
+                projectCollection = new ProjectCollection(_globalProperties)
                 {
                     DefaultToolsVersion = _toolsVersion,
                     DisableMarkDirty = true, // Not sure but hoping this improves load performance
