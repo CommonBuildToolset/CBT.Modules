@@ -176,15 +176,11 @@ namespace CBT.NuGet.Internal
 
             try
             {
-                var loadStartTime = DateTime.Now;
                 project = new Project(path, null, toolsVersion, projectCollection, projectLoadSettings);
-                _log.LogMessage(Microsoft.Build.Framework.MessageImportance.Low, $"Loaded {path} in {(DateTime.Now - loadStartTime).TotalMilliseconds} TotalMilliseconds");
-
             }
             catch (InvalidProjectFileException e)
             {
                 _log.LogError(null, e.ErrorCode, e.HelpKeyword, e.ProjectFile, e.LineNumber, e.ColumnNumber, e.EndLineNumber, e.EndColumnNumber, e.Message);
-
                 return false;
             }
             catch (Exception e)
@@ -192,7 +188,6 @@ namespace CBT.NuGet.Internal
                 _log.LogError(null, null, null, path, 0, 0, 0, 0, e.ToString());
                 return false;
             }
-
 
             if (CollectStats)
             {
