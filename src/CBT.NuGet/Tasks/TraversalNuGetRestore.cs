@@ -42,8 +42,14 @@ namespace CBT.NuGet.Tasks
 
             Log.LogMessage(MessageImportance.Normal, $"Loading project references for '{Project}'...");
             _projectCollection = projectLoader.LoadProjectsAndReferences(new[] { Project });
-
             _enableOptimization = enableOptimization;
+
+
+            Log.LogMessage(MessageImportance.Low, $"10 Slowest Loading Projects ...");
+            foreach (var loadTimes in projectLoader.Statistics.ProjectLoadTimes.OrderByDescending(i => i.Value).Take(10))
+            {
+                Log.LogMessage(MessageImportance.Low, $"{loadTimes.Key} {loadTimes.Value}");
+            }
 
             if (Log.HasLoggedErrors)
             {
