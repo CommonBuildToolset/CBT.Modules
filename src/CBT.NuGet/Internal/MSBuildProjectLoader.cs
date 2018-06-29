@@ -173,9 +173,7 @@ namespace CBT.NuGet.Internal
             }
             catch (Exception e)
             {
-                _log.LogError($"Load exception {path}");
-                _log.LogErrorFromException(e);
-
+                _log.LogError(null, null, null, path, 0, 0, 0, 0, e.ToString());
                 return false;
             }
 
