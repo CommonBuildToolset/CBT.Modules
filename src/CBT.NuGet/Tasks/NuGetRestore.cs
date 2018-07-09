@@ -100,7 +100,8 @@ namespace CBT.NuGet.Tasks
             EnvironmentVariables = new[]
             {
                 "CBTEnablePackageRestore=false",
-                "CBTModulesRestored=true"
+                "CBTModulesRestored=true",
+                "MsBuildSkipEagerWildCardEvaluationRegexes=[*]{2}"
             };
 
             // Do restoration in a semaphore to prevent NuGet restore having locking issues
