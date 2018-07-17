@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <CBTOutputRootDir Condition=" '$(CBTOverrideBaseOutputPath)' != '' ">$(CBTOverrideBaseOutputPath)</CBTOutputRootDir>
+    <CBTOutputPathPlatformPart Condition="'$(CBTOutputPathPlatformPart)' == ''">$(Platform)</CBTOutputPathPlatformPart>
+    <CBTOutputRootDir Condition=" '$(CBTOutputRootDir)' == '' ">$(EnlistmentRoot)\bin\$(CBTOutputPathPlatformPart)\$(Configuration)</CBTOutputRootDir>
+    <CBTOutputRootDir>$(CBTOutputRootDir.TrimEnd({'\\'}))</CBTOutputRootDir>
+
+    <CBTRelativeOutputPathAppend Condition="'$(CBTRelativeOutputPathAppend)' == '' and '$(CBTUnifiedOutputDirUseAssemblyName)' == 'true' ">$(AssemblyName)</CBTRelativeOutputPathAppend>
+    <CBTRelativeOutputPathAppend Condition="'$(CBTRelativeOutputPathAppend)' == ''">$(MSBuildProjectName)</CBTRelativeOutputPathAppend>
+    <CBTRelativeOutputPath Condition="'$(CBTSelfContainedBuildOutput)' == 'true'">$([System.IO.Path]::Combine($(CBTRelativeOutputPath), $(CBTRelativeOutputPathAppend)))</CBTRelativeOutputPath>
+
+    <!-- These variables are the ones that the standard MSBuild targets recognize.  We override them here.  -->
+    <OutDir Condition=" '$(OutDir)' =='' ">$([System.IO.Path]::Combine($(CBTOutputRootDir), $(CBTRelativeOutputPath)))</OutDir>
+
+    <!-- OutDir requires a trailing slash to prevent MSB8004 warning -->
+    <OutDir Condition="!HasTrailingSlash('$(OutDir)')">$(OutDir)\</OutDir>
+    <!-- This ensures OutputPath always matches OutDir, especially when TFS overrides OutDir. -->
+    <OutputPath>$(OutDir)</OutputPath>
+  </PropertyGroup>
+</Project>
