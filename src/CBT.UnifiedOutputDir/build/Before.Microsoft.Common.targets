@@ -6,8 +6,10 @@
     <CBTOutputRootDir Condition=" '$(CBTOutputRootDir)' == '' ">$(EnlistmentRoot)\bin\$(CBTOutputPathPlatformPart)\$(Configuration)</CBTOutputRootDir>
     <CBTOutputRootDir>$(CBTOutputRootDir.TrimEnd({'\\'}))</CBTOutputRootDir>
 
-    <CBTRelativeOutputPathAppend Condition="'$(CBTRelativeOutputPathAppend)' == '' and '$(CBTUnifiedOutputDirUseAssemblyName)' == 'true' ">$(AssemblyName)</CBTRelativeOutputPathAppend>
-    <CBTRelativeOutputPathAppend Condition="'$(CBTRelativeOutputPathAppend)' == ''">$(MSBuildProjectName)</CBTRelativeOutputPathAppend>
+
+    <CBTRelativeOutputPathAppend Condition=" '$(CBTRelativeOutputPathAppend)' == '' and '$(CBTUnifiedOutputDirUseAssemblyName)' == 'true' ">$(AssemblyName)</CBTRelativeOutputPathAppend>
+    <CBTRelativeOutputPathAppend Condition=" '$(CBTRelativeOutputPathAppend)' == '' and '$(CBTUnifiedOutputDirUseAssemblyName)' == 'true' ">$(TargetName)</CBTRelativeOutputPathAppend>
+    <CBTRelativeOutputPathAppend Condition=" '$(CBTRelativeOutputPathAppend)' == '' ">$(MSBuildProjectName)</CBTRelativeOutputPathAppend>
     <CBTRelativeOutputPath Condition="'$(CBTSelfContainedBuildOutput)' == 'true'">$([System.IO.Path]::Combine($(CBTRelativeOutputPath), $(CBTRelativeOutputPathAppend)))</CBTRelativeOutputPath>
 
     <!-- These variables are the ones that the standard MSBuild targets recognize.  We override them here.  -->
