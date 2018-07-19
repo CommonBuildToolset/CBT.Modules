@@ -8,7 +8,7 @@
 
 
     <CBTRelativeOutputPathAppend Condition=" '$(CBTRelativeOutputPathAppend)' == '' and '$(CBTUnifiedOutputDirUseAssemblyName)' == 'true' ">$(AssemblyName)</CBTRelativeOutputPathAppend>
-    <CBTRelativeOutputPathAppend Condition=" '$(CBTRelativeOutputPathAppend)' == '' and '$(CBTUnifiedOutputDirUseAssemblyName)' == 'true' ">$(TargetName)</CBTRelativeOutputPathAppend>
+    <CBTRelativeOutputPathAppend Condition=" '$(CBTRelativeOutputPathAppend)' == '' and '$(CBTUnifiedOutputDirUseTargetName)' == 'true' ">$(TargetName)</CBTRelativeOutputPathAppend>
     <CBTRelativeOutputPathAppend Condition=" '$(CBTRelativeOutputPathAppend)' == '' ">$(MSBuildProjectName)</CBTRelativeOutputPathAppend>
     <CBTRelativeOutputPath Condition="'$(CBTSelfContainedBuildOutput)' == 'true'">$([System.IO.Path]::Combine($(CBTRelativeOutputPath), $(CBTRelativeOutputPathAppend)))</CBTRelativeOutputPath>
 
