@@ -7,7 +7,7 @@
 
   <Import Project="$(CustomBeforeNoTargets)" Condition="'$(CustomBeforeNoTargets)' != '' and Exists('$(CustomBeforeNoTargets)')" />
 
-  <ItemDefinitionGroup Condition="'$(NoTargetsCopyReferenceOutput)' == 'true'" >
+  <ItemDefinitionGroup Condition="'$(NoTargetsReferenceOutputAssembly)' == 'false'" >
     <ProjectReference>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <Private>false</Private>
