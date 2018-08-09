@@ -2,6 +2,7 @@
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,37 @@ namespace CBT.NuGet.Tasks
     /// </summary>
     public class NuGetRestore : DownloadCommandBase
     {
+        private readonly Lazy<FileVersionInfo> _nugetFileVersionLazy;
+
+        public NuGetRestore()
+        {
+            _nugetFileVersionLazy = new Lazy<FileVersionInfo>(() =>
+            {
+                if (String.IsNullOrWhiteSpace(ToolPath) || String.IsNullOrWhiteSpace(ToolName))
+                {
+                    return null;
+                }
+
+                string fullPath = Path.Combine(ToolPath, ToolName);
+
+                if (!System.IO.File.Exists(fullPath))
+                {
+                    return null;
+                }
+
+                try
+                {
+                    return FileVersionInfo.GetVersionInfo(fullPath);
+                }
+                catch (Exception e)
+                {
+                    Log.LogWarning($"Failed to determine the version of assembly '{fullPath}'.  Ensure that path is a valid NuGet.exe.  The error was: {Environment.NewLine}{e}");
+
+                    return null;
+                }
+            }, isThreadSafe: true);
+        }
+
         /// <summary>
         /// Gets or sets additional NuGet restore arguments.
         /// </summary>
@@ -95,12 +127,7 @@ namespace CBT.NuGet.Tasks
 
         public override bool Execute()
         {
-            // NuGet now evaluates msbuild projects during restore, CBTEnablePackageRestore must be set to prevent NuGet from infinite looping.
-            // CBTModulesRestored must be set so on it's evaluation it knows to import the generated module imports so it evaluates the proper full closure of the project.
-            EnvironmentVariables = new[]
-            {
-                "CBTModulesRestored=true"
-            };
+            EnvironmentVariables = GetEnvironmentVariables().ToArray();
 
             // Do restoration in a semaphore to prevent NuGet restore having locking issues
             //
@@ -282,36 +309,36 @@ namespace CBT.NuGet.Tasks
             }
         }
 
+        private IEnumerable<string> GetEnvironmentVariables()
+        {
+            // CBTModulesRestored must be set so on it's evaluation it knows to import the generated module imports so it evaluates the proper full closure of the project.
+            yield return "CBTModulesRestored=true";
+
+            if (IsNuGetVersion4OrGreater())
+            {
+                // Enable feature flag in NuGet to skip non-existent targets.  This also enables building in parallel
+                if (!String.Equals(Environment.GetEnvironmentVariable("NUGET_RESTORE_MSBUILD_USESKIPNONEXISTENT"), "false", StringComparison.OrdinalIgnoreCase))
+                {
+                    yield return "NUGET_RESTORE_MSBUILD_USESKIPNONEXISTENT=True";
+                }
+
+                // Enable multi-proc in MSBuild for NuGet to run faster
+                yield return $"NUGET_RESTORE_MSBUILD_ARGS=/m {Environment.GetEnvironmentVariable("NUGET_RESTORE_MSBUILD_ARGS")}";
+            }
+        }
+
         /// <summary>
         /// Determines if the version of NuGet.exe is 4.0 or greater.
         /// </summary>
         /// <returns><code>true</code> if the version of NuGet.exe is 4.0 or greater, otherwise <code>false</code>.</returns>
         private bool IsNuGetVersion4OrGreater()
         {
-            if (String.IsNullOrWhiteSpace(ToolPath) || String.IsNullOrWhiteSpace(ToolName))
+            if (_nugetFileVersionLazy.Value == null)
             {
                 return false;
             }
 
-            string fullPath = Path.Combine(ToolPath, ToolName);
-
-            if (!System.IO.File.Exists(fullPath))
-            {
-                return false;
-            }
-
-            try
-            {
-                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(fullPath);
-
-                return fileVersionInfo.ProductMajorPart >= 4;
-            }
-            catch (Exception e)
-            {
-                Log.LogWarning($"Failed to determine the version of assembly '{fullPath}'.  Ensure that path is a valid NuGet.exe.  The error was: {Environment.NewLine}{e}");
-
-                return false;
-            }
+            return _nugetFileVersionLazy.Value.ProductMajorPart >= 4;
         }
     }
 }
