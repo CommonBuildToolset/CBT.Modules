@@ -37,7 +37,6 @@ namespace CBT.NuGet.Tasks
 
                 try
                 {
-                    
                     return FileVersionInfo.GetVersionInfo(fullPath);
                 }
                 catch (Exception e)
@@ -326,7 +325,6 @@ namespace CBT.NuGet.Tasks
                 // Enable multi-proc in MSBuild for NuGet to run faster
                 yield return $"NUGET_RESTORE_MSBUILD_ARGS=/m {Environment.GetEnvironmentVariable("NUGET_RESTORE_MSBUILD_ARGS")}";
             }
-
         }
 
         /// <summary>
