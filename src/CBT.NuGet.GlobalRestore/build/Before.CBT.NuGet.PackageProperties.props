@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <CBTEnableGlobalPackageRestore Condition=" '$(CBTEnablePackageRestore)' == 'false' And '$(IsTraversal)' != 'true' ">false</CBTEnableGlobalPackageRestore>
-  </PropertyGroup>
-
   <PropertyGroup Condition=" '$(CBTEnableGlobalPackageRestore)' != 'false' ">
     <CBTNuGetGlobalPackagesRestoreFile Condition=" '$(CBTNuGetGlobalPackagesRestoreFile)' == '' And Exists('$(CBTLocalPath)\GlobalPackages\packages.config') ">$(CBTLocalPath)\GlobalPackages\packages.config</CBTNuGetGlobalPackagesRestoreFile>
     <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(CBTNuGetGlobalPackagesRestoreFile)</CBTNuGetAllProjects>
@@ -15,7 +11,7 @@
   <PropertyGroup Condition=" '$(CBTEnableGlobalPackageRestore)' != 'false' And '$(ExcludeRestorePackageImports)' != 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' And '$(IsRestoreOnly)' != 'true' And '$(CBTNuGetTasksAssemblyName)' != '' ">
     <CBTNuGetGlobalPackagesRestored Condition=" '$(CBTNuGetGlobalPackagesRestored)' != 'true' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.NuGetRestore').Execute('$(CBTNuGetGlobalPackagesRestoreFile)','$(NuGetMsBuildVersion)',$(CBTNuGetRestoreRequireConsent),$(CBTNuGetDisableParallelProcessing),$(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), '$(NuGetPackageSaveMode)',$(NuGetSource.Split(';')),'$(NuGetConfigFile)',$(CBTNuGetNonInteractive),'$(NuGetVerbosity)',$(CBTNuGetTimeout),'$(CBTNuGetPath)',$([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')),$(CBTNuGetGlobalPackagesRestoredMarker),$(CBTNuGetAllProjects.Split(';')), '$(NuGetMSBuildPath)', '$(CBTNuGetRestoreAdditionalArguments)'))</CBTNuGetGlobalPackagesRestored>
 
-    <CBTNuGetGlobalPackagePropertiesCreated Condition=" '$(CBTNuGetGlobalPackagePropertiesCreated)' != 'true' And '$(CBTNuGetGlobalPackagesRestored)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' != 'false' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetGlobalPackagesRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetGlobalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), ''))</CBTNuGetGlobalPackagePropertiesCreated> 
+    <CBTNuGetGlobalPackagePropertiesCreated Condition=" '$(CBTNuGetGlobalPackagePropertiesCreated)' != 'true' And '$(CBTNuGetGlobalPackagesRestored)' == 'true' And '$(CBTNuGetGenerateGlobalPackageProperties)' != 'false'">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetGlobalPackagesRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetGlobalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), ''))</CBTNuGetGlobalPackagePropertiesCreated>
   </PropertyGroup>
 
   <ItemGroup>
