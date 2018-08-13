@@ -4,7 +4,7 @@
     <TraversalProjectNames Condition=" '$(TraversalProjectNames)' == '' ">dirs.proj</TraversalProjectNames>
 
     <IsTraversal Condition=" '$(IsTraversal)' != '' ">$([System.Convert]::ToBoolean($(IsTraversal)))</IsTraversal>
-    <IsTraversal Condition=" '$(IsTraversal)' == '' And $(TraversalProjectNames.Contains($(MSBuildProjectFile), System.String.StringComparison.OrdinalIgnoreCase)) ">true</IsTraversal>
+    <IsTraversal Condition=" '$(IsTraversal)' == '' And $(TraversalProjectNames.IndexOf($(MSBuildProjectFile), System.StringComparison.OrdinalIgnoreCase)) >= 0 ">true</IsTraversal>
 
     <OutputPath Condition=" '$(OutputPath)' == '' And '$(IsTraversal)' == 'true' ">$([System.IO.Path]::Combine(bin, $(Configuration), $(Platform)))\</OutputPath>
     <TraversalTargets>$(MSBuildThisFileDirectory)Traversal.targets</TraversalTargets>
