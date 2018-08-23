@@ -7,7 +7,7 @@
   <UsingTask AssemblyFile="$(CBTNuGetTasksAssemblyPath)" TaskName="CBT.NuGet.Tasks.GenerateNuGetProperties" />
 
   <Target Name="RestoreGlobalNuGetPackages"
-    Condition=" '$(CBTNuGetGlobalPackagesRestored)' != 'true' "
+    Condition=" '$(CBTNuGetGlobalPackagesRestored)' != 'true' And '$(ExcludeRestorePackageImports)' != 'true' "
     Inputs="$(CBTNuGetAllProjects);$(CBTNuGetGlobalPackagesRestoreFile)"
     Outputs="$(CBTNuGetGlobalPackagesRestoredMarker)">
 
