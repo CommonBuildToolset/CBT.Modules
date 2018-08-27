@@ -50,7 +50,11 @@ namespace CBT.NuGet.UnitTests
 
             File.WriteAllText(packageConfigFile, _packageConfigFileContents);
 
-            string packagePath = CreatePackagesFolder( new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.1") });
+            string packagePath = CreatePackagesFolder(new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("Newtonsoft.Json", "6.0.1"),
+                new Tuple<string, string>("Newtonsoft.Json", "7.0.1")
+            });
 
             MockSettings settings = new MockSettings
             {
@@ -65,7 +69,6 @@ namespace CBT.NuGet.UnitTests
             bool result = new NuGetPackagesConfigParser(settings, _log).TryGetPackages(packageConfigFile, packageRestoreData, out IEnumerable<PackageIdentityWithPath> packages);
 
             result.ShouldBeTrue();
-            packages.Count().ShouldBe(1);
 
             packageConfigFile = Path.Combine(TestRootPath, "foo.proj");
 
@@ -76,9 +79,9 @@ namespace CBT.NuGet.UnitTests
             result.ShouldBeTrue();
 
             IList<PackageIdentityWithPath> packageIdentityWithPaths = packages as IList<PackageIdentityWithPath> ?? packages.ToList();
-            packageIdentityWithPaths.Count.ShouldBe(1);
-            packageIdentityWithPaths.First().Id.ShouldBe("Newtonsoft.Json");
-            packageIdentityWithPaths.First().Version.ToString().ShouldBe("6.0.1");
+            packageIdentityWithPaths.Count.ShouldBe(2);
+            packageIdentityWithPaths.Select(i => i.Id).ShouldBe(new [] { "Newtonsoft.Json", "Newtonsoft.Json" });
+            packageIdentityWithPaths.Select(i => i.Version.ToString()).ShouldBe(new[] { "6.0.1", "7.0.1" });
         }
 
         [Fact]
