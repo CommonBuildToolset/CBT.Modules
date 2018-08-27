@@ -16,9 +16,12 @@ namespace CBT.NuGet.UnitTests
     public class NuGetPathPropertiesTests : TestBase
     {
         private readonly string _packageReferenceRestoreFlagContents = @"{""RestoreOutputAbsolutePath"": ""#RestoreOutputPath#"",""PackageImportOrder"": [{""Id"": ""Newtonsoft.Json"",""Version"": ""6.0.3""}],""RestoreProjectStyle"": ""PackageReference"",""ProjectJsonPath"": """"}";
-        private readonly string _packageConfigRestoreFlagContents = @"{""RestoreOutputAbsolutePath"": ""d:\\git\\CBT.Examples\\obj\\AnyCPU\\Debug\\ClassLibrary.csproj\\B34D2B84\\"",""PackageImportOrder"": [{""Id"": ""Newtonsoft.Json"",""Version"": ""6.0.1""}],""RestoreProjectStyle"": ""Unknown"",""ProjectJsonPath"": """"}";
+        private readonly string _packageConfigRestoreFlagContents = @"{""RestoreOutputAbsolutePath"": ""d:\\git\\CBT.Examples\\obj\\AnyCPU\\Debug\\ClassLibrary.csproj\\B34D2B84\\"",""PackageImportOrder"": [],""RestoreProjectStyle"": ""Unknown"",""ProjectJsonPath"": """"}";
         private readonly string _packageProjectJsonRestoreFlagContents = @"{""RestoreOutputAbsolutePath"": ""d:\\git\\CBT.Examples\\obj\\AnyCPU\\Debug\\ClassLibrary.csproj\\B34D2B84\\"",""PackageImportOrder"": [{""Id"": ""Newtonsoft.Json"",""Version"": ""6.0.1""}],""RestoreProjectStyle"": ""ProjectJson"",""ProjectJsonPath"": ""#JsonFile#""}";
-        private readonly string _packageConfigFileContents = @"<packages><package id=""Newtonsoft.Json"" version=""6.0.1""/></packages>";
+        private readonly string _packageConfigFileContents = @"<packages>
+    <package id=""Newtonsoft.Json"" version=""7.0.1""/>
+    <package id=""Newtonsoft.Json"" version=""6.0.1""/>
+</packages>";
         private readonly string _packageProjectJsonFileContents = @"{  ""dependencies"": {    ""NewtonSoft.Json"": ""6.0.3""  },  ""frameworks"": {    ""net45"": {}  },  ""runtimes"": {    ""win"": {}  }}";
 
         private readonly CBTTaskLogHelper _log = new CBTTaskLogHelper(new MockTask
@@ -172,15 +175,22 @@ namespace CBT.NuGet.UnitTests
 <Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <NuGetPath_Newtonsoft_Json>{TestRootPath}\packages\Newtonsoft.Json.6.0.1</NuGetPath_Newtonsoft_Json>
-    <NuGetVersion_Newtonsoft_Json>6.0.1</NuGetVersion_Newtonsoft_Json>
+    <NuGetPath_Newtonsoft_Json>{TestRootPath}\packages\Newtonsoft.Json.7.0.1</NuGetPath_Newtonsoft_Json>
+    <NuGetVersion_Newtonsoft_Json>7.0.1</NuGetVersion_Newtonsoft_Json>
   </PropertyGroup>
   <ItemGroup>
     <CBTNuGetPackageDir Include=""{TestRootPath}\packages\Newtonsoft.Json.6.0.1"" />
+    <CBTNuGetPackageDir Include=""{TestRootPath}\packages\Newtonsoft.Json.7.0.1"" />
   </ItemGroup>
 </Project>";
 
-            string packagePath = CreatePackagesFolder(new List<Tuple<string, string>> { new Tuple<string, string>("Newtonsoft.Json", "6.0.3") }, @"\");
+            string packagePath = CreatePackagesFolder(
+                new List<Tuple<string, string>>
+                {
+                    new Tuple<string, string>("Newtonsoft.Json", "7.0.1"),
+                    new Tuple<string, string>("Newtonsoft.Json", "6.0.1"),
+                },
+                @"\");
 
             MockSettings settings = new MockSettings
             {
