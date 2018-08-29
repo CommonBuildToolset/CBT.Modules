@@ -76,21 +76,25 @@ namespace CBT.NuGet.Internal
 
             PackagesConfigReader packagesConfigReader = new PackagesConfigReader(document);
 
-            packages = packagesConfigReader.GetPackages(allowDuplicatePackageIds: true).Select(i =>
-            {
-                string installPath = packagePathResolver.GetInstallPath(i.PackageIdentity);
-
-                if (!String.IsNullOrWhiteSpace(installPath))
+            packages = packagesConfigReader.GetPackages(allowDuplicatePackageIds: true)
+                .OrderBy(i => i.PackageIdentity.Id)
+                .ThenBy(i => i.PackageIdentity.Version)
+                .Select(i =>
                 {
-                    installPath = Path.GetFullPath(installPath);
-                }
-                else
-                {
-                    Log.LogWarning($"The package '{i.PackageIdentity.Id}' was not found in the repository.");
-                }
+                    string installPath = packagePathResolver.GetInstallPath(i.PackageIdentity);
 
-                return new PackageIdentityWithPath(i.PackageIdentity, installPath);
-            }).Where(i => !String.IsNullOrWhiteSpace(i.FullPath));
+                    if (!String.IsNullOrWhiteSpace(installPath))
+                    {
+                        installPath = Path.GetFullPath(installPath);
+                    }
+                    else
+                    {
+                        Log.LogWarning($"The package '{i.PackageIdentity.Id}' was not found in the repository.");
+                    }
+
+                    return new PackageIdentityWithPath(i.PackageIdentity, installPath);
+                })
+                .Where(i => !String.IsNullOrWhiteSpace(i.FullPath));
 
             return true;
         }

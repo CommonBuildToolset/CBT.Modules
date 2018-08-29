@@ -5,12 +5,12 @@
     <PrepareForBuildDependsOn Condition=" '$(CBTEnableNuGetPackageRestoreOptimization)' != 'false' ">_CheckForCBTNuGetPackagesRestoredMarker;$(PrepareForBuildDependsOn)</PrepareForBuildDependsOn>
     <RestoreDependsOn>$(RestoreDependsOn);RestoreNuGetPackages</RestoreDependsOn>
     <RestoreDependsOn Condition=" '$(CBTNuGetGeneratePackageProperties)' != 'false' ">$(RestoreDependsOn);GenerateNuGetProperties</RestoreDependsOn>
-	<CBTDesignTimeBuildDependsOn>$(CBTDesignTimeBuildDependsOn);GenerateNuGetAssetFlagFileInsideVisualStudio</CBTDesignTimeBuildDependsOn>
+    <CBTDesignTimeBuildDependsOn>$(CBTDesignTimeBuildDependsOn);GenerateNuGetAssetFlagFileInsideVisualStudio</CBTDesignTimeBuildDependsOn>
   </PropertyGroup>
 
   <Import Project="$(NuGetTargets)" Condition=" '$(NuGetTargets)' != '' And !Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.targets\ImportAfter\Microsoft.NuGet.ImportAfter.targets') " />
 
-  <Import Project="$(CBTBuildPackageTargetsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' "/>
+  <Import Project="$(CBTBuildPackageTargetsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' And Exists('$(CBTBuildPackageTargetsFile)') "/>
 
   <Target Name="GenerateNuGetAssetFlagFileInsideVisualStudio"
     Condition=" '$(BuildingInsideVisualStudio)' == 'true' "

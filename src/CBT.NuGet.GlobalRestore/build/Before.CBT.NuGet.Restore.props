@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(CBTEnableGlobalPackageRestore)' != 'false' ">
+    <CBTNuGetGlobalPackagesRestoreFile Condition=" '$(CBTNuGetGlobalPackagesRestoreFile)' == '' And Exists('$(CBTLocalPath)\GlobalPackages\packages.config') ">$(CBTLocalPath)\GlobalPackages\packages.config</CBTNuGetGlobalPackagesRestoreFile>
+    <CBTNuGetAllProjects>$(CBTNuGetAllProjects);$(CBTNuGetGlobalPackagesRestoreFile)</CBTNuGetAllProjects>
+    <CBTNuGetGlobalPackagesRestoredMarker Condition=" '$(CBTNuGetGlobalPackagesRestoredMarker)' == '' ">$(CBTIntermediateOutputPath)\GlobalPackages.CBTNuGetPackagesRestored</CBTNuGetGlobalPackagesRestoredMarker>
+    <CBTNuGetGlobalPackagePropertyFile Condition=" '$(CBTNuGetGlobalPackagePropertyFile)' == '' ">$(CBTIntermediateOutputPath)\GlobalPackages.props</CBTNuGetGlobalPackagePropertyFile>
+  </PropertyGroup>
+
+  <!-- Restore packages if not running under Visual Studio and not running as part of NuGet's restore -->
+  <PropertyGroup Condition=" '$(CBTEnableGlobalPackageRestore)' != 'false' And '$(ExcludeRestorePackageImports)' != 'true' And '$(BuildingInsideVisualStudio)' != 'true' And '$(NuGet_ProjectReferenceToResolve)' == '' And '$(IsRestoreOnly)' != 'true' And '$(CBTNuGetTasksAssemblyName)' != '' ">
+    <CBTNuGetGlobalPackagesRestored Condition=" '$(CBTNuGetGlobalPackagesRestored)' != 'true' ">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.NuGetRestore').Execute('$(CBTNuGetGlobalPackagesRestoreFile)','$(NuGetMsBuildVersion)',$(CBTNuGetRestoreRequireConsent),$(CBTNuGetDisableParallelProcessing),$(NuGetFallbackSource.Split(';')), $(CBTNuGetNoCache), '$(NuGetPackageSaveMode)',$(NuGetSource.Split(';')),'$(NuGetConfigFile)',$(CBTNuGetNonInteractive),'$(NuGetVerbosity)',$(CBTNuGetTimeout),'$(CBTNuGetPath)',$([MSBuild]::ValueOrDefault('$(CBTEnableNuGetPackageRestoreOptimization)', 'true')),$(CBTNuGetGlobalPackagesRestoredMarker),$(CBTNuGetAllProjects.Split(';')), '$(NuGetMSBuildPath)', '$(CBTNuGetRestoreAdditionalArguments)'))</CBTNuGetGlobalPackagesRestored>
+
+    <CBTNuGetGlobalPackagePropertiesCreated Condition=" '$(CBTNuGetGlobalPackagePropertiesCreated)' != 'true' And '$(CBTNuGetGlobalPackagesRestored)' == 'true' And '$(CBTNuGetGenerateGlobalPackageProperties)' != 'false'">$(CBTNuGetTasksAssemblyPath.GetType().Assembly.GetType('System.AppDomain').GetProperty('CurrentDomain').GetValue(null).GetData('CBT_NUGET_ASSEMBLY').CreateInstance('CBT.NuGet.Tasks.GenerateNuGetProperties').Execute($(CBTNuGetGlobalPackagesRestoreFile), $(CBTNuGetAllProjects.Split(';')), $(CBTNuGetGlobalPackagePropertyFile), $(CBTNuGetPackagePropertyVersionNamePrefix), $(CBTNuGetPackagePropertyPathNamePrefix), ''))</CBTNuGetGlobalPackagePropertiesCreated>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CBTParseError Condition=" '$(CBTNuGetGlobalPackagesRestored)' == 'false' " Include="Global packages were not restored and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.NuGet.GlobalRestore.1000</Code>
+    </CBTParseError>
+    <CBTParseError Condition=" '$(CBTNuGetGlobalPackagePropertiesCreated)' == 'false' " Include="Global packages properites were not created and the build cannot continue.  Refer to other errors for more information.">
+      <Code>CBT.NuGet.GlobalRestore.1001</Code>
+    </CBTParseError>
+  </ItemGroup>
+
+  <Import Project="$(CBTNuGetGlobalPackagePropertyFile)" Condition=" '$(CBTEnableGlobalPackageRestore)' != 'false' And Exists('$(CBTNuGetGlobalPackagePropertyFile)') "/>
+</Project>
