@@ -313,6 +313,8 @@ namespace CBT.NuGet.Tasks
         {
             // CBTModulesRestored must be set so on it's evaluation it knows to import the generated module imports so it evaluates the proper full closure of the project.
             yield return "CBTModulesRestored=true";
+            // sets wildcard expansion to lazy expansion so items with properties that aren't set which use **\* don't expand taking forever or timing out. 
+            yield return "MsBuildSkipEagerWildCardEvaluationRegexes=[*]{2}";
 
             if (IsNuGetVersion4OrGreater())
             {
