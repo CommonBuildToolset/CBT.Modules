@@ -10,6 +10,6 @@
 
   <ItemGroup>
     <Build Include="build\CBT.DotNetFx-$(TargetFramework).targets" />
-    <Build Include="$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\$(TargetFrameworkVersion)\**\*" PackagePath="build\$(TargetFramework)\%(RecursiveDir)" />
+    <Build Include="$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\$(TargetFrameworkVersion)\**\*" PackagePath="build\$(TargetFramework)" />
   </ItemGroup>
 </Project>
