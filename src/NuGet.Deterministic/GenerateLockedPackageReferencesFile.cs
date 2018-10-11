@@ -190,7 +190,7 @@ namespace NuGet.Tasks.Deterministic
                 {VersionMetadataName, $"[{library.Version}]"},
                 {Sha512MetadataName, library.Sha512},
                 {PackagePathMetadataName, library.Path},
-                {HashfileMetadataName, library.Files.First(i => i.EndsWith("nupkg.sha512"))},
+                {HashfileMetadataName, library.Files.First(i => i.EndsWith("nupkg.sha512", StringComparison.OrdinalIgnoreCase)).ToLowerInvariant()},
             };
 
             if (libraryDependency != null)

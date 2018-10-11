@@ -143,6 +143,73 @@ namespace NuGet.Deterministic.UnitTests
             buildError.Message.ShouldBe($"NuGet assets file '{generateLockedPackageReferencesFile.ProjectAssetsFile}' does not exist.");
         }
 
+        [Fact]
+        public void HashFileIsLowerCased()
+        {
+            const string sha512FileName = "pAcKaGe1.1.0.0.nUpKg.sHA512";
+
+            LockFile lockFile = new LockFile
+            {
+                Libraries = new List<LockFileLibrary>
+                {
+                    new LockFileLibrary
+                    {
+                        Path = "package1/1.0.0",
+                        Name = "Package1",
+                        Version = new NuGetVersion(1, 0, 0),
+                        Sha512 = "3473C4E0C7F5404F8F46311CA3631331",
+                        Type = "package",
+                        Files = new List<string>
+                        {
+                            sha512FileName
+                        }
+                    }
+                },
+                Targets = new List<LockFileTarget>
+                {
+                    new LockFileTarget
+                    {
+                        TargetFramework = NuGetFramework.ParseFolder("net46"),
+                        Libraries = new List<LockFileTargetLibrary>
+                        {
+                            new LockFileTargetLibrary
+                            {
+                                Name = "Package1",
+                                Type = "package",
+                                Version = new NuGetVersion(1, 0, 0)
+                            }
+                        }
+                    }
+                },
+                PackageSpec = new PackageSpec
+                {
+                    Name = "foo",
+                    TargetFrameworks =
+                    {
+                        new TargetFrameworkInformation
+                        {
+                            FrameworkName = NuGetFramework.ParseFolder("net46"),
+                            Dependencies = new List<LibraryDependency>
+                            {
+                                new LibraryDependency
+                                {
+                                    LibraryRange = new LibraryRange("Package1", VersionRange.Parse("1.0.0"), LibraryDependencyTarget.Package)
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            ProjectRootElement project = ValidateProject(lockFile);
+
+            ProjectItemElement packageReference = project.Items.Where(i => i.ItemType.Equals("PackageReference")).ShouldHaveSingleItem();
+
+            ProjectMetadataElement hashFileMetadata = packageReference.Metadata.Where(i => i.Name.Equals(GenerateLockedPackageReferencesFile.HashfileMetadataName)).ShouldHaveSingleItem();
+
+            hashFileMetadata.Value.ShouldBe(sha512FileName.ToLowerInvariant());
+        }
+
         protected override void Dispose(bool disposing)
         {
             foreach (string assetsFile in _assetsFilesWritten)
