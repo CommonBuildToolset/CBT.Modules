@@ -7,6 +7,7 @@
     <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
     <Description>Provides project traversal in a source code tree.</Description>
     <PackageTags>CBT Module traversal dirs</PackageTags>
+    <PackageId>NuGet.Deterministic</PackageId>
   </PropertyGroup>
   
   <ItemGroup>
