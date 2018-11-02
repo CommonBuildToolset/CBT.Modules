@@ -229,7 +229,7 @@ namespace CBT.NuGet.Tasks
             {
                 ret = Execute();
 
-                if (enableOptimization && !String.IsNullOrWhiteSpace(markerPath))
+                if (ret && enableOptimization && !String.IsNullOrWhiteSpace(markerPath))
                 {
                     GenerateNuGetOptimizationFile(markerPath);
                 }
