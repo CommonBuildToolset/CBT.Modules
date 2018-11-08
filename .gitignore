@@ -159,6 +159,7 @@ publish/
 !CBT.NuGet.targets
 !Before.CBT.NuGet.props
 !After.CBT.NuGet.props
+launchSettings.json
 
 # Microsoft Azure Build Output
 csx/

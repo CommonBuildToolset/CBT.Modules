@@ -1,10 +1,11 @@
 ﻿using CBT.NuGet.Internal;
+using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Build.Construction;
 
 namespace CBT.NuGet.Tasks
 {
@@ -32,6 +33,10 @@ namespace CBT.NuGet.Tasks
             GlobalProperties = globalProperties;
             File = file;
 
+            FileInfo projectsFileInfo = !String.IsNullOrWhiteSpace(projectsFile) ? new FileInfo(projectsFile) : null;
+
+            inputs = inputs.Concat(GetAllPathsFromProjectsFile(projectsFileInfo)).ToArray();
+
             if (enableOptimization && IsFileUpToDate(Log, markerPath, inputs))
             {
                 Log.LogMessage(MessageImportance.Low, "Traversal NuGet packages are up-to-date");
@@ -44,11 +49,10 @@ namespace CBT.NuGet.Tasks
             _projectCollection = projectLoader.LoadProjectsAndReferences(new[] { Project });
             _enableOptimization = enableOptimization;
 
-
-            Log.LogMessage(MessageImportance.Low, $"10 Slowest Loading Projects ...");
+            Log.LogMessage(MessageImportance.Low, "10 Slowest Loading Projects:");
             foreach (var loadTimes in projectLoader.Statistics.ProjectLoadTimes.OrderByDescending(i => i.Value).Take(10))
             {
-                Log.LogMessage(MessageImportance.Low, $"{loadTimes.Key} {loadTimes.Value}");
+                Log.LogMessage(MessageImportance.Low, $"  {loadTimes.Key} {loadTimes.Value}");
             }
 
             if (Log.HasLoggedErrors)
@@ -63,7 +67,7 @@ namespace CBT.NuGet.Tasks
                 return false;
             }
 
-            if (!String.IsNullOrWhiteSpace(projectsFile) && !TryWriteProjectsFile(_projectCollection, new FileInfo(projectsFile)))
+            if (projectsFileInfo != null && !TryWriteProjectsFile(_projectCollection, projectsFileInfo))
             {
                 return false;
             }
@@ -98,6 +102,57 @@ namespace CBT.NuGet.Tasks
             base.ExecutePostRestore();
         }
 
+        private IEnumerable<string> GetAllPathsFromProjectsFile(FileInfo projectsFileInfo)
+        {
+            if (projectsFileInfo == null || !projectsFileInfo.Exists)
+            {
+                yield break;
+            }
+
+            ProjectRootElement rootElement = ProjectRootElement.Open(projectsFileInfo.FullName);
+
+            if (rootElement == null)
+            {
+                yield break;
+            }
+
+            foreach (ProjectItemElement projectItemElement in rootElement.Items.Where(i => i.ItemType.Equals("ProjectFile") || i.ItemType.Equals("TraversalFile")))
+            {
+                if (System.IO.File.Exists(projectItemElement.Include))
+                {
+                    yield return projectItemElement.Include;
+                }
+            }
+        }
+
+        private bool TryWriteProjectsFile(ProjectCollection projectCollection, FileInfo projectsFile)
+        {
+            Log.LogMessageFromText($"Generating file '{projectsFile.FullName}'", MessageImportance.Low);
+
+            Directory.CreateDirectory(projectsFile.DirectoryName);
+
+            ProjectRootElement rootElement = ProjectRootElement.Create(projectsFile.FullName);
+
+            ProjectItemGroupElement projectFileItemGroup = rootElement.AddItemGroup();
+            ProjectItemGroupElement traversalFileItemGroup = rootElement.AddItemGroup();
+
+            foreach (Project project in projectCollection.LoadedProjects)
+            {
+                if (String.Equals(project.GetPropertyValue("IsTraversal"), "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    traversalFileItemGroup.AddItem("TraversalFile", project.FullPath);
+                }
+                else
+                {
+                    projectFileItemGroup.AddItem("ProjectFile", project.FullPath);
+                }
+            }
+
+            rootElement.Save();
+
+            return true;
+        }
+
         private bool TryWriteSolutionFile(ProjectCollection projectCollection)
         {
             string folder = $"{Path.GetDirectoryName(File)}{Path.DirectorySeparatorChar}";
@@ -117,26 +172,6 @@ namespace CBT.NuGet.Tasks
                     writer.WriteLine("EndProject");
                 }
             }
-
-            return true;
-        }
-
-        private bool TryWriteProjectsFile(ProjectCollection projectCollection, FileInfo projectsFile)
-        {
-            Log.LogMessageFromText($"Generating file '{projectsFile.FullName}'", MessageImportance.Low);
-
-            Directory.CreateDirectory(projectsFile.DirectoryName);
-
-            ProjectRootElement rootElement = ProjectRootElement.Create(projectsFile.FullName);
-
-            ProjectItemGroupElement itemGroup = rootElement.AddItemGroup();
-
-            foreach (Project project in projectCollection.LoadedProjects.Where(i => !String.Equals(i.GetPropertyValue("IsTraversal"), "true", StringComparison.OrdinalIgnoreCase)))
-            {
-                itemGroup.AddItem("ProjectFile", project.FullPath);
-            }
-
-            rootElement.Save();
 
             return true;
         }
