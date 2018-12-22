@@ -162,7 +162,7 @@ namespace CBT.NuGet.Tasks
             {
                 writer.WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
 
-                foreach (var project in projectCollection.LoadedProjects)
+                foreach (var project in projectCollection.LoadedProjects.Where(p =>  !p.FullPath.EndsWith(@"\dirs.proj", StringComparison.OrdinalIgnoreCase)))
                 {
                     Uri toUri = new Uri(project.FullPath, UriKind.Absolute);
 
