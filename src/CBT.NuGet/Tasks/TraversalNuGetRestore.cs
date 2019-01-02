@@ -164,7 +164,8 @@ namespace CBT.NuGet.Tasks
 
                 foreach (var project in projectCollection.LoadedProjects)
                 {
-                    if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("QBuild_Distributed"))&&(project.FullPath.EndsWith(@"\dirs.proj",StringComparison.OrdinalIgnoreCase)))
+                    // Mitigation to exlcude dirs.proj from slngen restore while in the lab only.
+                    if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("Q_SESSION_GUID"))&&(project.FullPath.EndsWith(@"\dirs.proj",StringComparison.OrdinalIgnoreCase)))
                     {
                         continue;
                     }
