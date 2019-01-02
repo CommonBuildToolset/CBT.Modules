@@ -73,7 +73,7 @@ namespace CBT.NuGet.Tasks
             }
 
             bool ret = Execute(file, msBuildVersion, requireConsent, disableParallelProcessing, fallbackSources, noCache, packageSaveMode, sources, configFile, nonInteractive, verbosity, timeout, toolPath, enableOptimization, markerPath, inputs, msbuildPath, additionalArguments);
-
+            Log.LogMessage(MessageImportance.Low, $"NuGet restore call returned {ret}.");
             return ret && !Log.HasLoggedErrors;
         }
 
@@ -162,8 +162,12 @@ namespace CBT.NuGet.Tasks
             {
                 writer.WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
 
-                foreach (var project in projectCollection.LoadedProjects.Where(p =>  !p.FullPath.EndsWith(@"\dirs.proj", StringComparison.OrdinalIgnoreCase)))
+                foreach (var project in projectCollection.LoadedProjects)
                 {
+                    if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("QBuild_Distributed"))&&(project.FullPath.EndsWith(@"\dirs.proj",StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
                     Uri toUri = new Uri(project.FullPath, UriKind.Absolute);
 
                     string relativePath = Uri.UnescapeDataString(fromUri.MakeRelativeUri(toUri).ToString()).Replace('/', Path.DirectorySeparatorChar);
