@@ -81,7 +81,7 @@ namespace CBT.NuGet.Tasks
         {
             if (_enableOptimization)
             {
-                foreach (Project loadedProject in _projectCollection.LoadedProjects)
+                foreach (Project loadedProject in _projectCollection.LoadedProjects.Where(i => !String.Equals(i.GetPropertyValue("IsTraversal"), "true", StringComparison.OrdinalIgnoreCase)))
                 {
                     string restoreMarkerPath = loadedProject.GetPropertyValue("CBTNuGetPackagesRestoredMarker");
 
