@@ -158,6 +158,11 @@ namespace CBT.NuGet.Tasks
             string folder = $"{Path.GetDirectoryName(File)}{Path.DirectorySeparatorChar}";
             Uri fromUri = new Uri(folder);
             Directory.CreateDirectory(folder);
+            bool buildingInCloudbuild=false;
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("Q_SESSION_GUID")))
+            {
+               buildingInCloudbuild=true;
+            }
             using (var writer = System.IO.File.CreateText(File))
             {
                 writer.WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
@@ -165,7 +170,7 @@ namespace CBT.NuGet.Tasks
                 foreach (var project in projectCollection.LoadedProjects)
                 {
                     // Mitigation to exlcude dirs.proj from slngen restore while in the lab only.
-                    if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("Q_SESSION_GUID"))&&(project.FullPath.EndsWith(@"\dirs.proj",StringComparison.OrdinalIgnoreCase)))
+                    if (buildingInCloudbuild && project.FullPath.EndsWith(@"\dirs.proj",StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
