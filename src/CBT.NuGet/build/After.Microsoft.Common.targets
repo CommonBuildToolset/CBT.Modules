@@ -13,7 +13,7 @@
   <Import Project="$(CBTBuildPackageTargetsFile)" Condition=" '$(CBTEnableImportBuildPackages)' != 'false' And Exists('$(CBTBuildPackageTargetsFile)') "/>
 
   <Target Name="GenerateNuGetAssetFlagFileInsideVisualStudio"
-    Condition=" '$(BuildingInsideVisualStudio)' == 'true' "
+    Condition=" '$(BuildingInsideVisualStudio)' == 'true' And '$(CBTNuGetGeneratePackageProperties)' == 'true'"
     Inputs="$(CBTNuGetRestoreFile)"
     Outputs="$(CBTNuGetAssetsFlagFile)">
 
