@@ -34,16 +34,16 @@ namespace CBT.NuGet.Tasks
             File = file;
 
             FileInfo projectsFileInfo = !String.IsNullOrWhiteSpace(projectsFile) ? new FileInfo(projectsFile) : null;
-
+            
             inputs = inputs.Concat(GetAllPathsFromProjectsFile(projectsFileInfo)).ToArray();
 
-            if (enableOptimization && IsFileUpToDate(Log, markerPath, inputs))
-            {
-                Log.LogMessage(MessageImportance.Low, "Traversal NuGet packages are up-to-date");
-                return true;
-            }
-
             MSBuildProjectLoader projectLoader = new MSBuildProjectLoader(GlobalProperties.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => i.Trim().Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(i => i.First(), i => i.Last()), MSBuildToolsVersion, Log, ProjectLoadSettings.IgnoreMissingImports);
+
+            // In the scenario where a project is deleted from the codebase the projectsFile contains invalid projects.  This causes a file load error.  So always delete file.
+            if (System.IO.File.Exists(projectsFileInfo.FullName))
+            {
+                System.IO.File.Delete(projectsFileInfo.FullName);
+            }
 
             Log.LogMessage(MessageImportance.Normal, $"Loading project references for '{Project}'...");
             _projectCollection = projectLoader.LoadProjectsAndReferences(new[] { Project });
@@ -72,8 +72,14 @@ namespace CBT.NuGet.Tasks
                 return false;
             }
 
+            // Always regenerate the dirs.proj.sln since a project can be deleted from the source tree.
+            if (enableOptimization && IsFileUpToDate(Log, markerPath, inputs))
+            {
+                Log.LogMessage(MessageImportance.Low, "Traversal NuGet packages are up-to-date");
+                return true;
+            }
             bool ret = Execute(file, msBuildVersion, requireConsent, disableParallelProcessing, fallbackSources, noCache, packageSaveMode, sources, configFile, nonInteractive, verbosity, timeout, toolPath, enableOptimization, markerPath, inputs, msbuildPath, additionalArguments);
-            Log.LogMessage(MessageImportance.Low, $"NuGet restore call returned {ret}.");
+
             return ret && !Log.HasLoggedErrors;
         }
 
@@ -158,22 +164,12 @@ namespace CBT.NuGet.Tasks
             string folder = $"{Path.GetDirectoryName(File)}{Path.DirectorySeparatorChar}";
             Uri fromUri = new Uri(folder);
             Directory.CreateDirectory(folder);
-            bool buildingInCloudbuild=false;
-            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("Q_SESSION_GUID")))
-            {
-               buildingInCloudbuild=true;
-            }
             using (var writer = System.IO.File.CreateText(File))
             {
                 writer.WriteLine("Microsoft Visual Studio Solution File, Format Version 12.00");
 
                 foreach (var project in projectCollection.LoadedProjects)
                 {
-                    // Mitigation to exlcude dirs.proj from slngen restore while in the lab only.
-                    if (buildingInCloudbuild && project.FullPath.EndsWith(@"\dirs.proj",StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
                     Uri toUri = new Uri(project.FullPath, UriKind.Absolute);
 
                     string relativePath = Uri.UnescapeDataString(fromUri.MakeRelativeUri(toUri).ToString()).Replace('/', Path.DirectorySeparatorChar);
