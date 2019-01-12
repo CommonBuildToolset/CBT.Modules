@@ -181,7 +181,7 @@
   </Target>
 
   <!-- _GenerateRestoreProjectSpec is a from the NuGet.targets new to NuGet 4.x. This target must be in the props chaining in by the cbt\obj\modules\build.props and not in the after.microsoft.common.targets extension as the Microsoft common targets are not pulled in during the NuGet evaluation of the project. -->
-  <Target Name="GenerateNuGetAssetFlagFile" AfterTargets="_GenerateRestoreProjectSpec" Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' " >
+  <Target Name="GenerateNuGetAssetFlagFile" AfterTargets="_GenerateRestoreProjectSpec" Condition=" '$(CBTNuGetGeneratePackageProperties)' == 'true' ">
     <ItemGroup>
       <RestoreAssetsFlagData Remove="@(RestoreAssetsFlagData)"/>
       <RestoreAssetsFlagData Include="ProjectJsonPath">
