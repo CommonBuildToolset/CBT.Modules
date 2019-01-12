@@ -34,7 +34,7 @@ namespace CBT.NuGet.Tasks
             File = file;
 
             FileInfo projectsFileInfo = !String.IsNullOrWhiteSpace(projectsFile) ? new FileInfo(projectsFile) : null;
-            
+
             inputs = inputs.Concat(GetAllPathsFromProjectsFile(projectsFileInfo)).ToArray();
 
             MSBuildProjectLoader projectLoader = new MSBuildProjectLoader(GlobalProperties.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Where(i => !String.IsNullOrWhiteSpace(i)).Select(i => i.Trim().Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries)).ToDictionary(i => i.First(), i => i.Last()), MSBuildToolsVersion, Log, ProjectLoadSettings.IgnoreMissingImports);
