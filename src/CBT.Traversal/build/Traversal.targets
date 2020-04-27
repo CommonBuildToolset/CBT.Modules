@@ -10,7 +10,6 @@
     </RebuildDependsOn>
   </PropertyGroup>
 
-
   <Import Project="$(CustomBeforeTraversalTargets)" Condition=" '$(CustomBeforeTraversalTargets)' != '' And Exists('$(CustomBeforeTraversalTargets)') " />
 
   <Import Project="$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)" Condition=" '$(CBTLocalBuildExtensionsPath)' != '' And Exists('$(CBTLocalBuildExtensionsPath)\Before.$(MSBuildThisFile)') " />
@@ -31,12 +30,49 @@
     <ReBuildDependsOn>$(_tmpReBuildDependsOn)</ReBuildDependsOn>
     <BuildDependsOn>$(_tmpBuildDependsOn)</BuildDependsOn>
     <LanguageTargets>$(MSBuildThisFileDirectory)\Empty.props</LanguageTargets>
+    <!--
+      NuGet should always restore Traversal projects with "PackageReference" style restore.  Setting this property will cause the right thing to happen even if there aren't any PackageReference items in the project.
+    -->
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
+  
+  <ItemDefinitionGroup Condition="'$(TraversalDoNotReferenceOutputAssemblies)' != 'false'">
+    <ProjectReference>
+      <!--
+        Setting ReferenceOutputAssembly skips adding the outputs of the referenced project to an item
+      -->
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <!--
+        Setting SkipGetTargetFrameworkProperties skips target framework cross-project validation in NuGet
+      -->
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ProjectReferenceTargets Remove="@(ProjectReferenceTargets)" />
+
+    <ProjectReferenceTargets Include="Build" Targets=".default" />
+    <ProjectReferenceTargets Include="Clean" Targets="Clean" />
+    <ProjectReferenceTargets Include="Test" Targets="Test" />
+    <ProjectReferenceTargets Include="VSTest" Targets="VSTest" />
+    <ProjectReferenceTargets Include="Publish" Targets="Publish" />
+    <ProjectReferenceTargets Include="Pack" Targets="Pack" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TraversalTranslateProjectFileItems)' != 'false' ">
+    <!--
+      Translate the ProjectFile items by moving them to ProjectReference items instead.
+    -->
+    <ProjectReference Include="@(ProjectFile)" />
+
+    <ProjectFile Remove="@(ProjectFile)" />
+  </ItemGroup>
 
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Build" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
-    <MSBuild Projects="@(ProjectFile)" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalBuildGlobalProperties)" />
+    <MSBuild Projects="@(ProjectReference)" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalBuildGlobalProperties)" />
 
     <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Build" Condition=" '@(PostTraversalProjectFile)' != '' " />
   </Target>
@@ -44,7 +80,7 @@
   <Target Name="Clean" DependsOnTargets="$(CleanDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Clean" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
-    <MSBuild Projects="@(ProjectFile)" Targets="Clean" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalCleanGlobalProperties)" />
+    <MSBuild Projects="@(ProjectReference)" Targets="Clean" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalCleanGlobalProperties)" />
 
     <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Clean" Condition="'@(PostTraversalProjectFile)'!=''" />
   </Target>
@@ -54,7 +90,7 @@
   <Target Name="Restore" DependsOnTargets="$(RestoreDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Restore" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
-    <MSBuild Projects="@(ProjectFile)" Targets="Restore" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);IsRestoreOnly=true;$(TraversalGlobalProperties);$(TraversalRestoreGlobalProperties)" />
+    <MSBuild Projects="@(ProjectReference)" Targets="Restore" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);IsRestoreOnly=true;$(TraversalGlobalProperties);$(TraversalRestoreGlobalProperties)" />
 
     <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Restore" Condition="'@(PostTraversalProjectFile)'!=''" />
   </Target>
@@ -62,7 +98,7 @@
   <Target Name="Test" DependsOnTargets="$(TestDependsOn)">
     <MSBuild Projects="@(PreTraversalProjectFile)" Targets="Test" Condition=" '@(PreTraversalProjectFile)' != '' " />
 
-    <MSBuild Projects="@(ProjectFile)" Targets="Test" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalTestGlobalProperties)" />
+    <MSBuild Projects="@(ProjectReference)" Targets="Test" BuildInParallel="$(BuildInParallel)" SkipNonexistentProjects="$(SkipNonexistentProjects)" Properties="CBTModulesRestored=$(CBTModulesRestored);$(TraversalGlobalProperties);$(TraversalTestGlobalProperties)" />
 
     <MSBuild Projects="@(PostTraversalProjectFile)" Targets="Test" Condition="'@(PostTraversalProjectFile)'!=''" />
   </Target>
