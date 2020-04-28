@@ -34,6 +34,10 @@
       NuGet should always restore Traversal projects with "PackageReference" style restore.  Setting this property will cause the right thing to happen even if there aren't any PackageReference items in the project.
     -->
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <!--
+      Disable generating properties for traversal projects since they don't support referencing packages
+    -->
+    <CBTNuGetGeneratePackageProperties>false</CBTNuGetGeneratePackageProperties>
   </PropertyGroup>
   
   <ItemDefinitionGroup Condition="'$(TraversalDoNotReferenceOutputAssemblies)' != 'false'">
