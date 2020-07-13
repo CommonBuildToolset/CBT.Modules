@@ -1,5 +1,5 @@
-# CBT.Modules
-Modules for CBT which extend the functionality of MSBuild.
+# CBT.Modules - Deprecation Notice
 
-## Build Status
-[![Build status](https://ci.appveyor.com/api/projects/status/horfsomppe0yexip?svg=true)](https://ci.appveyor.com/project/CBT/cbt-modules)
+CBT is officially deprecated in favor of retail MSBuild.  
+
+[Click here](https://gist.github.com/jeffkl/37b14b0601bafbdc9462afa8b288fadc) for more information.
