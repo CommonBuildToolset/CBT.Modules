@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27110.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30313.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CBT.NuGet", "CBT.NuGet", "{105F8F9A-A30C-4516-9359-916B2D00C29E}"
 EndProject
@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{18B754B7
 		global.json = global.json
 		NuGet.config = NuGet.config
 		Packages.props = Packages.props
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CBT.NuGet.UnitTests", "src\CBT.NuGet.UnitTests\CBT.NuGet.UnitTests.csproj", "{DF1E58FD-D11A-4DFF-9437-16257D12DE2D}"
